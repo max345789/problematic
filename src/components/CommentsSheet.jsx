@@ -53,7 +53,7 @@ export default function CommentsSheet({
       <div className="modal-backdrop" onClick={onClose} />
       <div className="bottom-sheet" style={{ maxHeight: '88%', padding: 0, gap: 0 }}>
         {/* Header */}
-        <div style={{ padding: '14px 18px 10px', borderBottom: '1px solid #EFF3F4' }}>
+        <div style={{ padding: '14px 18px 10px', borderBottom: '1px solid rgba(255, 255, 255, 0.7)' }}>
           <div className="sheet-handle" />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
             <div>
@@ -64,7 +64,7 @@ export default function CommentsSheet({
                 Replying to <b style={{ color: '#1D9BF0' }}>{post.handle}</b>
               </div>
             </div>
-            <button onClick={onClose} aria-label="Close" style={{ padding: 4 }}>
+            <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
               <Icon.Close />
             </button>
           </div>

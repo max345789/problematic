@@ -9,27 +9,30 @@ import {
 const SLIDES = [
   {
     id: 'problems',
-    bg: '#FED053',
+    bg: 'radial-gradient(135deg, rgba(254, 208, 83, 0.5) 0%, rgba(245, 158, 11, 0.25) 50%, rgba(13, 27, 20, 0.4) 100%)',
     textColor: '#19150E',
     subColor: '#4A3F2C',
+    accent: '#D97706',
     title: ['Share Problems,', 'Find Solutions'],
     subtitle: 'A borderless worldwide network where every challenge gets solved without follow gates.',
     illustration: <ProblemSolvingIllustration />,
   },
   {
     id: 'quality',
-    bg: '#62D5E4',
+    bg: 'radial-gradient(135deg, rgba(98, 213, 228, 0.5) 0%, rgba(2, 132, 199, 0.25) 50%, rgba(13, 27, 20, 0.4) 100%)',
     textColor: '#0B2930',
     subColor: '#1E5059',
+    accent: '#0284C7',
     title: ['Quality &', 'Spam-Free'],
     subtitle: 'Active community moderation keeps discussions authentic, focused, and free of noise.',
     illustration: <CommunityQualityIllustration />,
   },
   {
     id: 'respectadeo',
-    bg: '#F8BAC9',
+    bg: 'radial-gradient(135deg, rgba(248, 186, 201, 0.55) 0%, rgba(219, 39, 119, 0.28) 50%, rgba(13, 27, 20, 0.4) 100%)',
     textColor: '#2D121B',
     subColor: '#582736',
+    accent: '#DB2777',
     title: ['Earn Respectadeo', '(RD Points)'],
     subtitle: 'Solve problems to earn 0.1 RD per approved answer. Irrelevant responses are disqualified by community moderation.',
     illustration: <RespectadeoIllustration />,
@@ -81,8 +84,8 @@ export default function OnboardingScreen({ onComplete }) {
     <div
       className="onboarding-container"
       style={{
-        backgroundColor: current.bg,
-        transition: 'background-color 0.45s cubic-bezier(0.4, 0, 0.2, 1)',
+        background: current.bg,
+        transition: 'background 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -113,28 +116,30 @@ export default function OnboardingScreen({ onComplete }) {
         >
           {SLIDES.map((slide) => (
             <div className="onboarding-slide" key={slide.id}>
-              <div className="onboarding-art-wrapper">
-                {slide.illustration}
-              </div>
+              <div className="onboarding-glass-card">
+                <div className="onboarding-art-wrapper">
+                  {slide.illustration}
+                </div>
 
-              <div className="onboarding-text-area">
-                <h1
-                  className="onboarding-title"
-                  style={{ color: slide.textColor }}
-                >
-                  {slide.title.map((line, i) => (
-                    <span key={i} style={{ display: 'block' }}>
-                      {line}
-                    </span>
-                  ))}
-                </h1>
+                <div className="onboarding-text-area">
+                  <h1
+                    className="onboarding-title"
+                    style={{ color: slide.textColor }}
+                  >
+                    {slide.title.map((line, i) => (
+                      <span key={i} style={{ display: 'block' }}>
+                        {line}
+                      </span>
+                    ))}
+                  </h1>
 
-                <p
-                  className="onboarding-subtitle"
-                  style={{ color: slide.subColor }}
-                >
-                  {slide.subtitle}
-                </p>
+                  <p
+                    className="onboarding-subtitle"
+                    style={{ color: slide.subColor }}
+                  >
+                    {slide.subtitle}
+                  </p>
+                </div>
               </div>
             </div>
           ))}

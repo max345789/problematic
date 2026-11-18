@@ -42,8 +42,8 @@ export default function EditProfileSheet({ currentUser, onSave, onClose, onError
       <div className="bottom-sheet" style={{ maxHeight: '90%', overflowY: 'auto' }}>
         <div className="sheet-handle" />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>Edit profile</div>
-          <button onClick={onClose} aria-label="Close">
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#0F1419' }}>Edit profile</div>
+          <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
             <Icon.Close />
           </button>
         </div>

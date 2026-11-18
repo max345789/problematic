@@ -276,6 +276,12 @@ export default function ProfileScreen({ theme, onOpenBgSheet, onOpenNotification
 
         {/* ================= TABBED USER ACTIVITY ================= */}
         <div className="profile-tabs">
+          <div
+            className="profile-tab-indicator"
+            style={{
+              transform: profileTab === 'problems' ? 'translateX(0%)' : 'translateX(100%)',
+            }}
+          />
           <button
             className={`profile-tab ${profileTab === 'problems' ? 'active' : ''}`}
             onClick={() => setProfileTab('problems')}

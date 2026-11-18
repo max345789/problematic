@@ -10,55 +10,38 @@ function Poll({ post, currentUserId, onVote }) {
   const totalVotes = post.poll.options.reduce((sum, o) => sum + (o.votes || 0), 0);
 
   return (
-    <div style={{ margin: '10px 0 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div className="poll-container">
       {post.poll.options.map((opt, i) => {
         const pct = totalVotes > 0 ? Math.round(((opt.votes || 0) / totalVotes) * 100) : 0;
         return (
           <button
             key={i}
-            className="gh"
+            className={`poll-glass-btn ${showResults ? 'voted' : ''}`}
             onClick={() => {
               if (showResults) return;
               setPreview(i);
               onVote?.(i);
             }}
             disabled={showResults}
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: '38px',
-              justifyContent: 'space-between',
-              padding: '0 14px',
-              borderRadius: 10,
-              overflow: 'hidden',
-              cursor: showResults ? 'default' : 'pointer',
-              border: '1px solid #CFD9DE',
-              background: '#F7F9F9',
-            }}
           >
             {showResults && (
               <span
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: `${pct}%`,
-                  background: 'rgba(29, 155, 240, 0.15)',
-                  transition: 'width 0.4s ease',
-                }}
+                className="poll-glass-fill"
+                style={{ width: `${pct}%` }}
               />
             )}
-            <span style={{ position: 'relative', zIndex: 1, fontSize: 13, fontWeight: 600, color: '#0F1419' }}>
+            <span className="poll-opt-label">
               {opt.text}
             </span>
             {showResults && (
-              <span style={{ position: 'relative', zIndex: 1, fontSize: 13, fontWeight: 700, color: '#536471' }}>
+              <span className="poll-opt-pct">
                 {pct}%
               </span>
             )}
           </button>
         );
       })}
-      <div style={{ fontSize: 12, color: '#536471', marginTop: 2 }}>
+      <div style={{ fontSize: 12, color: '#536471', marginTop: 3, fontWeight: 500 }}>
         {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         {showResults ? ' • Final results' : ''}
       </div>
@@ -206,19 +189,13 @@ export default function PostCard({
 
         {/* Media attachment */}
         {post.image ? (
-          <img
-            src={post.image}
-            alt="Attachment"
-            style={{
-              width: '100%',
-              borderRadius: 14,
-              margin: '6px 0 8px',
-              display: 'block',
-              maxHeight: 280,
-              objectFit: 'cover',
-              border: '1px solid #EFF3F4',
-            }}
-          />
+          <div className="tweet-image-wrapper">
+            <img
+              src={post.image}
+              alt="Attachment"
+              className="tweet-image-content"
+            />
+          </div>
         ) : null}
 
         {/* Optional Poll */}

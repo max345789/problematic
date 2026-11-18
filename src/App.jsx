@@ -173,73 +173,57 @@ export default function App() {
                 <div className="modal-backdrop" onClick={() => setShowBgSheet(false)} />
                 <div className="bottom-sheet">
                   <div className="sheet-handle" />
-                  <div style={{ fontSize: 18, fontWeight: 700 }}>Change background</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: '#0F1419' }}>Change background</div>
+                    <button
+                      className="sheet-close-btn"
+                      onClick={() => setShowBgSheet(false)}
+                      aria-label="Close"
+                    >
+                      <Icon.Close />
+                    </button>
+                  </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                    {THEMES.map((t) => (
-                      <div
-                        key={t.id}
-                        style={{ cursor: 'pointer', textAlign: 'center' }}
-                        onClick={async () => {
-                          await changeTheme(t.id);
-                          showToast?.(`${t.label} theme applied.`);
-                        }}
-                      >
+                  <div className="theme-options-grid">
+                    {THEMES.map((t) => {
+                      const isActive = theme === t.id;
+                      return (
                         <div
-                          style={{
-                            width: 76,
-                            height: 120,
-                            borderRadius: 16,
-                            background: t.preview,
-                            boxSizing: 'border-box',
-                            border: theme === t.id ? '3px solid #1F6F6B' : '1px solid #D5DAE0',
-                            position: 'relative',
+                          key={t.id}
+                          className={`theme-card-option ${isActive ? 'active' : ''}`}
+                          onClick={async () => {
+                            await changeTheme(t.id);
+                            showToast?.(`${t.label} theme applied.`);
                           }}
                         >
-                          {theme === t.id && (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                top: 6,
-                                right: 6,
-                                width: 20,
-                                height: 20,
-                                borderRadius: '50%',
-                                background: '#1F6F6B',
-                                color: '#fff',
-                                display: 'grid',
-                                placeItems: 'center',
-                              }}
-                            >
-                              <Icon.Check />
-                            </div>
-                          )}
+                          <div
+                            className="theme-card-preview"
+                            style={{ background: t.preview }}
+                          >
+                            <div className="theme-glass-overlay" />
+                            {isActive && (
+                              <div className="theme-check-badge">
+                                <Icon.Check />
+                              </div>
+                            )}
+                          </div>
+                          <div className={`theme-card-label ${isActive ? 'active' : ''}`}>
+                            {t.label}
+                          </div>
                         </div>
-                        <div
-                          className="pm"
-                          style={{
-                            marginTop: 6,
-                            color: theme === t.id ? '#14181F' : '#5B6472',
-                            fontWeight: theme === t.id ? 700 : 500,
-                          }}
-                        >
-                          {t.label}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <button
-                    className="pri"
-                    style={{ height: 48, marginTop: 6 }}
+                    className="pri theme-action-btn"
                     onClick={() => showToast?.('Gallery picker simulated.')}
                   >
                     <Icon.Photo /> Choose from gallery
                   </button>
 
                   <button
-                    className="gh"
-                    style={{ height: 44 }}
+                    className="gh theme-action-btn"
                     onClick={async () => {
                       await changeTheme('default');
                       setShowBgSheet(false);

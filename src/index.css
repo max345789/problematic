@@ -3854,24 +3854,26 @@ textarea::placeholder {
   position: absolute;
   top: 14px;
   right: 14px;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #202327;
-  border: 1px solid #2F3336;
+  background: transparent;
+  border: none;
+  box-shadow: none;
   color: var(--text-main, #E7E9EA);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, background 0.2s ease;
   z-index: 10;
+  padding: 0;
 }
 
 .profile-settings-btn:hover {
-  background: #2F3336;
-  border-color: #71767B;
-  transform: rotate(35deg) scale(1.05);
+  background: var(--btn-sec-bg, rgba(255, 255, 255, 0.08));
+  color: var(--text-main);
+  transform: rotate(35deg) scale(1.06);
 }
 
 .profile-settings-btn:active {
@@ -5599,6 +5601,25 @@ body[data-theme="light"],
 [data-theme="light"] .profile-tab.active,
 .theme-light .profile-tab.active {
   color: #000000 !important;
+}
+
+[data-theme="light"] .profile-settings-btn,
+.theme-light .profile-settings-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"] .profile-settings-btn:hover,
+.theme-light .profile-settings-btn:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"] .profile-settings-btn svg,
+.theme-light .profile-settings-btn svg {
+  stroke: #000000 !important;
 }
 
 [data-theme="light"] .profile-theme-toggle-btn,

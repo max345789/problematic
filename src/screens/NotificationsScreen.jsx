@@ -1,11 +1,20 @@
 import React, { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from '../components/Icons';
 import { timeAgo, groupByDay } from '../services/utils';
 
 const GROUPS = ['Today', 'Yesterday', 'Earlier'];
 
 export default function NotificationsScreen({ showToast }) {
-  const { notifications, unreadCount, markNotificationRead, markAllRead, clearNotifications } = useApp();
+  const {
+    notifications,
+    unreadCount,
+    markNotificationRead,
+    markAllRead,
+    clearNotifications,
+    isDark,
+    toggleDarkMode,
+  } = useApp();
 
   const grouped = useMemo(() => {
     const map = { Today: [], Yesterday: [], Earlier: [] };
@@ -19,24 +28,32 @@ export default function NotificationsScreen({ showToast }) {
   return (
     <>
       <header className="h">
-        <div className="logo">Notifications</div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-          {unreadCount > 0 && (
-            <button
-              className="gh"
-              style={{ height: 32, fontSize: 12, padding: '0 12px' }}
-              onClick={async () => {
-                await markAllRead();
-                showToast?.('All notifications marked as read.');
-              }}
-            >
-              Mark all read
-            </button>
-          )}
+        <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Icon.BrandMark size={22} style={{ color: 'var(--text-main)' }} />
+          <span>Notifications</span>
         </div>
       </header>
 
-      <div className="screen-scroll">
+      {unreadCount > 0 && (
+        <div className="notifications-unread-bar">
+          <span className="notifications-unread-text">
+            {unreadCount} unread notification{unreadCount === 1 ? '' : 's'}
+          </span>
+          <button
+            type="button"
+            className="gh"
+            style={{ minHeight: 32, fontSize: 12, fontWeight: 600, padding: '0 12px', borderRadius: 999 }}
+            onClick={async () => {
+              await markAllRead();
+              showToast?.('All notifications marked as read.');
+            }}
+          >
+            Mark all read
+          </button>
+        </div>
+      )}
+
+      <main id="main-content" className="screen-scroll">
         {notifications.length === 0 && (
           <div className="gc" style={{ padding: 28, textAlign: 'center' }}>
             <div className="pnm" style={{ marginBottom: 6 }}>No notifications</div>
@@ -61,7 +78,7 @@ export default function NotificationsScreen({ showToast }) {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <span className="nm">{n.name} </span>
-                    <span style={{ color: '#14181F' }}>{n.text}</span>
+                    <span style={{ color: 'var(--text-main, #0F1419)' }}>{n.text}</span>
                     <div className="pm" style={{ marginTop: 2 }}>{timeAgo(n.createdAt)}</div>
                   </div>
                   {n.unread && (
@@ -70,7 +87,8 @@ export default function NotificationsScreen({ showToast }) {
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        background: '#1F6F6B',
+                        background: 'var(--link-blue, #1D9BF0)',
+                        boxShadow: '0 0 8px rgba(29, 155, 240, 0.6)',
                         flex: 'none',
                       }}
                     />
@@ -82,10 +100,10 @@ export default function NotificationsScreen({ showToast }) {
         )}
 
         {notifications.length > 0 && (
-          <div style={{ textAlign: 'center', padding: '4px 0 20px' }}>
+          <div style={{ textAlign: 'center', padding: '12px 0 24px' }}>
             <button
-              className="gh"
-              style={{ height: 36, fontSize: 13 }}
+              className="gh danger"
+              style={{ minHeight: 38, fontSize: 13, fontWeight: 600, padding: '0 18px', borderRadius: 999 }}
               onClick={async () => {
                 await clearNotifications();
                 showToast?.('Notifications cleared.');
@@ -95,7 +113,7 @@ export default function NotificationsScreen({ showToast }) {
             </button>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

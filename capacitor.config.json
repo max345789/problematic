@@ -1,0 +1,42 @@
+{
+  "appId": "com.problamatic.murmur",
+  "appName": "Problematic",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "preferredContentMode": "mobile"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true,
+    "mixedContentMode": 0,
+    "backgroundColor": "#14210f",
+    "overrideUserAgent": "Problamatic/1.0"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#14210f",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#14210f"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "dark",
+      "resizeOnFullScreen": true
+    },
+    "Preferences": {
+      "group": "ProblamaticPreferences"
+    }
+  }
+}

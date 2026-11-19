@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from '../components/Icons';
 
-export default function LoginScreen({ onSuccess, showToast }) {
+export default function LoginScreen({ onSuccess, onOpenStory, showToast }) {
   const { login, signup } = useApp();
   const [mode, setMode] = useState('login'); // 'login' | 'signup'
   const [name, setName] = useState('');
@@ -36,7 +37,10 @@ export default function LoginScreen({ onSuccess, showToast }) {
     <div className="login-screen-wrap">
       <div className="login-glass-card">
         <div className="login-brand-header">
-          <div className="login-logo">Problamatic</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <Icon.BrandMark size={44} style={{ color: 'var(--text-main)' }} />
+          </div>
+          <div className="login-logo">Problematic</div>
           <div className="login-subtitle">
             {mode === 'login' ? 'Log in to see what’s new.' : 'Create your account to get started.'}
           </div>
@@ -104,6 +108,28 @@ export default function LoginScreen({ onSuccess, showToast }) {
         {mode === 'login' && (
           <div className="login-demo-pill">
             Demo login: <b>rohitha</b> / <b>password</b>
+          </div>
+        )}
+
+        {onOpenStory && (
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <button
+              type="button"
+              onClick={onOpenStory}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted, #94a3b8)',
+                fontSize: 13,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                textDecoration: 'underline',
+              }}
+            >
+              <span>← Back to Story & Community Overview</span>
+            </button>
           </div>
         )}
       </div>

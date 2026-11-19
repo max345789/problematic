@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useApp } from './context/AppContext';
 import Icon from './components/Icons';
 import LoginScreen from './screens/LoginScreen';
@@ -6,43 +6,87 @@ import FeedScreen from './screens/FeedScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+import ComposerSheet from './components/ComposerSheet';
+import SplashScreen from './components/SplashScreen';
+import StoryLandingPage from './components/landing/StoryLandingPage';
 
 const TAB_OFFSETS = { feed: 6, notifications: 64, profile: 122 };
-
-const THEMES = [
-  { id: 'default', label: 'Default', preview: 'url(/default_bg.jpg) center/cover' },
-  { id: 'ocean', label: 'Ocean', preview: 'linear-gradient(160deg,#0f2b3d,#2a7f9e 60%,#bfe3ee)' },
-  { id: 'dusk', label: 'Dusk', preview: 'linear-gradient(160deg,#2b1b3d,#a14a6b 60%,#f2b27a)' },
-  { id: 'plain', label: 'Plain', preview: '#E8ECEF' },
-];
 
 export default function App() {
   const {
     isLoggedIn,
-    theme,
+    currentUser,
+    createPost,
     loading,
     error,
-    changeTheme,
     unreadCount,
     hasOnboarded,
     completeOnboarding,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('feed');
-  const [showBgSheet, setShowBgSheet] = useState(false);
+  const [viewMode, setViewMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash === '#app') return 'app';
+      if (hash.startsWith('#story')) return 'story';
+    }
+    return 'story';
+  });
+  const [showSplash, setShowSplash] = useState(false);
+  const [showComposer, setShowComposer] = useState(false);
+  const [composerSessionId, setComposerSessionId] = useState(0);
+  const composerSessionRef = useRef(0);
   const [previewOnboarding, setPreviewOnboarding] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const toastTimerRef = useRef(null);
+  const dockCreateBtnRef = useRef(null);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      if (hash === '#app') {
+        setViewMode('app');
+      } else if (hash.startsWith('#story')) {
+        setViewMode('story');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const openApp = () => {
+    setShowSplash(false);
+    setViewMode('app');
+    window.location.hash = '#app';
+  };
+
+  const openStory = () => {
+    setViewMode('story');
+    window.location.hash = '#story';
+  };
 
   const showToast = (msg) => {
     if (!msg) return;
     setToastMessage(msg);
-    window.clearTimeout(showToast._t);
-    showToast._t = window.setTimeout(() => setToastMessage(null), 2500);
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // When the user logs out, always land back on the feed after next login.
+  const openComposer = () => {
+    dockCreateBtnRef.current = document.querySelector('.dock-create-btn');
+    const nextSession = ++composerSessionRef.current;
+    setComposerSessionId(nextSession);
+    setShowComposer(true);
+  };
+
+  // When the user logs out, always land back on the feed after next login and reset composer.
   useEffect(() => {
-    if (!isLoggedIn) setActiveTab('feed');
+    if (!isLoggedIn) {
+      setActiveTab('feed');
+      setShowComposer(false);
+      composerSessionRef.current++;
+    }
   }, [isLoggedIn]);
 
   const showOnboarding = !hasOnboarded || previewOnboarding;
@@ -50,28 +94,35 @@ export default function App() {
   const handleFinishOnboarding = async () => {
     await completeOnboarding();
     setPreviewOnboarding(false);
-    showToast('Welcome to Problamatic!');
+    showToast('Welcome to Problematic!');
   };
+
+  if (viewMode === 'story') {
+    return (
+      <StoryLandingPage
+        onEnterApp={openApp}
+        onOpenLogin={openApp}
+      />
+    );
+  }
+
+  if (showSplash) {
+    return (
+      <div className="mobile-app">
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
       <div className="mobile-app">
-        <div className="s theme-default" style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ textAlign: 'center', color: '#fff' }}>
+        <div className="s theme-default app-loading-screen">
+          <div style={{ textAlign: 'center', color: 'var(--text-main)' }}>
             <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: '-0.8px', marginBottom: 16 }}>
-              Problamatic
+              Problematic
             </div>
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                border: '3px solid rgba(255,255,255,0.3)',
-                borderTopColor: '#fff',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto',
-              }}
-            />
+            <div className="app-loading-spinner" />
           </div>
         </div>
       </div>
@@ -80,21 +131,14 @@ export default function App() {
 
   return (
     <div className="mobile-app">
-      <div className={`s theme-${theme}`}>
-        {/* Ambient Organic Liquid Blobs for Glass Refraction */}
-        <div className="liquid-ambient-backdrop" aria-hidden="true">
-          <div className="liquid-blob blob-1" />
-          <div className="liquid-blob blob-2" />
-          <div className="liquid-blob blob-3" />
-          <div className="liquid-blob blob-4" />
-        </div>
-
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <div className="s">
         {/* ================= ONBOARDING SCREENS ================= */}
         {showOnboarding ? (
           <OnboardingScreen onComplete={handleFinishOnboarding} />
         ) : !isLoggedIn ? (
           /* ================= LOGIN SCREEN ================= */
-          <LoginScreen onSuccess={() => setActiveTab('feed')} showToast={showToast} />
+          <LoginScreen onSuccess={() => setActiveTab('feed')} onOpenStory={openStory} showToast={showToast} />
         ) : (
           /* ================= MAIN APP TABS ================= */
           <>
@@ -114,6 +158,7 @@ export default function App() {
             {activeTab === 'feed' && (
               <FeedScreen
                 onOpenNotifications={() => setActiveTab('notifications')}
+                onOpenStory={openStory}
                 showToast={showToast}
               />
             )}
@@ -124,116 +169,87 @@ export default function App() {
 
             {activeTab === 'profile' && (
               <ProfileScreen
-                theme={theme}
-                onOpenBgSheet={() => setShowBgSheet(true)}
                 onOpenNotifications={() => setActiveTab('notifications')}
                 onOpenOnboarding={() => setPreviewOnboarding(true)}
                 showToast={showToast}
               />
             )}
 
-            {/* Floating bottom dock - FIXED AT POSITION */}
-            <nav className="tb bnav">
-              <div className="tp">
-                <div
-                  className="tab-indicator"
-                  style={{ left: `${TAB_OFFSETS[activeTab] ?? 6}px` }}
-                />
+            {/* Dual-Cluster Dynamic Capsule Navigation */}
+            <nav
+              className="bnav"
+              inert={showComposer ? '' : undefined}
+              aria-hidden={showComposer ? 'true' : undefined}
+            >
+              <div className="nav-dual-cluster">
+                {/* Cluster 1: Browsing Capsule */}
+                <div className="nav-capsule-main">
+                  <button
+                    className={`dock-tab ${activeTab === 'feed' ? 'active' : ''}`}
+                    aria-label="Home"
+                    aria-current={activeTab === 'feed' ? 'page' : undefined}
+                    onClick={() => setActiveTab('feed')}
+                  >
+                    <Icon.Home />
+                  </button>
+                  <button
+                    className={`dock-tab ${activeTab === 'notifications' ? 'active' : ''}`}
+                    aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
+                    aria-current={activeTab === 'notifications' ? 'page' : undefined}
+                    onClick={() => setActiveTab('notifications')}
+                  >
+                    <Icon.Bell />
+                    {unreadCount > 0 && (
+                      <span className="dock-unread-dot" />
+                    )}
+                  </button>
+                  <button
+                    className={`dock-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                    aria-label="Profile"
+                    aria-current={activeTab === 'profile' ? 'page' : undefined}
+                    onClick={() => setActiveTab('profile')}
+                  >
+                    <Icon.User />
+                  </button>
+                </div>
+
+                {/* Cluster 2: Standalone Hero Action Orb */}
                 <button
-                  className={`dock-tab ${activeTab === 'feed' ? 'active' : ''}`}
-                  aria-label="Home"
-                  onClick={() => setActiveTab('feed')}
+                  className="nav-action-orb dock-create-btn"
+                  aria-label="Create Problem Post"
+                  title="Create Problem Post"
+                  onClick={openComposer}
                 >
-                  <Icon.Home />
-                </button>
-                <button
-                  className={`dock-tab ${activeTab === 'notifications' ? 'active' : ''}`}
-                  aria-label="Notifications"
-                  onClick={() => setActiveTab('notifications')}
-                  style={{ position: 'relative' }}
-                >
-                  <Icon.Bell />
-                  {unreadCount > 0 && (
-                    <span className="dock-unread-dot" />
-                  )}
-                </button>
-                <button
-                  className={`dock-tab ${activeTab === 'profile' ? 'active' : ''}`}
-                  aria-label="Profile"
-                  onClick={() => setActiveTab('profile')}
-                >
-                  <Icon.User />
+                  <Icon.Plus />
                 </button>
               </div>
             </nav>
 
-            {/* Change Background Bottom Sheet */}
-            {showBgSheet && (
-              <>
-                <div className="modal-backdrop" onClick={() => setShowBgSheet(false)} />
-                <div className="bottom-sheet">
-                  <div className="sheet-handle" />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#0F1419' }}>Change background</div>
-                    <button
-                      className="sheet-close-btn"
-                      onClick={() => setShowBgSheet(false)}
-                      aria-label="Close"
-                    >
-                      <Icon.Close />
-                    </button>
-                  </div>
-
-                  <div className="theme-options-grid">
-                    {THEMES.map((t) => {
-                      const isActive = theme === t.id;
-                      return (
-                        <div
-                          key={t.id}
-                          className={`theme-card-option ${isActive ? 'active' : ''}`}
-                          onClick={async () => {
-                            await changeTheme(t.id);
-                            showToast?.(`${t.label} theme applied.`);
-                          }}
-                        >
-                          <div
-                            className="theme-card-preview"
-                            style={{ background: t.preview }}
-                          >
-                            <div className="theme-glass-overlay" />
-                            {isActive && (
-                              <div className="theme-check-badge">
-                                <Icon.Check />
-                              </div>
-                            )}
-                          </div>
-                          <div className={`theme-card-label ${isActive ? 'active' : ''}`}>
-                            {t.label}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    className="pri theme-action-btn"
-                    onClick={() => showToast?.('Gallery picker simulated.')}
-                  >
-                    <Icon.Photo /> Choose from gallery
-                  </button>
-
-                  <button
-                    className="gh theme-action-btn"
-                    onClick={async () => {
-                      await changeTheme('default');
-                      setShowBgSheet(false);
-                      showToast?.('Reset to default forest theme.');
-                    }}
-                  >
-                    Reset to default
-                  </button>
-                </div>
-              </>
+            {/* Independent Post Create Screen (Slow Popup from Down Side, Zero Glitch) */}
+            {showComposer && (
+              <ComposerSheet
+                key={composerSessionId}
+                currentUser={currentUser}
+                restoreFocusEl={dockCreateBtnRef.current}
+                onPublish={async (payload) => {
+                  const targetSession = composerSessionId;
+                  await createPost(payload);
+                  if (composerSessionRef.current === targetSession) {
+                    setShowComposer(false);
+                    setActiveTab('feed');
+                    showToast('Problem broadcasted worldwide!');
+                  }
+                }}
+                onClose={() => {
+                  composerSessionRef.current++;
+                  setShowComposer(false);
+                }}
+                onError={(msg) => {
+                  if (composerSessionRef.current === composerSessionId) {
+                    showToast(msg);
+                  }
+                }}
+              />
             )}
           </>
         )}

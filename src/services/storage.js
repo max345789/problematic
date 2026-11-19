@@ -14,9 +14,10 @@ export const STORAGE_KEYS = {
   THEME: 'problamatic_theme_v5',
   SEEDED: 'problamatic_seeded_v5',
   ONBOARDING: 'problamatic_onboarding_v5',
+  CUSTOM_BG: 'problamatic_custom_bg_v5',
 };
 
-export const DEFAULT_THEME = 'default';
+export const DEFAULT_THEME = 'dark';
 
 /* ----------------------------- tiny hash ---------------------------------- */
 export function hashPassword(password) {
@@ -53,8 +54,10 @@ export async function setStoredData(key, value) {
 async function removeStoredData(key) {
   try {
     await Preferences.remove({ key });
+    return true;
   } catch (error) {
     console.error(`[storage] remove failed for ${key}:`, error);
+    throw error;
   }
 }
 
@@ -284,6 +287,10 @@ export async function getComments() {
   return getStoredData(STORAGE_KEYS.COMMENTS, {});
 }
 
+export async function saveComments(comments) {
+  return setStoredData(STORAGE_KEYS.COMMENTS, comments);
+}
+
 export async function getCommentsForPost(postId) {
   const all = await getComments();
   return all[postId] || [];
@@ -360,13 +367,13 @@ export async function acceptSolution(postId, solutionId, solverId) {
   });
   await saveUsers(nextUsers);
 
-  // Send an RD point reward notification
+  // Send solution accepted notification
   await addNotification({
-    type: 'rd_award',
-    name: 'Respectadeo Award',
-    avatar: '★',
-    avatarBg: '#FED053',
-    text: `Your solution was marked as helpful! You earned +0.1 RD points for "${targetPost?.title || 'Problem'}".`,
+    type: 'solution_accepted',
+    name: 'Solution Accepted',
+    avatar: '✓',
+    avatarBg: '#10B981',
+    text: `Your solution was marked as accepted for "${targetPost?.title || 'Problem'}".`,
     postId,
     unread: true,
   });
@@ -382,7 +389,7 @@ export async function disqualifySolution(postId, solutionId, solverId, reason = 
     return {
       ...c,
       aiStatus: 'disqualified',
-      disqualificationReason: `Disqualified by community moderation: ${reason} (-0.2 RD penalty applied)`,
+      disqualificationReason: `Disqualified by community moderation: ${reason}`,
     };
   });
   comments[postId] = nextList;
@@ -490,6 +497,19 @@ export async function getTheme() {
 
 export async function saveTheme(theme) {
   return setStoredData(STORAGE_KEYS.THEME, theme);
+}
+
+/* --------------------------- custom background ---------------------------- */
+export async function getCustomBg() {
+  return getStoredData(STORAGE_KEYS.CUSTOM_BG, null);
+}
+
+export async function saveCustomBg(bgDataUrl) {
+  return setStoredData(STORAGE_KEYS.CUSTOM_BG, bgDataUrl);
+}
+
+export async function removeCustomBg() {
+  return removeStoredData(STORAGE_KEYS.CUSTOM_BG);
 }
 
 /* ------------------------------ seed data --------------------------------- */
@@ -733,11 +753,11 @@ function seedNotifications(userId) {
   return [
     {
       id: 'notif_rd_1',
-      type: 'rd_award',
-      name: 'Respectadeo Award',
-      avatar: '★',
-      avatarBg: '#FED053',
-      text: 'Arjun marked your solution as helpful! You earned +0.1 RD points for "Capacitor Android build fails".',
+      type: 'solution_accepted',
+      name: 'Solution Accepted',
+      avatar: '✓',
+      avatarBg: '#10B981',
+      text: 'Arjun marked your solution as accepted for "Capacitor Android build fails".',
       postId: 'prob_1',
       unread: true,
       createdAt: minutesAgo(15),
@@ -756,10 +776,10 @@ function seedNotifications(userId) {
     {
       id: 'notif_welcome_app',
       type: 'welcome',
-      name: 'Problamatic Community',
+      name: 'Problematic Community',
       avatar: 'P',
       avatarBg: '#1F6F6B',
-      text: 'Welcome to Problamatic. Broadcast your first problem or solve one to earn Respectadeo (RD) points!',
+      text: 'Welcome to Problematic. Broadcast your first problem or help others solve theirs!',
       postId: null,
       unread: false,
       createdAt: daysAgo(1),
@@ -794,7 +814,7 @@ export async function setOnboardingCompleted(completed = true) {
 
 export async function initializeStorage() {
   await seedInitialData();
-  const [users, session, posts, notifications, comments, theme, onboarded] = await Promise.all([
+  const [users, session, posts, notifications, comments, theme, onboarded, customBg] = await Promise.all([
     getUsers(),
     getSession(),
     getPosts(),
@@ -802,13 +822,14 @@ export async function initializeStorage() {
     getComments(),
     getTheme(),
     hasCompletedOnboarding(),
+    getCustomBg(),
   ]);
 
   const currentUser = session?.userId
     ? users.find((u) => u.id === session.userId) || users[0] || null
     : users[0] || null;
 
-  return { users, session, currentUser, posts, notifications, comments, theme, onboarded };
+  return { users, session, currentUser, posts, notifications, comments, theme, onboarded, customBg };
 }
 
 export async function clearAllData() {

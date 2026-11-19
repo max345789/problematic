@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+server/node_modules/
+
+# Production build
+dist/
+dist-ssr/
+*.local
+
+# Environment
+.env.local
+.env.*.local
+
+# Android builds & caches
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/captures/
+.gradle/
+build/
+
+# Keystores & sensitive keys (keep local release safe)
+*.keystore
+*.jks
+keystore.properties
+
+# Editor & temporary files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+edge_profile/
+screenshots/
+*.png
+*.log
+
+# Server local database files
+server/data/*.db*
+
+# Release APKs & App Bundles (exceed GitHub 100MB limit)
+release/
+*.apk
+*.aab
+public/*.apk
+public/*.aab
+
+# OS files
+.DS_Store
+Thumbs.db

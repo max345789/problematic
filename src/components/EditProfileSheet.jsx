@@ -42,14 +42,14 @@ export default function EditProfileSheet({ currentUser, onSave, onClose, onError
       <div className="bottom-sheet" style={{ maxHeight: '90%', overflowY: 'auto' }}>
         <div className="sheet-handle" />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#0F1419' }}>Edit profile</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main, #0F1419)' }}>Edit profile</div>
           <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
             <Icon.Close />
           </button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="av" style={{ background: avatarBg, width: 64, height: 64, fontSize: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div className="av" style={{ background: avatarBg, width: 64, height: 64, fontSize: 24, flexShrink: 0 }}>
             {(name || '?').charAt(0).toUpperCase()}
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -60,39 +60,40 @@ export default function EditProfileSheet({ currentUser, onSave, onClose, onError
                 aria-label={`Avatar color ${c}`}
                 className="color-dot-btn"
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: 30,
+                  height: 30,
                   borderRadius: '50%',
                   background: c,
-                  border: avatarBg === c ? '3px solid #14181F' : '2px solid rgba(255,255,255,0.8)',
-                  boxShadow: avatarBg === c ? '0 0 0 2px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.2)' : '0 1px 4px rgba(0,0,0,0.15)',
+                  border: avatarBg === c ? '3px solid #0F1419' : '2px solid rgba(0,0,0,0.15)',
+                  boxShadow: avatarBg === c ? '0 0 0 2px rgba(15,20,25,0.2), 0 2px 8px rgba(0,0,0,0.2)' : '0 1px 4px rgba(0,0,0,0.15)',
                   transform: avatarBg === c ? 'scale(1.12)' : 'scale(1)',
                   transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  cursor: 'pointer',
                 }}
               />
             ))}
           </div>
         </div>
 
-        <label style={{ fontSize: 13, fontWeight: 600 }}>Name</label>
+        <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main, #0F1419)' }}>Name</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={40}
           className="glass-input"
-          style={{ height: 42, padding: '0 12px' }}
+          style={{ height: 44, padding: '0 14px' }}
         />
 
-        <label style={{ fontSize: 13, fontWeight: 600 }}>Username</label>
+        <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main, #0F1419)' }}>Username</label>
         <input
           value={handle}
           onChange={(e) => setHandle(e.target.value)}
           maxLength={21}
           className="glass-input"
-          style={{ height: 42, padding: '0 12px' }}
+          style={{ height: 44, padding: '0 14px' }}
         />
 
-        <label style={{ fontSize: 13, fontWeight: 600 }}>Bio</label>
+        <label style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main, #0F1419)' }}>Bio</label>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
@@ -106,9 +107,9 @@ export default function EditProfileSheet({ currentUser, onSave, onClose, onError
           }}
         />
 
-        {error && <div style={{ color: '#C0392B', fontSize: 13 }}>{error}</div>}
+        {error && <div style={{ color: '#DC2626', fontSize: 13, background: '#FEF2F2', padding: '8px 12px', borderRadius: 10 }}>{error}</div>}
 
-        <button className="pri" style={{ height: 48 }} onClick={submit} disabled={busy}>
+        <button className="pri" style={{ minHeight: 48, width: '100%', marginTop: 8 }} onClick={submit} disabled={busy}>
           {busy ? 'Saving…' : 'Save changes'}
         </button>
       </div>

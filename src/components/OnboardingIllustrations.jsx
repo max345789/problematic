@@ -255,90 +255,65 @@ export function CommunityQualityIllustration() {
   );
 }
 
-// Screen 3: Soft Rose (#F8BAC9) — Respectadeo (RD Points) Economy & +0.1 Reward
+// Screen 3: Verified Solutions & Community Impact (No Points)
 export function RespectadeoIllustration() {
   return (
     <svg viewBox="0 0 340 260" width="100%" height="220" style={{ overflow: 'visible' }}>
       <defs>
-        <filter id="coin-shadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="16" stdDeviation="18" floodColor="#831843" floodOpacity="0.32" />
+        <filter id="badge-shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="16" stdDeviation="18" floodColor="#065F46" floodOpacity="0.25" />
         </filter>
         <filter id="chip-shadow" x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#000" floodOpacity="0.2" />
         </filter>
 
-        <radialGradient id="coin-face" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#FFFBEB" />
-          <stop offset="30%" stopColor="#FDE68A" />
-          <stop offset="70%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#B45309" />
-        </radialGradient>
-        <linearGradient id="coin-edge" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#FDE68A" />
-          <stop offset="50%" stopColor="#D97706" />
-          <stop offset="100%" stopColor="#78350F" />
+        <linearGradient id="badge-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#047857" />
         </linearGradient>
 
-        <linearGradient id="reward-chip" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#34D399" />
-          <stop offset="100%" stopColor="#059669" />
+        <linearGradient id="verified-chip" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#3B82F6" />
+          <stop offset="100%" stopColor="#1D4ED8" />
         </linearGradient>
       </defs>
 
-      <ellipse cx="170" cy="226" rx="115" ry="17" fill="#9D174D" opacity="0.25" />
+      <ellipse cx="170" cy="226" rx="115" ry="17" fill="#065F46" opacity="0.2" />
 
-      {/* Center 3D Golden Respectadeo (RD) Coin */}
-      <g filter="url(#coin-shadow)">
-        <ellipse cx="170" cy="126" rx="72" ry="72" fill="url(#coin-edge)" />
-        <ellipse cx="170" cy="120" rx="72" ry="72" fill="url(#coin-face)" />
+      {/* Center Verified Solution Badge */}
+      <g filter="url(#badge-shadow)">
+        <circle cx="170" cy="120" r="72" fill="url(#badge-gradient)" />
+        <circle cx="170" cy="120" r="64" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeDasharray="4 4" />
 
-        <circle cx="170" cy="120" r="64" fill="none" stroke="#D97706" strokeWidth="3" opacity="0.8" />
-        <circle cx="170" cy="120" r="60" fill="none" stroke="#FEF3C7" strokeWidth="2" strokeDasharray="3 3" />
-
-        <g fill="#B45309" opacity="0.85">
-          <path d="M 124 100 C 122 108, 126 116, 132 120 C 126 120, 122 112, 124 100 Z" />
-          <path d="M 126 124 C 124 132, 128 140, 136 142 C 128 142, 124 134, 126 124 Z" />
-          <path d="M 136 144 C 138 152, 146 158, 154 158 C 146 160, 138 152, 136 144 Z" />
-
-          <path d="M 216 100 C 218 108, 214 116, 208 120 C 214 120, 218 112, 216 100 Z" />
-          <path d="M 214 124 C 216 132, 212 140, 204 142 C 212 142, 216 134, 214 124 Z" />
-          <path d="M 204 144 C 202 152, 194 158, 186 158 C 194 160, 202 152, 204 144 Z" />
-        </g>
-
-        <path d="M 170 82 l 3 6 l 7 1 l -5 5 l 1 7 l -6 -3 l -6 3 l 1 -7 l -5 -5 l 7 -1 z" fill="#FFFFFF" />
+        {/* Large Crisp White Checkmark */}
+        <path
+          d="M 142 120 L 162 140 L 202 96"
+          fill="none"
+          stroke="#FFFFFF"
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
 
         <text
           x="170"
-          y="136"
+          y="166"
           textAnchor="middle"
-          fill="#78350F"
-          fontSize="44"
-          fontWeight="900"
-          fontFamily="'Figtree', -apple-system, sans-serif"
-          letterSpacing="-1.5px"
-        >
-          RD
-        </text>
-
-        <text
-          x="170"
-          y="156"
-          textAnchor="middle"
-          fill="#92400E"
-          fontSize="9"
+          fill="#FFFFFF"
+          fontSize="10"
           fontWeight="800"
           letterSpacing="1.8px"
         >
-          RESPECTADEO
+          VERIFIED
         </text>
       </g>
 
-      {/* Floating "+0.1 RD" Award Badge Chip */}
-      <g filter="url(#chip-shadow)" transform="translate(200, 36)">
-        <rect x="0" y="0" width="108" height="42" rx="21" fill="url(#reward-chip)" />
-        <rect x="2" y="2" width="104" height="38" rx="19" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
-        <text x="54" y="26" textAnchor="middle" fill="#FFFFFF" fontSize="17" fontWeight="800" letterSpacing="-0.3px">
-          +0.1 RD ✓
+      {/* Floating "Solution Accepted" Badge Chip */}
+      <g filter="url(#chip-shadow)" transform="translate(196, 36)">
+        <rect x="0" y="0" width="124" height="42" rx="21" fill="url(#verified-chip)" />
+        <rect x="2" y="2" width="120" height="38" rx="19" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+        <text x="62" y="26" textAnchor="middle" fill="#FFFFFF" fontSize="14" fontWeight="800" letterSpacing="-0.2px">
+          Accepted ✓
         </text>
       </g>
 

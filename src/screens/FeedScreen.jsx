@@ -3,9 +3,9 @@ import { useApp } from '../context/AppContext';
 import Icon from '../components/Icons';
 import PostCard from '../components/PostCard';
 import CommentsSheet from '../components/CommentsSheet';
-import ComposerSheet from '../components/ComposerSheet';
+import ShareModal from '../components/ShareModal';
 
-export default function FeedScreen({ onOpenNotifications, showToast }) {
+export default function FeedScreen({ onOpenNotifications, onOpenStory, showToast }) {
   const {
     posts,
     currentUser,
@@ -18,40 +18,30 @@ export default function FeedScreen({ onOpenNotifications, showToast }) {
     addComment,
     removeComment,
     acceptSolution,
-    createPost,
     notify,
+    isDark,
+    toggleDarkMode,
   } = useApp();
 
-  const [composer, setComposer] = useState(null); // 'problem' | null
   const [commentsFor, setCommentsFor] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [sharingPost, setSharingPost] = useState(null);
 
-  const handleShare = async (post) => {
-    const shareData = {
-      title: 'Problamatic Problem',
-      text: `"${post.title || post.text}" — by ${post.author} on Problamatic`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-        await notify({
-          type: 'share',
-          name: currentUser?.name || 'You',
-          avatar: currentUser?.avatar || 'Y',
-          avatarBg: currentUser?.avatarBg || '#1F6F6B',
-          text: 'shared your problem',
-          postId: post.id,
-          unread: false,
-        });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
-        showToast?.('Problem link copied to clipboard!');
-      } else {
-        showToast?.('Sharing is not supported on this device.');
-      }
-    } catch (err) {
-      if (err?.name !== 'AbortError') showToast?.('Could not share.');
+  const handleShare = (post) => {
+    setSharingPost(post);
+  };
+
+  const handleShareSuccess = async (msg) => {
+    showToast?.(msg);
+    if (sharingPost) {
+      await notify({
+        type: 'share',
+        name: currentUser?.name || 'You',
+        avatar: currentUser?.avatar || 'Y',
+        avatarBg: currentUser?.avatarBg || '#1F6F6B',
+        text: 'shared your problem',
+        postId: sharingPost.id,
+        unread: false,
+      });
     }
   };
 
@@ -66,36 +56,44 @@ export default function FeedScreen({ onOpenNotifications, showToast }) {
 
   return (
     <>
-      <header className="h">
-        <div className="logo">Problamatic</div>
-        <button className="ib" aria-label="Notifications" onClick={onOpenNotifications}>
-          <Icon.Bell />
-          {unreadCount > 0 && <span className="dot" />}
-        </button>
+      <header className="h" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Icon.BrandMark size={22} style={{ color: 'var(--text-main)' }} />
+          <span>Problematic</span>
+        </div>
+        {onOpenStory && (
+          <button
+            type="button"
+            className="feed-story-btn"
+            onClick={onOpenStory}
+            style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '999px',
+              padding: '4px 12px',
+              color: 'var(--text-main)',
+              fontSize: '12px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'background 0.2s ease',
+            }}
+          >
+            <span style={{ color: '#10b981' }}>〰</span>
+            <span>Our Story</span>
+          </button>
+        )}
       </header>
 
-      <div className="screen-scroll">
-        {/* Worldwide Broadcast Composer Box */}
-        <div
-          className="composer-box"
-          onClick={() => setComposer('problem')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="av" style={{ background: currentUser?.avatarBg || '#1F6F6B' }}>
-            {currentUser?.avatar || '?'}
-          </div>
-          <div style={{ flex: 1, color: '#536471', fontSize: 15, fontWeight: 400 }}>
-            What's the problem? Post to find solutions…
-          </div>
-        </div>
-
+      <main id="main-content" tabIndex={-1} className="screen-scroll">
         {/* Global Problems List */}
         <div>
           {posts.length === 0 && (
-            <div className="pc" style={{ textAlign: 'center', padding: 28 }}>
+            <div className="pc empty-card" style={{ textAlign: 'center', padding: 28 }}>
               <div className="pnm" style={{ marginBottom: 6 }}>No problems broadcasted yet</div>
-              <div className="pm">Tap + to broadcast the first problem to the worldwide community.</div>
+              <div className="pm instruction-text">Tap + in the bottom navigation bar to broadcast the first problem to the worldwide community.</div>
             </div>
           )}
           {posts.map((post) => (
@@ -112,48 +110,7 @@ export default function FeedScreen({ onOpenNotifications, showToast }) {
             />
           ))}
         </div>
-      </div>
-
-      {/* Floating action button + speed dial (fixed at position) */}
-      <div className="fab-container">
-        {menuOpen && (
-          <>
-            <div
-              className="fab-item"
-              onClick={() => {
-                setMenuOpen(false);
-                setComposer('problem');
-              }}
-            >
-              <span className="fab-label">Broadcast Problem</span>
-              <button className="fab-button" aria-label="Broadcast Problem">
-                <Icon.Pencil />
-              </button>
-            </div>
-          </>
-        )}
-        <button
-          className={`fab-main ${menuOpen ? 'open' : ''}`}
-          aria-label={menuOpen ? 'Close' : 'Broadcast Problem'}
-          onClick={() => {
-            setComposer('problem');
-          }}
-        >
-          <Icon.Plus />
-        </button>
-      </div>
-
-      {composer && (
-        <ComposerSheet
-          currentUser={currentUser}
-          onPublish={async (payload) => {
-            await createPost(payload);
-            showToast?.('Posted to worldwide feed!');
-          }}
-          onClose={() => setComposer(null)}
-          onError={(msg) => showToast?.(msg)}
-        />
-      )}
+      </main>
 
       {commentsFor && (
         <CommentsSheet
@@ -165,6 +122,14 @@ export default function FeedScreen({ onOpenNotifications, showToast }) {
           onAccept={acceptSolution}
           onClose={() => setCommentsFor(null)}
           showToast={showToast}
+        />
+      )}
+
+      {sharingPost && (
+        <ShareModal
+          post={sharingPost}
+          onClose={() => setSharingPost(null)}
+          onShareSuccess={handleShareSuccess}
         />
       )}
     </>

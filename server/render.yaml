@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: problematic-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+    disk:
+      name: problematic-data
+      mountPath: /app/data
+      sizeGB: 1

@@ -68,10 +68,9 @@ export default function OnboardingScreen({ onComplete }) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Top Bar: Brand Icon & Skip */}
+      {/* Top Bar: Brand Text & Skip */}
       <div className="onboarding-top-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Icon.BrandMark size={26} style={{ color: '#FFFFFF' }} />
+        <div>
           <span style={{ fontSize: 16, fontWeight: 800, letterSpacing: '-0.3px', color: '#FFFFFF' }}>
             Problematic
           </span>

@@ -37,9 +37,6 @@ export default function LoginScreen({ onSuccess, onOpenStory, showToast }) {
     <div className="login-screen-wrap">
       <div className="login-glass-card">
         <div className="login-brand-header">
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-            <Icon.BrandMark size={44} style={{ color: 'var(--text-main)' }} />
-          </div>
           <div className="login-logo">Problematic</div>
           <div className="login-subtitle">
             {mode === 'login' ? 'Log in to see what’s new.' : 'Create your account to get started.'}

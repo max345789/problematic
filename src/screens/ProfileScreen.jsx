@@ -31,8 +31,7 @@ export default function ProfileScreen({ showToast }) {
   return (
     <>
       <header className="h">
-        <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Icon.BrandMark size={22} style={{ color: 'var(--text-main)' }} />
+        <div className="logo">
           <span>Profile</span>
         </div>
       </header>

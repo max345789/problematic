@@ -26,21 +26,8 @@ export default function App() {
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('feed');
-  const [viewMode, setViewMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      if (Capacitor.isNativePlatform()) return 'app';
-      const hash = window.location.hash;
-      if (hash === '#app') return 'app';
-      if (hash.startsWith('#story')) return 'story';
-    }
-    return 'story';
-  });
-  const [showSplash, setShowSplash] = useState(() => {
-    if (typeof window !== 'undefined') {
-      if (Capacitor.isNativePlatform() || window.location.hash === '#app') return true;
-    }
-    return false;
-  });
+  const [viewMode, setViewMode] = useState('app');
+  const [showSplash, setShowSplash] = useState(true);
   const [showComposer, setShowComposer] = useState(false);
   const [composerSessionId, setComposerSessionId] = useState(0);
   const composerSessionRef = useRef(0);
@@ -104,20 +91,20 @@ export default function App() {
     showToast('Welcome to Problematic!');
   };
 
+  if (showSplash) {
+    return (
+      <div className="mobile-app">
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      </div>
+    );
+  }
+
   if (viewMode === 'story') {
     return (
       <StoryLandingPage
         onEnterApp={openApp}
         onOpenLogin={openApp}
       />
-    );
-  }
-
-  if (showSplash) {
-    return (
-      <div className="mobile-app">
-        <SplashScreen onFinish={() => setShowSplash(false)} />
-      </div>
     );
   }
 
@@ -165,7 +152,6 @@ export default function App() {
             {activeTab === 'feed' && (
               <FeedScreen
                 onOpenNotifications={() => setActiveTab('notifications')}
-                onOpenStory={openStory}
                 showToast={showToast}
               />
             )}

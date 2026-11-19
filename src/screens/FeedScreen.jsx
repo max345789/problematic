@@ -5,7 +5,7 @@ import PostCard from '../components/PostCard';
 import CommentsSheet from '../components/CommentsSheet';
 import ShareModal from '../components/ShareModal';
 
-export default function FeedScreen({ onOpenNotifications, onOpenStory, showToast }) {
+export default function FeedScreen({ onOpenNotifications, showToast }) {
   const {
     posts,
     currentUser,
@@ -56,35 +56,10 @@ export default function FeedScreen({ onOpenNotifications, onOpenStory, showToast
 
   return (
     <>
-      <header className="h" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Icon.BrandMark size={22} style={{ color: 'var(--text-main)' }} />
+      <header className="h">
+        <div className="logo">
           <span>Problematic</span>
         </div>
-        {onOpenStory && (
-          <button
-            type="button"
-            className="feed-story-btn"
-            onClick={onOpenStory}
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '999px',
-              padding: '4px 12px',
-              color: 'var(--text-main)',
-              fontSize: '12px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'background 0.2s ease',
-            }}
-          >
-            <span style={{ color: '#10b981' }}>〰</span>
-            <span>Our Story</span>
-          </button>
-        )}
       </header>
 
       <main id="main-content" tabIndex={-1} className="screen-scroll">

@@ -3251,7 +3251,7 @@ textarea::placeholder {
 }
 
 /* ========================================================================== */
-/*  Splash Screen Animation (Full 2-Phase Cinematic Rollback)                 */
+/*  Splash Screen Animation (Text-Only, Exact per user template)              */
 /* ========================================================================== */
 #splash-screen {
   position: fixed;
@@ -3291,10 +3291,7 @@ textarea::placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Text enters, then morphs out */
-  animation: 
-    textIn 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) 0.5s forwards,
-    textOut 0.8s cubic-bezier(0.55, 0.085, 0.68, 0.53) 2.5s forwards;
+  animation: textIn 1s cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s forwards;
   z-index: 2;
 }
 
@@ -3305,30 +3302,6 @@ textarea::placeholder {
   color: #050505; /* Black logo and text */
   text-transform: uppercase;
   margin: 0;
-}
-
-/* LOGO ANIMATION STYLES */
-#splash-screen .logo-wrapper {
-  position: absolute;
-  opacity: 0;
-  transform: scale(0);
-  /* Pops in as text shrinks out to create the blend effect */
-  animation: logoIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2.7s forwards;
-  z-index: 1;
-}
-
-#splash-screen .logo-zoom-container {
-  width: 250px;
-  height: 250px;
-  /* Targets the solid part of top-right black chevron to fill screen with black */
-  transform-origin: 62% 22%;
-  animation: logoZoom 1.2s cubic-bezier(0.8, 0, 0.2, 1) 4s forwards;
-}
-
-#splash-screen .logo-zoom-container svg {
-  width: 100%;
-  height: 100%;
-  outline: none;
 }
 
 /* KEYFRAMES */
@@ -3348,51 +3321,8 @@ textarea::placeholder {
   }
 }
 
-@keyframes textOut {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-    letter-spacing: 14px;
-    margin-right: -14px;
-    filter: blur(0px);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.3);
-    letter-spacing: -5px;
-    margin-right: 5px;
-    filter: blur(15px);
-  }
-}
-
-@keyframes logoIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.2) rotate(-45deg);
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-    filter: blur(0px);
-  }
-}
-
-@keyframes logoZoom {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(300);
-  }
-}
-
 /* Responsive adjustments */
 @media (max-width: 600px) {
-  #splash-screen .logo-zoom-container {
-    width: 200px;
-    height: 200px;
-  }
   #splash-screen .brand-title {
     font-size: 1.5rem;
   }
@@ -3409,22 +3339,6 @@ textarea::placeholder {
       letter-spacing: 10px;
       margin-right: -10px;
       filter: blur(0px);
-    }
-  }
-  @keyframes textOut {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-      letter-spacing: 10px;
-      margin-right: -10px;
-      filter: blur(0px);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.3);
-      letter-spacing: -2px;
-      margin-right: 2px;
-      filter: blur(10px);
     }
   }
 }

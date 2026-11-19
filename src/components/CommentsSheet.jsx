@@ -131,10 +131,14 @@ export default function CommentsSheet({
                     {(c.authorId === currentUser?.id || isModerator) && (
                       <button
                         type="button"
-                        onClick={() => {
-                          onDelete(post.id, c.id);
-                          if (isModerator && c.authorId !== currentUser?.id) {
-                            showToast?.('Comment removed by Moderator.');
+                        onClick={async () => {
+                          try {
+                            await onDelete(post.id, c.id);
+                            if (isModerator && c.authorId !== currentUser?.id) {
+                              showToast?.('Comment removed by Moderator.');
+                            }
+                          } catch (err) {
+                            showToast?.('Could not delete comment.');
                           }
                         }}
                         aria-label="Delete comment"
@@ -169,9 +173,12 @@ export default function CommentsSheet({
                         <button
                           type="button"
                           className="revoke-solution-btn"
-                          onClick={() => {
-                            onRevokeSolution(post.id, c.id, c.authorId);
-                            showToast?.('Resolution revoked by Moderator.');
+                          onClick={async () => {
+                            try {
+                              await onRevokeSolution(post.id, c.id, c.authorId);
+                            } catch (err) {
+                              // Error handled by onRevokeSolution handler
+                            }
                           }}
                           title="Revoke / Delete resolution"
                           style={{
@@ -229,9 +236,13 @@ export default function CommentsSheet({
                       {isModerator && onDisqualify && (
                         <button
                           type="button"
-                          onClick={() => {
-                            onDisqualify(post.id, c.id, c.authorId, 'Off-topic comment');
-                            showToast?.('Comment flagged as disqualified.');
+                          onClick={async () => {
+                            try {
+                              await onDisqualify(post.id, c.id, c.authorId, 'Off-topic comment');
+                              showToast?.('Comment flagged as disqualified.');
+                            } catch (err) {
+                              showToast?.('Could not flag comment.');
+                            }
                           }}
                           style={{
                             background: 'rgba(245, 158, 11, 0.12)',

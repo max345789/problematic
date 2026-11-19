@@ -63,6 +63,7 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
       showToast?.('Resolution revoked by Moderator.');
     } catch (err) {
       showToast?.('Could not revoke resolution.');
+      throw err;
     }
   };
 

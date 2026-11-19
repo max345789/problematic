@@ -338,38 +338,110 @@ export async function deleteComment(postId, commentId) {
 }
 
 export async function revokeSolution(postId, solutionId, solverId) {
-  const posts = await getPosts();
-  let updatedPost = null;
-  const nextPosts = posts.map((p) => {
-    if (p.id !== postId) return p;
-    updatedPost = { ...p, status: 'open', acceptedSolutionId: null };
-    return updatedPost;
-  });
-  await savePosts(nextPosts);
+  // Read posts with null default to catch read failures and prevent saving fallbacks
+  const rawPosts = await getStoredData(STORAGE_KEYS.POSTS, null);
+  if (!Array.isArray(rawPosts)) {
+    throw new Error('Cannot revoke resolution: failed to read stored posts.');
+  }
 
-  const comments = await getComments();
-  const list = comments[postId] || [];
+  const targetPost = rawPosts.find((p) => p.id === postId);
+  
+  // Read comments with null default to catch read failures
+  const rawComments = await getStoredData(STORAGE_KEYS.COMMENTS, null);
+  if (!rawComments || typeof rawComments !== 'object') {
+    throw new Error('Cannot revoke resolution: failed to read stored comments.');
+  }
+
+  const list = rawComments[postId] || [];
+  const activeSolutionId = targetPost?.acceptedSolutionId || solutionId;
+  const acceptedComment = list.find((c) => c.id === activeSolutionId || c.isAccepted);
+
+  // If neither the post is solved nor any comment remains accepted, revocation is already complete
+  if ((!targetPost || targetPost.status !== 'solved') && (!acceptedComment || !acceptedComment.isAccepted)) {
+    return { post: targetPost || null, comment: null };
+  }
+
+  // If a specific solutionId was requested and post is solved with another, reject mismatch
+  if (solutionId && targetPost?.acceptedSolutionId && targetPost.acceptedSolutionId !== solutionId) {
+    return { post: targetPost, comment: null };
+  }
+
+  const revokedMarkerKey = `revoked_${postId}_${activeSolutionId}`;
+  const targetSolverId = solverId || acceptedComment?.authorId;
+
+  // 1. Reconcile solver points with retry-safe durable receipt on the solver record
+  if (targetSolverId && acceptedComment?.isAccepted) {
+    const rawUsers = await getStoredData(STORAGE_KEYS.USERS, null);
+    if (!Array.isArray(rawUsers)) {
+      throw new Error('Cannot reconcile solver: failed to read stored users.');
+    }
+    const targetSolver = rawUsers.find((u) => u.id === targetSolverId);
+    const alreadyReconciled = Boolean(targetSolver?.reconciledRevocations?.includes(revokedMarkerKey));
+
+    if (!alreadyReconciled) {
+      const nextUsers = rawUsers.map((u) => {
+        if (u.id !== targetSolverId) return u;
+        const currentRd = typeof u.respectadeo === 'number' ? u.respectadeo : 0;
+        const nextRd = Math.max(0, Number((currentRd - 0.1).toFixed(1)));
+        const solved = Math.max(0, (u.problemsSolved || 0) - 1);
+        const existingReceipts = u.reconciledRevocations || [];
+        const nextReceipts = existingReceipts.includes(revokedMarkerKey)
+          ? existingReceipts
+          : [...existingReceipts, revokedMarkerKey];
+        return {
+          ...u,
+          respectadeo: nextRd,
+          problemsSolved: solved,
+          reconciledRevocations: nextReceipts,
+        };
+      });
+      const usersSaved = await setStoredData(STORAGE_KEYS.USERS, nextUsers);
+      if (!usersSaved) {
+        throw new Error('Failed to persist solver reconciliation during resolution revocation.');
+      }
+    }
+  }
+
+  // 2. Prepare and persist comments update
   let updatedComment = null;
-  const nextList = list.map((c) => {
-    if (c.id === solutionId || c.isAccepted) {
+  const freshComments = await getStoredData(STORAGE_KEYS.COMMENTS, null);
+  if (!freshComments || typeof freshComments !== 'object') {
+    throw new Error('Cannot update comments: failed to re-read stored comments.');
+  }
+  const currentList = freshComments[postId] || [];
+  freshComments[postId] = currentList.map((c) => {
+    if (c.id === activeSolutionId || c.isAccepted) {
       updatedComment = { ...c, isAccepted: false, pointsAwarded: 0 };
       return updatedComment;
     }
     return c;
   });
-  comments[postId] = nextList;
-  await setStoredData(STORAGE_KEYS.COMMENTS, comments);
+  const commentsSaved = await setStoredData(STORAGE_KEYS.COMMENTS, freshComments);
+  if (!commentsSaved) {
+    throw new Error('Failed to persist comment updates during resolution revocation.');
+  }
 
-  if (solverId) {
-    const users = await getUsers();
-    const nextUsers = users.map((u) => {
-      if (u.id !== solverId) return u;
-      const currentRd = typeof u.respectadeo === 'number' ? u.respectadeo : 0;
-      const nextRd = Math.max(0, Number((currentRd - 0.1).toFixed(1)));
-      const solved = Math.max(0, (u.problemsSolved || 0) - 1);
-      return { ...u, respectadeo: nextRd, problemsSolved: solved };
-    });
-    await saveUsers(nextUsers);
+  // 3. Prepare and persist post status back to open (tracking reconciliation marker to prevent duplicate deductions on retry)
+  let updatedPost = null;
+  const currentPosts = await getStoredData(STORAGE_KEYS.POSTS, null);
+  if (!Array.isArray(currentPosts)) {
+    throw new Error('Cannot update post: failed to re-read stored posts.');
+  }
+  const nextPosts = currentPosts.map((p) => {
+    if (p.id !== postId) return p;
+    const existingMarkers = p.reconciledRevocations || [];
+    const nextMarkers = existingMarkers.includes(revokedMarkerKey) ? existingMarkers : [...existingMarkers, revokedMarkerKey];
+    updatedPost = {
+      ...p,
+      status: 'open',
+      acceptedSolutionId: null,
+      reconciledRevocations: nextMarkers,
+    };
+    return updatedPost;
+  });
+  const postsSaved = await setStoredData(STORAGE_KEYS.POSTS, nextPosts);
+  if (!postsSaved) {
+    throw new Error('Failed to persist post updates during resolution revocation.');
   }
 
   return { post: updatedPost, comment: updatedComment };

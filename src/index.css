@@ -3609,11 +3609,11 @@ textarea::placeholder {
 }
 
 .feed-brand-title {
-  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-family: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
   font-style: italic;
-  font-size: 28px;
-  font-weight: 400;
-  letter-spacing: -0.3px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
   color: var(--text-main);
   user-select: none;
   line-height: 1;
@@ -4928,155 +4928,6 @@ textarea::placeholder {
   opacity: 0.35;
   cursor: not-allowed;
 }
-
-/* ========================================================================== */
-/*  Inbox Screen: Quick Draft Message Card                                    */
-/* ========================================================================== */
-.messages-quick-draft-card {
-  margin: 0 16px 14px;
-  background: #14171F;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.messages-draft-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.messages-draft-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #9CA3AF;
-  letter-spacing: 0.02em;
-}
-
-.messages-draft-clear {
-  background: transparent;
-  border: none;
-  color: #6B7280;
-  font-size: 11px;
-  cursor: pointer;
-  padding: 2px 4px;
-}
-.messages-draft-clear:hover {
-  color: #FFFFFF;
-}
-
-.messages-recipients-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding-bottom: 2px;
-}
-.messages-recipients-row::-webkit-scrollbar {
-  display: none;
-}
-
-.messages-recipient-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 5px;
-  border-radius: 9999px;
-  background: #191D27;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #9CA3AF;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
-}
-
-.messages-recipient-chip:hover {
-  background: #202431;
-  color: #FFFFFF;
-}
-
-.messages-recipient-chip.active {
-  background: #FFFFFF;
-  color: #000000;
-  border-color: #FFFFFF;
-  font-weight: 600;
-}
-
-.messages-chip-avatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.messages-recipient-chip.active .messages-chip-avatar {
-  background: #000000 !important;
-  color: #FFFFFF;
-}
-
-.messages-draft-form {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.messages-draft-input {
-  flex: 1;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 20px;
-  background: #191D27;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #FFFFFF;
-  font-size: 13.5px;
-  outline: none;
-  transition: border-color 0.15s ease;
-}
-.messages-draft-input:focus {
-  border-color: #FFFFFF;
-}
-.messages-draft-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.messages-draft-send-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  color: #000000;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.12s ease, opacity 0.15s ease;
-}
-.messages-draft-send-btn:active {
-  transform: scale(0.92);
-}
-.messages-draft-send-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* ========================================================================== */
-/*  Settings Radio Rows for Messaging Permissions                             */
 
 /* ========================================================================== */
 /*  Accessibility: Prefers-Reduced-Motion Support                             */

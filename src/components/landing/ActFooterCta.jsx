@@ -66,7 +66,7 @@ export default function ActFooterCta({ onEnterApp, onOpenLogin }) {
             <div className="footer-logo">
               <span className="logo-symbol">〰</span>
               <span className="logo-name">Problematic</span>
-              <span className="logo-sub">Murmur Safe-Harbor</span>
+              <span className="logo-sub">Safe-Harbor</span>
             </div>
             <p className="footer-tagline">
               A calm, verified social sanctuary for mental, technology, and physical challenges.
@@ -80,7 +80,7 @@ export default function ActFooterCta({ onEnterApp, onOpenLogin }) {
               <span className="footer-link" onClick={onOpenLogin}>Sign In</span>
             </div>
             <div className="footer-copy">
-              © 2026 Problematic (Murmur). Built with empathy, verified by human stewards.
+              © 2026 Problematic. Built with empathy, verified by human stewards.
             </div>
           </div>
         </footer>

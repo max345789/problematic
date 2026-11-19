@@ -1,6 +1,6 @@
 /**
  * Storytelling Landing Page Content & Models
- * Problematic (Murmur) - Safe-Harbor Community Social Network
+ * Problematic - Safe-Harbor Social Platform
  */
 
 export const HERO_WHISPERS = [

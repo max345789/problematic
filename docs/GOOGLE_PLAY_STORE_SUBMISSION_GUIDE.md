@@ -9,7 +9,7 @@ This guide details everything configured, generated, and required to push **Prob
 | Attribute | Configured Value | Notes |
 | :--- | :--- | :--- |
 | **App Name** | `Problematic` | Display title on Android launcher and Play Store |
-| **Package Name / Application ID** | `com.problamatic.murmur` | Unique global identifier across Google Play |
+| **Package Name / Application ID** | `com.problematic.app` | Unique global identifier across Google Play |
 | **Version Name** | `1.0.0` | User-visible version |
 | **Version Code** | `1` | Incremental integer (must increment with each update) |
 | **Target SDK** | `34` (Android 14) | Exceeds Google Play minimum requirement (API 34+) |

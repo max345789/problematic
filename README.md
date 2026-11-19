@@ -1,4 +1,4 @@
-# Problamatic (Murmur)
+# Problematic
 
 A calm micro-blogging and social thought-sharing app built with **React + Vite + Capacitor**.
 It runs as a **real Android app** (and iOS/web) with **real, persistent, on-device data** — no
@@ -88,7 +88,7 @@ npm run build
 ## 🤖 Build the Android app
 
 The Android project is already added under `android/` and configured
-(`com.problamatic.murmur`). Requires **JDK 17** and the **Android SDK**.
+(`com.problematic.app`). Requires **JDK 17** and the **Android SDK**.
 
 ```bash
 # 1. Build web assets + sync into the Android project
@@ -115,7 +115,7 @@ cd android
 
 ### Native configuration
 
-- `capacitor.config.json` — app id `com.problamatic.murmur`, splash + status bar + keyboard plugins.
+- `capacitor.config.json` — app id `com.problematic.app`, splash + status bar + keyboard plugins.
 - `android/app/src/main/res/values/colors.xml` — brand palette.
 - `android/app/src/main/res/values/styles.xml` — forest splash theme → app theme.
 - Plugins installed: `@capacitor/preferences`, `@capacitor/splash-screen`, `@capacitor/status-bar`,

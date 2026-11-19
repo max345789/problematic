@@ -35,7 +35,10 @@ Write-Host "  Problematic - Google Play Store Release Preparation" -ForegroundCo
 Write-Host "==============================================================" -ForegroundColor Cyan
 
 # 1. Environment & Java Check
-$JavaJbr = "C:\Program Files\Android\Android Studio\jbr"
+$JavaJbr = "C:\Users\Unified\.jdk\jdk17.0.21_1"
+if (-not (Test-Path $JavaJbr)) {
+    $JavaJbr = "C:\Program Files\Android\Android Studio\jbr"
+}
 if (Test-Path $JavaJbr) {
     $env:JAVA_HOME = $JavaJbr
     $env:PATH = "$JavaJbr\bin;$env:PATH"
@@ -111,7 +114,7 @@ Write-Host @"
 ==============================================================
   RELEASE READY FOR GOOGLE PLAY CONSOLE
 ==============================================================
-Package Name : com.problamatic.murmur
+Package Name : com.problematic.app
 Version Code : 1
 Version Name : 1.0.0
 

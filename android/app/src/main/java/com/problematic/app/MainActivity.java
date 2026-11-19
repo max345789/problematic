@@ -1,4 +1,4 @@
-package com.problamatic.murmur;
+package com.problematic.app;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,2 +1,2 @@
 json_key_file(ENV["PLAY_SERVICE_ACCOUNT_JSON_FILE"] || "play-service-account.json")
-package_name("com.problamatic.murmur")
+package_name("com.problematic.app")

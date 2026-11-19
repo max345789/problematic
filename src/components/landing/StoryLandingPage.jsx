@@ -74,7 +74,7 @@ export default function StoryLandingPage({ onEnterApp, onOpenLogin }) {
             <span className="brand-glyph">〰</span>
             <div className="brand-text-wrap">
               <span className="brand-name">Problematic</span>
-              <span className="brand-tag">Murmur Platform</span>
+              <span className="brand-tag">Platform</span>
             </div>
           </div>
 

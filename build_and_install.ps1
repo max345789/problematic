@@ -52,13 +52,13 @@ Write-Host $installResult
 
 if ($installResult -match "INSTALL_FAILED") {
     Write-Host "Incompatible signature detected. Uninstalling previous version..."
-    & $adb -s $device uninstall com.problamatic.murmur
+    & $adb -s $device uninstall com.problematic.app
     Write-Host "Retrying install..."
     & $adb -s $device install (Join-Path $relDir "problematic-v1.0.0.apk")
 }
 
 Write-Host "Launching Problematic on phone..."
-& $adb -s $device shell am start -n com.problamatic.murmur/.MainActivity
+& $adb -s $device shell am start -n com.problematic.app/.MainActivity
 
 Start-Sleep -Seconds 2
 

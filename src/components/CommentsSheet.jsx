@@ -38,6 +38,7 @@ export default function CommentsSheet({
   onRevokeSolution,
   onDisqualify,
   onDirectMessage,
+  onViewProfile,
   onClose,
   showToast,
 }) {
@@ -221,14 +222,29 @@ export default function CommentsSheet({
                   alignItems: 'flex-start',
                 }}
               >
-                <div className="av" style={{ background: c.avatarBg, width: 38, height: 38, fontSize: 15, flex: 'none' }}>
-                  {c.avatar}
-                </div>
+                <button
+                  type="button"
+                  className="tweet-avatar-btn"
+                  onClick={() => onViewProfile?.(c.authorId, c.handle, c)}
+                  aria-label={`View ${c.author}'s profile`}
+                  title={`View ${c.author}'s profile`}
+                >
+                  <div className="av" style={{ background: c.avatarBg, width: 38, height: 38, fontSize: 15, flex: 'none' }}>
+                    {c.avatar}
+                  </div>
+                </button>
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-main, #0F1419)' }}>{c.author}</span>
+                      <button
+                        type="button"
+                        className="tweet-author-name-btn"
+                        onClick={() => onViewProfile?.(c.authorId, c.handle, c)}
+                        title={`View ${c.author}'s profile`}
+                      >
+                        <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-main, #0F1419)' }}>{c.author}</span>
+                      </button>
                       <span style={{ fontSize: 13, color: 'var(--text-sub, #536471)' }}>{c.handle}</span>
                       <span style={{ fontSize: 12, color: 'var(--text-muted, #8B98A5)' }}>·</span>
                       <span style={{ fontSize: 12, color: 'var(--text-sub, #536471)' }}>{timeAgo(c.createdAt)}</span>

@@ -4,10 +4,12 @@ import Icon from '../components/Icons';
 import PostCard from '../components/PostCard';
 import CommentsSheet from '../components/CommentsSheet';
 import ShareModal from '../components/ShareModal';
+import UserProfileSheet from '../components/UserProfileSheet';
 
 export default function FeedScreen({
   onOpenNotifications,
   onOpenComposer,
+  onOpenProfile,
   onDirectMessage,
   showToast,
 }) {
@@ -34,6 +36,27 @@ export default function FeedScreen({
 
   const [commentsFor, setCommentsFor] = useState(null);
   const [sharingPost, setSharingPost] = useState(null);
+  const [viewedUser, setViewedUser] = useState(null);
+
+  const handleViewProfile = (authorId, handle, entityObj) => {
+    const found = users.find((u) => u.id === authorId || (handle && u.handle?.toLowerCase() === handle.toLowerCase()));
+    if (found) {
+      setViewedUser(found);
+    } else if (entityObj) {
+      setViewedUser({
+        id: authorId || entityObj.authorId || `user_${handle}`,
+        name: entityObj.author || (handle ? handle.replace(/^@/, '') : 'User'),
+        handle: handle || entityObj.handle || '@user',
+        avatar: entityObj.avatar || (entityObj.author ? entityObj.author.charAt(0).toUpperCase() : 'U'),
+        avatarBg: entityObj.avatarBg || '#1F6F6B',
+        bio: 'Sharing real thoughts, pains, and everyday problems.',
+        respectadeo: 1.0,
+        problemsSolved: 0,
+        problemsPosted: 1,
+        messagingPermission: 'requests',
+      });
+    }
+  };
 
   const handleShare = (post) => {
     setSharingPost(post);
@@ -119,6 +142,7 @@ export default function FeedScreen({
               onDelete={handleDelete}
               onRevokeSolution={handleRevokeSolution}
               onDirectMessage={onDirectMessage}
+              onViewProfile={handleViewProfile}
             />
           ))}
         </div>
@@ -137,8 +161,20 @@ export default function FeedScreen({
           onRevokeSolution={handleRevokeSolution}
           onDisqualify={disqualifySolution}
           onDirectMessage={onDirectMessage}
+          onViewProfile={handleViewProfile}
           onClose={() => setCommentsFor(null)}
           showToast={showToast}
+        />
+      )}
+
+      {viewedUser && (
+        <UserProfileSheet
+          user={viewedUser}
+          currentUser={currentUser}
+          posts={posts}
+          onClose={() => setViewedUser(null)}
+          onDirectMessage={onDirectMessage}
+          onOpenMyProfile={onOpenProfile}
         />
       )}
 

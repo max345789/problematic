@@ -62,6 +62,7 @@ export default function PostCard({
   onDelete,
   onRevokeSolution,
   onDirectMessage,
+  onViewProfile,
 }) {
   const liked = (post.likedByIds || []).includes(currentUserId);
   const isOwn = post.authorId === currentUserId;
@@ -98,7 +99,16 @@ export default function PostCard({
     <div className="tweet-card">
       {/* Top Header: Avatar + User Info (Name stacked with handle & time) */}
       <div className="tweet-header-row">
-        <div className="tweet-avatar-wrap">
+        <button
+          type="button"
+          className="tweet-avatar-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewProfile?.(post.authorId, post.handle, post);
+          }}
+          aria-label={`View ${post.author}'s profile`}
+          title={`View ${post.author}'s profile`}
+        >
           <div
             className="av"
             style={{
@@ -111,11 +121,21 @@ export default function PostCard({
           >
             {post.avatar}
           </div>
-        </div>
+        </button>
 
         <div className="tweet-user-info-stacked">
           <div className="tweet-author-line">
-            <span className="tweet-name">{post.author}</span>
+            <button
+              type="button"
+              className="tweet-author-name-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewProfile?.(post.authorId, post.handle, post);
+              }}
+              title={`View ${post.author}'s profile`}
+            >
+              <span className="tweet-name">{post.author}</span>
+            </button>
           </div>
           <div className="tweet-meta-sub">
             <span className="tweet-handle">{post.handle}</span>
@@ -201,6 +221,30 @@ export default function PostCard({
                     <Icon.Close /> {isOwn ? 'Revoke resolution' : 'Revoke resolution (Moderator)'}
                   </button>
                 )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onViewProfile?.(post.authorId, post.handle, post);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    color: 'var(--text-main)',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <Icon.User size={15} /> View profile
+                </button>
 
                 {!isOwn && (
                   <button

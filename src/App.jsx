@@ -198,6 +198,7 @@ export default function App() {
               <FeedScreen
                 onOpenNotifications={() => setActiveTab('notifications')}
                 onOpenComposer={openComposer}
+                onOpenProfile={() => setActiveTab('profile')}
                 onDirectMessage={(targetUserId) => {
                   setDirectMessageTargetUserId(targetUserId);
                   setActiveTab('messages');

@@ -1,6 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import Icon from '../components/Icons';
+
+const PERMISSION_OPTIONS = [
+  {
+    id: 'requests',
+    title: 'Message requests (Recommended)',
+    desc: 'Messages from new profiles require your approval before opening a chat.',
+  },
+  {
+    id: 'everyone',
+    title: 'Everyone',
+    desc: 'Anyone in the community can send messages directly into your inbox.',
+  },
+  {
+    id: 'nobody',
+    title: 'Closed',
+    desc: 'Disable incoming direct messages completely.',
+  },
+];
 
 export default function SettingsScreen({
   onBack,
@@ -12,18 +30,50 @@ export default function SettingsScreen({
   showToast,
 }) {
   const { currentUser, saveProfile, logout, posts, reload } = useApp();
+  const radioRefs = useRef([]);
   const [serverStatus, setServerStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [screenInfo, setScreenInfo] = useState({ width: 0, height: 0, dpr: 1 });
 
-  const currentPermission = currentUser?.messagingPermission || 'requests';
+  const [selectedPermission, setSelectedPermission] = useState(
+    () => currentUser?.messagingPermission || 'requests'
+  );
 
-  const handlePermissionChange = async (perm) => {
-    try {
-      await saveProfile({ messagingPermission: perm });
-      const label = perm === 'everyone' ? 'Everyone' : perm === 'nobody' ? 'Closed' : 'Message requests';
-      showToast?.(`Direct message privacy set to: ${label}`);
-    } catch {
-      showToast?.('Could not update privacy setting.');
+  useEffect(() => {
+    if (currentUser?.messagingPermission) {
+      setSelectedPermission(currentUser.messagingPermission);
+    }
+  }, [currentUser?.messagingPermission]);
+
+  const handlePermissionChange = (perm) => {
+    setSelectedPermission(perm);
+    saveProfile({ messagingPermission: perm })
+      .then(() => {
+        const label =
+          perm === 'everyone' ? 'Everyone' : perm === 'nobody' ? 'Closed' : 'Message requests';
+        showToast?.(`Direct message privacy set to: ${label}`);
+      })
+      .catch(() => {
+        showToast?.('Could not update privacy setting.');
+      });
+  };
+
+  const handleRadioKeyDown = (e, index) => {
+    let nextIndex = null;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      nextIndex = (index + 1) % PERMISSION_OPTIONS.length;
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      nextIndex = (index - 1 + PERMISSION_OPTIONS.length) % PERMISSION_OPTIONS.length;
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handlePermissionChange(PERMISSION_OPTIONS[index].id);
+    }
+
+    if (nextIndex !== null) {
+      const nextOption = PERMISSION_OPTIONS[nextIndex];
+      handlePermissionChange(nextOption.id);
+      radioRefs.current[nextIndex]?.focus();
     }
   };
 
@@ -218,75 +268,36 @@ export default function SettingsScreen({
         <section className="settings-section">
           <div className="settings-section-title">Direct messages</div>
           <div className="settings-group" role="radiogroup" aria-label="Direct messages privacy">
-            <label
-              className={`settings-radio-row ${currentPermission === 'requests' ? 'selected' : ''}`}
-            >
-              <input
-                type="radio"
-                name="messagingPermission"
-                value="requests"
-                checked={currentPermission === 'requests'}
-                onChange={() => handlePermissionChange('requests')}
-                className="settings-radio-input"
-              />
-              <div className={`settings-radio-circle ${currentPermission === 'requests' ? 'checked' : ''}`} aria-hidden="true">
-                {currentPermission === 'requests' && <div className="settings-radio-dot" />}
-              </div>
-              <div className="settings-radio-text">
-                <div className="settings-radio-title">Message requests (Recommended)</div>
-                <div className="settings-radio-desc">
-                  Messages from new profiles require your approval before opening a chat.
-                </div>
-              </div>
-            </label>
-
-            <div className="settings-divider" />
-
-            <label
-              className={`settings-radio-row ${currentPermission === 'everyone' ? 'selected' : ''}`}
-            >
-              <input
-                type="radio"
-                name="messagingPermission"
-                value="everyone"
-                checked={currentPermission === 'everyone'}
-                onChange={() => handlePermissionChange('everyone')}
-                className="settings-radio-input"
-              />
-              <div className={`settings-radio-circle ${currentPermission === 'everyone' ? 'checked' : ''}`} aria-hidden="true">
-                {currentPermission === 'everyone' && <div className="settings-radio-dot" />}
-              </div>
-              <div className="settings-radio-text">
-                <div className="settings-radio-title">Everyone</div>
-                <div className="settings-radio-desc">
-                  Anyone in the community can send messages directly into your inbox.
-                </div>
-              </div>
-            </label>
-
-            <div className="settings-divider" />
-
-            <label
-              className={`settings-radio-row ${currentPermission === 'nobody' ? 'selected' : ''}`}
-            >
-              <input
-                type="radio"
-                name="messagingPermission"
-                value="nobody"
-                checked={currentPermission === 'nobody'}
-                onChange={() => handlePermissionChange('nobody')}
-                className="settings-radio-input"
-              />
-              <div className={`settings-radio-circle ${currentPermission === 'nobody' ? 'checked' : ''}`} aria-hidden="true">
-                {currentPermission === 'nobody' && <div className="settings-radio-dot" />}
-              </div>
-              <div className="settings-radio-text">
-                <div className="settings-radio-title">Closed</div>
-                <div className="settings-radio-desc">
-                  Disable incoming direct messages completely.
-                </div>
-              </div>
-            </label>
+            {PERMISSION_OPTIONS.map((opt, idx) => {
+              const isSelected = selectedPermission === opt.id;
+              return (
+                <React.Fragment key={opt.id}>
+                  {idx > 0 && <div className="settings-divider" />}
+                  <div
+                    ref={(el) => {
+                      radioRefs.current[idx] = el;
+                    }}
+                    className={`settings-radio-row ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handlePermissionChange(opt.id)}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={isSelected ? 0 : -1}
+                    onKeyDown={(e) => handleRadioKeyDown(e, idx)}
+                  >
+                    <div
+                      className={`settings-radio-circle ${isSelected ? 'checked' : ''}`}
+                      aria-hidden="true"
+                    >
+                      {isSelected && <div className="settings-radio-dot" />}
+                    </div>
+                    <div className="settings-radio-text">
+                      <div className="settings-radio-title">{opt.title}</div>
+                      <div className="settings-radio-desc">{opt.desc}</div>
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            })}
           </div>
         </section>
 

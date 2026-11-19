@@ -15,6 +15,7 @@ export default function MessagesScreen({
     users,
     conversations,
     pendingRequestsCount,
+    sendDirectMessage,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('inbox'); // 'inbox' | 'requests'
@@ -22,6 +23,42 @@ export default function MessagesScreen({
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [selectedDraftUser, setSelectedDraftUser] = useState(null);
+  const [draftText, setDraftText] = useState('');
+  const [draftSending, setDraftSending] = useState(false);
+
+  const availableRecipients = useMemo(() => {
+    return users.filter((u) => u.id !== currentUser?.id).slice(0, 10);
+  }, [users, currentUser?.id]);
+
+  const handleSendDraft = async (e) => {
+    e?.preventDefault();
+    const clean = draftText.trim();
+    if (!clean || !selectedDraftUser || draftSending) return;
+
+    if (selectedDraftUser.messagingPermission === 'nobody') {
+      showToast?.(`${selectedDraftUser.name} has closed direct messages.`);
+      return;
+    }
+
+    const targetId = selectedDraftUser.id;
+    try {
+      setDraftSending(true);
+      await sendDirectMessage({
+        recipientId: targetId,
+        text: clean,
+      });
+      setDraftText('');
+      // Only transition to target chat if the user stayed in the inbox while sending
+      setSelectedRecipientId((curr) => (curr === null ? targetId : curr));
+      showToast?.(`Message sent to ${selectedDraftUser.name}!`);
+    } catch (err) {
+      showToast?.(err?.message || 'Could not send message.');
+    } finally {
+      setDraftSending(false);
+    }
+  };
 
   // When initialRecipientId changes from outside (e.g. tapping "Message" on a post or comment)
   useEffect(() => {
@@ -216,6 +253,68 @@ export default function MessagesScreen({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+
+        {/* Quick Draft Message Card */}
+        {activeTab === 'inbox' && (
+          <div className="messages-quick-draft-card">
+            <div className="messages-draft-header">
+              <span className="messages-draft-label">Draft message</span>
+              {selectedDraftUser && (
+                <button
+                  type="button"
+                  className="messages-draft-clear"
+                  onClick={() => setSelectedDraftUser(null)}
+                >
+                  Clear recipient
+                </button>
+              )}
+            </div>
+
+            <div className="messages-recipients-row" role="group" aria-label="Select person to message">
+              {availableRecipients.map((u) => {
+                const isSelected = selectedDraftUser?.id === u.id;
+                return (
+                  <button
+                    key={u.id}
+                    type="button"
+                    role="button"
+                    aria-pressed={isSelected}
+                    className={`messages-recipient-chip ${isSelected ? 'active' : ''}`}
+                    onClick={() => setSelectedDraftUser(isSelected ? null : u)}
+                  >
+                    <span className="messages-chip-avatar" style={{ background: u.avatarBg || '#1F6F6B' }}>
+                      {u.avatar || '?'}
+                    </span>
+                    <span className="messages-chip-name">{u.name?.split(' ')[0] || u.handle}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <form onSubmit={handleSendDraft} className="messages-draft-form">
+              <input
+                type="text"
+                className="messages-draft-input"
+                placeholder={
+                  selectedDraftUser
+                    ? `Message ${selectedDraftUser.name}…`
+                    : 'Pick a person above to draft message…'
+                }
+                value={draftText}
+                onChange={(e) => setDraftText(e.target.value)}
+                disabled={!selectedDraftUser || draftSending}
+              />
+              <button
+                type="submit"
+                className="messages-draft-send-btn"
+                disabled={!draftText.trim() || !selectedDraftUser || draftSending}
+                aria-label="Send message"
+              >
+                <Icon.Send size={16} />
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* Requests Explanatory Banner */}
         {activeTab === 'requests' && (

@@ -6,6 +6,7 @@ import EditProfileSheet from '../components/EditProfileSheet';
 export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showToast }) {
   const {
     currentUser,
+    isModerator,
     posts,
     comments,
     saveProfile,
@@ -58,8 +59,28 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
               {currentUser?.avatar || '?'}
             </div>
             <div className="profile-user-details">
-              <div className="profile-user-name">
-                {currentUser?.name || 'You'}
+              <div className="profile-user-name" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <span>{currentUser?.name || 'You'}</span>
+                {isModerator && (
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 3,
+                      fontSize: 10,
+                      fontWeight: 800,
+                      letterSpacing: '0.05em',
+                      padding: '2px 7px',
+                      borderRadius: 9999,
+                      background: 'rgba(29, 155, 240, 0.15)',
+                      color: '#1D9BF0',
+                      border: '1px solid rgba(29, 155, 240, 0.35)',
+                    }}
+                    title="Community Moderator"
+                  >
+                    🛡️ MOD
+                  </span>
+                )}
               </div>
               <div className="profile-user-handle">{currentUser?.handle}</div>
               <div className="profile-user-bio">
@@ -83,6 +104,47 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
             </button>
           </div>
         </div>
+
+        {/* ================= MODERATOR ACCOUNT PRIVILEGES CARD ================= */}
+        {isModerator && (
+          <div
+            style={{
+              margin: '0 16px 12px',
+              padding: '12px 16px',
+              borderRadius: 14,
+              background: '#16181C',
+              border: '1px solid #2F3336',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'rgba(29, 155, 240, 0.12)',
+                border: '1px solid rgba(29, 155, 240, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 16,
+                flexShrink: 0,
+              }}
+            >
+              🛡️
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#E7E9EA' }}>
+                Moderator Account
+              </div>
+              <div style={{ fontSize: 12, color: '#71767B', marginTop: 1, lineHeight: 1.35 }}>
+                Full moderation access: delete unwanted problems, remove comments & revoke solutions.
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ================= COMMUNITY ACTIVITY METRICS ================= */}
         <div className="pc" style={{ margin: '0 16px 12px', padding: '16px' }}>

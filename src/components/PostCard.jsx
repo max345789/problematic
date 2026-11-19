@@ -52,15 +52,18 @@ function Poll({ post, currentUserId, onVote }) {
 export default function PostCard({
   post,
   currentUserId,
+  isModerator = false,
   commentCount = 0,
   onLike,
   onComment,
   onShare,
   onVote,
   onDelete,
+  onRevokeSolution,
 }) {
   const liked = (post.likedByIds || []).includes(currentUserId);
   const isOwn = post.authorId === currentUserId;
+  const canDelete = isOwn || isModerator;
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Extract tags from text or post.tags
@@ -118,7 +121,7 @@ export default function PostCard({
                 style={{ position: 'fixed', inset: 0, zIndex: 40 }}
               />
               <div className="glass-dropdown-menu">
-                {isOwn ? (
+                {canDelete && (
                   <button
                     onClick={() => {
                       setMenuOpen(false);
@@ -131,7 +134,7 @@ export default function PostCard({
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: 8,
-                      color: '#E0245E',
+                      color: '#EF4444',
                       fontSize: 13,
                       fontWeight: 600,
                       border: 'none',
@@ -139,13 +142,15 @@ export default function PostCard({
                       cursor: 'pointer',
                     }}
                   >
-                    <Icon.Trash /> Delete post
+                    <Icon.Trash /> {isOwn ? 'Delete post' : '🛡️ Delete post (Mod)'}
                   </button>
-                ) : (
+                )}
+
+                {isModerator && post.status === 'solved' && onRevokeSolution && (
                   <button
                     onClick={() => {
                       setMenuOpen(false);
-                      onShare?.(post);
+                      onRevokeSolution?.(post.id, post.acceptedSolutionId);
                     }}
                     style={{
                       display: 'flex',
@@ -154,17 +159,40 @@ export default function PostCard({
                       width: '100%',
                       padding: '9px 12px',
                       borderRadius: 8,
+                      color: '#F59E0B',
                       fontSize: 13,
                       fontWeight: 600,
-                      color: 'var(--text-main)',
                       border: 'none',
                       background: 'none',
                       cursor: 'pointer',
                     }}
                   >
-                    <Icon.Share /> Share post
+                    <Icon.Close /> 🛡️ Revoke resolution (Mod)
                   </button>
                 )}
+
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onShare?.(post);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--text-main)',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Icon.Share /> Share post
+                </button>
               </div>
             </>
           )}

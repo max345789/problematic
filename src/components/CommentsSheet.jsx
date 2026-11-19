@@ -6,9 +6,12 @@ export default function CommentsSheet({
   post,
   comments,
   currentUser,
+  isModerator = false,
   onAdd,
   onDelete,
   onAccept,
+  onRevokeSolution,
+  onDisqualify,
   onClose,
   showToast,
 }) {
@@ -125,23 +128,69 @@ export default function CommentsSheet({
                       <span style={{ fontSize: 12, color: 'var(--text-sub, #536471)' }}>{timeAgo(c.createdAt)}</span>
                     </div>
 
-                    {c.authorId === currentUser?.id && (
+                    {(c.authorId === currentUser?.id || isModerator) && (
                       <button
-                        onClick={() => onDelete(post.id, c.id)}
-                        aria-label="Delete"
-                        style={{ padding: 4, color: 'var(--text-sub, #536471)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        type="button"
+                        onClick={() => {
+                          onDelete(post.id, c.id);
+                          if (isModerator && c.authorId !== currentUser?.id) {
+                            showToast?.('Comment removed by Moderator.');
+                          }
+                        }}
+                        aria-label="Delete comment"
+                        title={isModerator && c.authorId !== currentUser?.id ? '🛡️ Moderate: Delete comment' : 'Delete'}
+                        style={{
+                          padding: '4px 6px',
+                          color: isModerator && c.authorId !== currentUser?.id ? '#EF4444' : 'var(--text-sub, #536471)',
+                          background: isModerator && c.authorId !== currentUser?.id ? 'rgba(239, 68, 68, 0.12)' : 'none',
+                          border: isModerator && c.authorId !== currentUser?.id ? '1px solid rgba(239, 68, 68, 0.3)' : 'none',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 3,
+                          fontSize: 11,
+                          fontWeight: 600,
+                        }}
                       >
-                        <Icon.Trash />
+                        <Icon.Trash size={13} />
+                        {isModerator && c.authorId !== currentUser?.id && <span>Mod</span>}
                       </button>
                     )}
                   </div>
 
                   {/* Badges for status */}
                   {isAccepted && (
-                    <div style={{ margin: '4px 0 6px' }}>
+                    <div style={{ margin: '6px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap' }}>
                       <span className="badge-accepted">
-                        ✓ Author Accepted (+0.1 RD)
+                        ✓ Accepted Solution (+0.1 RD)
                       </span>
+                      {(isAuthor || isModerator) && onRevokeSolution && (
+                        <button
+                          type="button"
+                          className="revoke-solution-btn"
+                          onClick={() => {
+                            onRevokeSolution(post.id, c.id, c.authorId);
+                            showToast?.('Resolution revoked by Moderator.');
+                          }}
+                          title="Revoke / Delete resolution"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.15)',
+                            border: '1px solid rgba(239, 68, 68, 0.35)',
+                            color: '#EF4444',
+                            fontSize: 11,
+                            fontWeight: 700,
+                            padding: '3px 8px',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          ✕ Revoke Resolution
+                        </button>
+                      )}
                     </div>
                   )}
 
@@ -167,9 +216,9 @@ export default function CommentsSheet({
                     {c.text}
                   </div>
 
-                  {/* Problem Author Action: "Accept as Solution" */}
-                  {isAuthor && !isAccepted && !isDisqualified && (
-                    <div style={{ marginTop: 8 }}>
+                  {/* Problem Author or Moderator Action: "Accept as Solution" / Flag */}
+                  {(isAuthor || isModerator) && !isAccepted && !isDisqualified && (
+                    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <button
                         className="accept-solution-btn"
                         onClick={() => handleAccept(c)}
@@ -177,6 +226,27 @@ export default function CommentsSheet({
                       >
                         ✓ Accept as Solution
                       </button>
+                      {isModerator && onDisqualify && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onDisqualify(post.id, c.id, c.authorId, 'Off-topic comment');
+                            showToast?.('Comment flagged as disqualified.');
+                          }}
+                          style={{
+                            background: 'rgba(245, 158, 11, 0.12)',
+                            border: '1px solid rgba(245, 158, 11, 0.3)',
+                            color: '#F59E0B',
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            padding: '4px 8px',
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Flag Off-Topic
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

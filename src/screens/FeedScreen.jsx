@@ -9,6 +9,7 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
   const {
     posts,
     currentUser,
+    isModerator,
     commentCounts,
     comments,
     unreadCount,
@@ -18,6 +19,8 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
     addComment,
     removeComment,
     acceptSolution,
+    revokeSolution,
+    disqualifySolution,
     notify,
     isDark,
     toggleDarkMode,
@@ -48,9 +51,18 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
   const handleDelete = async (post) => {
     try {
       await deletePost(post.id);
-      showToast?.('Problem deleted.');
+      showToast?.(isModerator && post.authorId !== currentUser?.id ? 'Problem removed by Moderator.' : 'Problem deleted.');
     } catch (err) {
       showToast?.('Could not delete problem.');
+    }
+  };
+
+  const handleRevokeSolution = async (postId, solutionId, solverId) => {
+    try {
+      await revokeSolution(postId, solutionId, solverId);
+      showToast?.('Resolution revoked by Moderator.');
+    } catch (err) {
+      showToast?.('Could not revoke resolution.');
     }
   };
 
@@ -85,12 +97,14 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
               key={post.id}
               post={post}
               currentUserId={currentUser?.id}
+              isModerator={isModerator}
               commentCount={commentCounts[post.id] || 0}
               onLike={toggleLike}
               onComment={(p) => setCommentsFor(p)}
               onShare={handleShare}
               onVote={votePoll}
               onDelete={handleDelete}
+              onRevokeSolution={handleRevokeSolution}
             />
           ))}
         </div>
@@ -98,12 +112,15 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
 
       {commentsFor && (
         <CommentsSheet
-          post={commentsFor}
+          post={posts.find((p) => p.id === commentsFor.id) || commentsFor}
           comments={comments[commentsFor.id] || []}
           currentUser={currentUser}
+          isModerator={isModerator}
           onAdd={addComment}
           onDelete={removeComment}
           onAccept={acceptSolution}
+          onRevokeSolution={handleRevokeSolution}
+          onDisqualify={disqualifySolution}
           onClose={() => setCommentsFor(null)}
           showToast={showToast}
         />

@@ -104,7 +104,7 @@ export default function LoginScreen({ onSuccess, onOpenStory, showToast }) {
 
         {mode === 'login' && (
           <div className="login-demo-pill">
-            Demo login: <b>rohitha</b> / <b>password</b>
+            🛡️ Demo Moderator: <b>rohitha</b> / <b>password</b>
           </div>
         )}
 

@@ -378,6 +378,33 @@ export function AppProvider({ children }) {
     [currentUser]
   );
 
+  const revokeSolution = useCallback(
+    async (postId, solutionId, solverId) => {
+      let result = null;
+      try {
+        result = await api.revokeSolution(postId, solutionId, solverId);
+      } catch (e) {}
+
+      if (!result) {
+        result = await storage.revokeSolution(postId, solutionId, solverId);
+      }
+
+      if (result?.post) {
+        setPosts((prev) => prev.map((p) => (p.id === postId ? result.post : p)));
+      }
+      if (result?.comment) {
+        setComments((prev) => ({
+          ...prev,
+          [postId]: (prev[postId] || []).map((c) => (c.id === solutionId ? result.comment : c)),
+        }));
+      }
+      const usersData = await storage.getUsers();
+      setUsers(usersData);
+      return result;
+    },
+    []
+  );
+
   const collectPendingPoints = useCallback(async () => {
     if (!currentUser) return null;
     const result = await storage.collectPendingPoints(currentUser.id);
@@ -477,11 +504,19 @@ export function AppProvider({ children }) {
     await storage.setOnboardingCompleted(false);
   }, []);
 
+  const isModerator = Boolean(
+    currentUser?.role === 'moderator' ||
+    currentUser?.isModerator === true ||
+    currentUser?.handle === '@rohitha' ||
+    currentUser?.id === 'user_rohitha'
+  );
+
   /* -------------------------------- value --------------------------------- */
   const value = {
     users,
     currentUser,
     isLoggedIn: !!currentUser,
+    isModerator,
     posts,
     notifications,
     comments,
@@ -512,6 +547,7 @@ export function AppProvider({ children }) {
     addComment,
     removeComment,
     acceptSolution,
+    revokeSolution,
     disqualifySolution,
     collectPendingPoints,
 

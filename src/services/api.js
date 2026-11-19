@@ -159,6 +159,13 @@ export async function acceptSolution(postId, solutionId, solverId) {
   });
 }
 
+export async function revokeSolution(postId, solutionId, solverId) {
+  return request(`/comments/${solutionId || 'solution'}/revoke`, {
+    method: 'POST',
+    body: JSON.stringify({ postId, solutionId, solverId }),
+  });
+}
+
 export async function fetchNotifications(userId) {
   return request(`/notifications?userId=${encodeURIComponent(userId || '')}`);
 }

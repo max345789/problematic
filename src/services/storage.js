@@ -88,7 +88,14 @@ function normalizeHandle(raw = '') {
 }
 
 export async function getUsers() {
-  return getStoredData(STORAGE_KEYS.USERS, []);
+  const users = await getStoredData(STORAGE_KEYS.USERS, []);
+  // Ensure demo account rohitha always has moderator status
+  return users.map((u) => {
+    if (u.id === 'user_rohitha' || u.handle === '@rohitha') {
+      return { ...u, role: 'moderator', isModerator: true };
+    }
+    return u;
+  });
 }
 
 export async function saveUsers(users) {
@@ -318,6 +325,54 @@ export async function deleteComment(postId, commentId) {
   const list = all[postId] || [];
   all[postId] = list.filter((c) => c.id !== commentId);
   await setStoredData(STORAGE_KEYS.COMMENTS, all);
+
+  // If this comment was the accepted solution on the post, reopen the post
+  const posts = await getPosts();
+  const targetPost = posts.find((p) => p.id === postId);
+  if (targetPost && targetPost.acceptedSolutionId === commentId) {
+    const nextPosts = posts.map((p) =>
+      p.id === postId ? { ...p, status: 'open', acceptedSolutionId: null } : p
+    );
+    await savePosts(nextPosts);
+  }
+}
+
+export async function revokeSolution(postId, solutionId, solverId) {
+  const posts = await getPosts();
+  let updatedPost = null;
+  const nextPosts = posts.map((p) => {
+    if (p.id !== postId) return p;
+    updatedPost = { ...p, status: 'open', acceptedSolutionId: null };
+    return updatedPost;
+  });
+  await savePosts(nextPosts);
+
+  const comments = await getComments();
+  const list = comments[postId] || [];
+  let updatedComment = null;
+  const nextList = list.map((c) => {
+    if (c.id === solutionId || c.isAccepted) {
+      updatedComment = { ...c, isAccepted: false, pointsAwarded: 0 };
+      return updatedComment;
+    }
+    return c;
+  });
+  comments[postId] = nextList;
+  await setStoredData(STORAGE_KEYS.COMMENTS, comments);
+
+  if (solverId) {
+    const users = await getUsers();
+    const nextUsers = users.map((u) => {
+      if (u.id !== solverId) return u;
+      const currentRd = typeof u.respectadeo === 'number' ? u.respectadeo : 0;
+      const nextRd = Math.max(0, Number((currentRd - 0.1).toFixed(1)));
+      const solved = Math.max(0, (u.problemsSolved || 0) - 1);
+      return { ...u, respectadeo: nextRd, problemsSolved: solved };
+    });
+    await saveUsers(nextUsers);
+  }
+
+  return { post: updatedPost, comment: updatedComment };
 }
 
 export async function getCommentCounts() {
@@ -529,9 +584,11 @@ function seedCommunity() {
     name: 'Rohitha',
     handle: '@rohitha',
     passwordHash: hashPassword('password'),
+    role: 'moderator',
+    isModerator: true,
     avatar: 'R',
     avatarBg: '#1F6F6B',
-    bio: 'Front-end engineer & systems thinker. Love fixing async race conditions.',
+    bio: 'Community Moderator & Front-end engineer. Keeping Problematic authentic.',
     respectadeo: 1.4,
     problemsSolved: 14,
     problemsPosted: 10,
@@ -828,6 +885,11 @@ export async function initializeStorage() {
   const currentUser = session?.userId
     ? users.find((u) => u.id === session.userId) || users[0] || null
     : users[0] || null;
+
+  if (currentUser && (currentUser.id === 'user_rohitha' || currentUser.handle === '@rohitha')) {
+    currentUser.role = 'moderator';
+    currentUser.isModerator = true;
+  }
 
   return { users, session, currentUser, posts, notifications, comments, theme, onboarded, customBg };
 }

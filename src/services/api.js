@@ -203,3 +203,32 @@ export async function updateProfile(userId, updates) {
     body: JSON.stringify({ id: userId, ...updates }),
   });
 }
+
+export async function fetchConversations(userId) {
+  return request(`/conversations?userId=${encodeURIComponent(userId || '')}`);
+}
+
+export async function fetchMessages(conversationId) {
+  return request(`/conversations/${conversationId}/messages`);
+}
+
+export async function sendDirectMessage(payload) {
+  return request('/conversations/messages', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function acceptMessageRequest(conversationId, userId) {
+  return request(`/conversations/${conversationId}/accept`, {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export async function declineMessageRequest(conversationId, userId) {
+  return request(`/conversations/${conversationId}/decline`, {
+    method: 'POST',
+    body: JSON.stringify({ userId }),
+  });
+}

@@ -5,9 +5,15 @@ import PostCard from '../components/PostCard';
 import CommentsSheet from '../components/CommentsSheet';
 import ShareModal from '../components/ShareModal';
 
-export default function FeedScreen({ onOpenNotifications, onOpenComposer, showToast }) {
+export default function FeedScreen({
+  onOpenNotifications,
+  onOpenComposer,
+  onDirectMessage,
+  showToast,
+}) {
   const {
     posts,
+    users,
     currentUser,
     isModerator,
     commentCounts,
@@ -28,6 +34,25 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
 
   const [commentsFor, setCommentsFor] = useState(null);
   const [sharingPost, setSharingPost] = useState(null);
+  const [domainFilter, setDomainFilter] = useState('all'); // 'all' | 'mental' | 'physical' | 'dailylife' | 'tech'
+
+  const DOMAIN_FILTERS = [
+    { id: 'all', label: 'All Domains' },
+    { id: 'mental', label: '🧠 Mental' },
+    { id: 'physical', label: '🏃 Physical' },
+    { id: 'dailylife', label: '🛠️ Daily Life' },
+    { id: 'tech', label: '💻 Tech' },
+  ];
+
+  const filteredPosts = posts.filter((p) => {
+    if (domainFilter === 'all') return true;
+    if (p.domain === domainFilter) return true;
+    if (domainFilter === 'mental' && (p.category?.includes('mental') || p.tags?.includes('mental') || p.category?.includes('burnout'))) return true;
+    if (domainFilter === 'physical' && (p.category?.includes('physical') || p.tags?.includes('physical') || p.category?.includes('posture'))) return true;
+    if (domainFilter === 'dailylife' && (p.category?.includes('dailylife') || p.tags?.includes('home') || p.tags?.includes('diy'))) return true;
+    if (domainFilter === 'tech' && (p.category?.includes('tech') || p.tags?.includes('mobile') || p.tags?.includes('backend') || p.tags?.includes('css'))) return true;
+    return false;
+  });
 
   const handleShare = (post) => {
     setSharingPost(post);
@@ -84,28 +109,46 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
         </button>
       </header>
 
+      {/* Universal Problem Domains Pill Bar */}
+      <div className="feed-domains-bar">
+        {DOMAIN_FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            className={`domain-filter-pill ${domainFilter === f.id ? 'active' : ''}`}
+            onClick={() => setDomainFilter(f.id)}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       <main id="main-content" tabIndex={-1} className="screen-scroll">
         {/* Global Problems List */}
         <div>
-          {posts.length === 0 && (
+          {filteredPosts.length === 0 && (
             <div className="pc empty-card" style={{ textAlign: 'center', padding: 28 }}>
-              <div className="pnm" style={{ marginBottom: 6 }}>No problems broadcasted yet</div>
-              <div className="pm instruction-text">Tap + in the bottom navigation bar to broadcast the first problem to the worldwide community.</div>
+              <div className="pnm" style={{ marginBottom: 6 }}>No problems found in this category</div>
+              <div className="pm instruction-text">
+                Broadcast a problem or switch filter back to "All Domains".
+              </div>
             </div>
           )}
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
               currentUserId={currentUser?.id}
               isModerator={isModerator}
               commentCount={commentCounts[post.id] || 0}
+              comments={comments[post.id] || []}
               onLike={toggleLike}
               onComment={(p) => setCommentsFor(p)}
               onShare={handleShare}
               onVote={votePoll}
               onDelete={handleDelete}
               onRevokeSolution={handleRevokeSolution}
+              onDirectMessage={onDirectMessage}
             />
           ))}
         </div>
@@ -115,6 +158,7 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
         <CommentsSheet
           post={posts.find((p) => p.id === commentsFor.id) || commentsFor}
           comments={comments[commentsFor.id] || []}
+          users={users}
           currentUser={currentUser}
           isModerator={isModerator}
           onAdd={addComment}
@@ -122,6 +166,7 @@ export default function FeedScreen({ onOpenNotifications, onOpenComposer, showTo
           onAccept={acceptSolution}
           onRevokeSolution={handleRevokeSolution}
           onDisqualify={disqualifySolution}
+          onDirectMessage={onDirectMessage}
           onClose={() => setCommentsFor(null)}
           showToast={showToast}
         />

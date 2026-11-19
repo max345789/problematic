@@ -5,14 +5,13 @@ import Icon from './components/Icons';
 import LoginScreen from './screens/LoginScreen';
 import FeedScreen from './screens/FeedScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import MessagesScreen from './screens/MessagesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import ComposerSheet from './components/ComposerSheet';
 import SplashScreen from './components/SplashScreen';
 import StoryLandingPage from './components/landing/StoryLandingPage';
 import SettingsScreen from './screens/SettingsScreen';
-
-const TAB_OFFSETS = { feed: 6, notifications: 64, profile: 122 };
 
 export default function App() {
   const {
@@ -22,11 +21,14 @@ export default function App() {
     loading,
     error,
     unreadCount,
+    unreadMessagesCount,
+    pendingRequestsCount,
     hasOnboarded,
     completeOnboarding,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('feed');
+  const [directMessageTargetUserId, setDirectMessageTargetUserId] = useState(null);
   const [viewMode, setViewMode] = useState('app');
   const [showSplash, setShowSplash] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
@@ -195,6 +197,19 @@ export default function App() {
               <FeedScreen
                 onOpenNotifications={() => setActiveTab('notifications')}
                 onOpenComposer={openComposer}
+                onDirectMessage={(targetUserId) => {
+                  setDirectMessageTargetUserId(targetUserId);
+                  setActiveTab('messages');
+                  setShowSettings(false);
+                }}
+                showToast={showToast}
+              />
+            )}
+
+            {activeTab === 'messages' && (
+              <MessagesScreen
+                initialRecipientId={directMessageTargetUserId}
+                onClearInitialRecipient={() => setDirectMessageTargetUserId(null)}
                 showToast={showToast}
               />
             )}
@@ -246,6 +261,25 @@ export default function App() {
                   onClick={() => { setActiveTab('feed'); setShowSettings(false); }}
                 >
                   <Icon.Home />
+                </button>
+                <button
+                  className={`dock-tab ${activeTab === 'messages' ? 'active' : ''}`}
+                  aria-label={
+                    unreadMessagesCount + pendingRequestsCount > 0
+                      ? `Messages (${unreadMessagesCount + pendingRequestsCount} unread)`
+                      : 'Messages'
+                  }
+                  aria-current={activeTab === 'messages' ? 'page' : undefined}
+                  onClick={() => {
+                    setActiveTab('messages');
+                    setShowSettings(false);
+                    setDirectMessageTargetUserId(null);
+                  }}
+                >
+                  <Icon.Message />
+                  {(unreadMessagesCount > 0 || pendingRequestsCount > 0) && (
+                    <span className="dock-unread-dot" />
+                  )}
                 </button>
                 <button
                   className={`dock-tab ${activeTab === 'notifications' ? 'active' : ''}`}

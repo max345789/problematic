@@ -10,6 +10,7 @@ export function AppProvider({ children }) {
   const [posts, setPosts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [comments, setComments] = useState({});
+  const [conversations, setConversations] = useState([]);
   const [theme, setThemeState] = useState(storage.DEFAULT_THEME);
   const [customBg, setCustomBg] = useState(null);
   const [hasOnboarded, setHasOnboarded] = useState(false);
@@ -26,6 +27,7 @@ export function AppProvider({ children }) {
       setPosts(data.posts || []);
       setNotifications(data.notifications || []);
       setComments(data.comments || {});
+      setConversations(data.conversations || []);
       setThemeState(data.theme || storage.DEFAULT_THEME);
       setCustomBg(data.customBg || null);
       setHasOnboarded(Boolean(data.onboarded));
@@ -83,6 +85,23 @@ export function AppProvider({ children }) {
     () => notifications.filter((n) => n.unread).length,
     [notifications]
   );
+
+  const unreadMessagesCount = useMemo(() => {
+    if (!currentUser) return 0;
+    return conversations.reduce((sum, c) => {
+      if (c.status === 'active') {
+        return sum + (c.unreadCount?.[currentUser.id] || 0);
+      }
+      return sum;
+    }, 0);
+  }, [conversations, currentUser]);
+
+  const pendingRequestsCount = useMemo(() => {
+    if (!currentUser) return 0;
+    return conversations.filter(
+      (c) => c.status === 'pending' && c.recipientId === currentUser.id
+    ).length;
+  }, [conversations, currentUser]);
 
   /* --------------------------------- auth -------------------------------- */
   const login = useCallback(async (handle, password) => {
@@ -170,7 +189,7 @@ export function AppProvider({ children }) {
 
   /* --------------------------------- posts (Problems) --------------------- */
   const createPost = useCallback(
-    async ({ title, text, tags, category, image, poll }) => {
+    async ({ title, text, tags, category, domain, image, poll }) => {
       if (!currentUser) throw new Error('Please log in first.');
       const cleanText = (text || '').trim();
       const cleanTitle = (title || '').trim();
@@ -184,6 +203,7 @@ export function AppProvider({ children }) {
         avatarBg: currentUser.avatarBg,
         title: cleanTitle || cleanText.slice(0, 60),
         text: cleanText,
+        domain: domain || 'general',
         category: category || tags || '#general',
         tags: tags || category || '#problem',
         status: 'open',
@@ -457,6 +477,71 @@ export function AppProvider({ children }) {
     setNotifications([]);
   }, [currentUser]);
 
+  /* --------------------------- direct messaging (DMs) -------------------- */
+  const sendDirectMessage = useCallback(
+    async ({ recipientId, text }) => {
+      if (!currentUser) throw new Error('Please log in first.');
+      const result = await storage.sendMessage({
+        senderId: currentUser.id,
+        recipientId,
+        text,
+      });
+
+      setConversations((prev) => {
+        const remaining = prev.filter((c) => c.id !== result.conversation.id);
+        return [result.conversation, ...remaining];
+      });
+
+      // Refresh notifications if any
+      const notifs = await storage.getNotifications();
+      setNotifications(notifs);
+
+      return result;
+    },
+    [currentUser]
+  );
+
+  const acceptRequest = useCallback(
+    async (conversationId) => {
+      if (!currentUser) return null;
+      const updated = await storage.acceptMessageRequest(conversationId, currentUser.id);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conversationId ? updated : c))
+      );
+      return updated;
+    },
+    [currentUser]
+  );
+
+  const declineRequest = useCallback(
+    async (conversationId) => {
+      if (!currentUser) return null;
+      const updated = await storage.declineMessageRequest(conversationId, currentUser.id);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conversationId ? updated : c))
+      );
+      return updated;
+    },
+    [currentUser]
+  );
+
+  const markChatRead = useCallback(
+    async (conversationId) => {
+      if (!currentUser) return;
+      const updated = await storage.markConversationRead(conversationId, currentUser.id);
+      if (updated) {
+        setConversations((prev) =>
+          prev.map((c) => (c.id === conversationId ? updated : c))
+        );
+      }
+    },
+    [currentUser]
+  );
+
+  const loadMessages = useCallback(async (conversationId) => {
+    return storage.getMessages(conversationId);
+  }, []);
+
   /* --------------------------------- theme -------------------------------- */
   const wallpaperSeqRef = useRef(0);
 
@@ -530,6 +615,9 @@ export function AppProvider({ children }) {
     loading,
     error,
     unreadCount,
+    conversations,
+    unreadMessagesCount,
+    pendingRequestsCount,
     hasOnboarded,
     completeOnboarding,
     resetOnboarding,
@@ -550,6 +638,12 @@ export function AppProvider({ children }) {
     revokeSolution,
     disqualifySolution,
     collectPendingPoints,
+
+    sendDirectMessage,
+    acceptRequest,
+    declineRequest,
+    markChatRead,
+    loadMessages,
 
     notify,
     markNotificationRead,

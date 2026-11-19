@@ -86,6 +86,25 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
               <div className="profile-user-bio">
                 {currentUser?.bio || 'Problem solver & community collaborator.'}
               </div>
+              <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    color: '#71767B',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <Icon.Message size={11} />
+                  <span>DMs: {currentUser?.messagingPermission === 'everyone' ? 'Everyone' : currentUser?.messagingPermission === 'nobody' ? 'Closed' : 'Requests Only'}</span>
+                </span>
+              </div>
             </div>
           </div>
 

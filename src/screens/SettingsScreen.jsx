@@ -11,9 +11,21 @@ export default function SettingsScreen({
   onOpenOnboarding,
   showToast,
 }) {
-  const { currentUser, logout, posts, comments } = useApp();
+  const { currentUser, saveProfile, logout, posts, comments } = useApp();
   const [serverStatus, setServerStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [screenInfo, setScreenInfo] = useState({ width: 0, height: 0, dpr: 1 });
+
+  const currentPermission = currentUser?.messagingPermission || 'requests';
+
+  const handlePermissionChange = async (perm) => {
+    try {
+      await saveProfile({ messagingPermission: perm });
+      const label = perm === 'everyone' ? 'Everyone' : perm === 'nobody' ? 'Nobody (Closed)' : 'Message Requests';
+      showToast?.(`Direct message privacy set to: ${label}`);
+    } catch (err) {
+      showToast?.('Could not update privacy setting.');
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -225,11 +237,92 @@ export default function SettingsScreen({
 
           <div className="settings-row-static">
             <span className="settings-row-label">Username Handle</span>
-            <span className="settings-value-pill">@{currentUser?.handle || 'user'}</span>
+            <span className="settings-value-pill">{currentUser?.handle?.startsWith('@') ? currentUser.handle : `@${currentUser?.handle || 'user'}`}</span>
           </div>
           <div className="settings-row-static">
             <span className="settings-row-label">Broadcasted Problems</span>
             <span className="settings-value-pill">{posts.length}</span>
+          </div>
+        </div>
+
+        {/* Section: Direct Message Permissions & Privacy */}
+        <div className="settings-card">
+          <div className="settings-card-header">
+            <div className="settings-icon-pill">
+              <Icon.Message />
+            </div>
+            <div>
+              <div className="settings-card-title">Direct Messages Privacy</div>
+              <div className="settings-card-subtitle">Control who can send you messages</div>
+            </div>
+          </div>
+
+          <div className="settings-permission-options" role="radiogroup" aria-label="Direct Messages Privacy">
+            <label
+              className={`settings-radio-row ${currentPermission === 'requests' ? 'selected' : ''}`}
+            >
+              <input
+                type="radio"
+                name="messagingPermission"
+                value="requests"
+                checked={currentPermission === 'requests'}
+                onChange={() => handlePermissionChange('requests')}
+                className="settings-radio-input"
+              />
+              <div className={`settings-radio-circle ${currentPermission === 'requests' ? 'checked' : ''}`} aria-hidden="true">
+                {currentPermission === 'requests' && <div className="settings-radio-dot" />}
+              </div>
+              <div className="settings-radio-text">
+                <div className="settings-radio-title">Message Requests (Recommended)</div>
+                <div className="settings-radio-desc">
+                  Messages from new profiles arrive as requests. You approve before chatting.
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`settings-radio-row ${currentPermission === 'everyone' ? 'selected' : ''}`}
+            >
+              <input
+                type="radio"
+                name="messagingPermission"
+                value="everyone"
+                checked={currentPermission === 'everyone'}
+                onChange={() => handlePermissionChange('everyone')}
+                className="settings-radio-input"
+              />
+              <div className={`settings-radio-circle ${currentPermission === 'everyone' ? 'checked' : ''}`} aria-hidden="true">
+                {currentPermission === 'everyone' && <div className="settings-radio-dot" />}
+              </div>
+              <div className="settings-radio-text">
+                <div className="settings-radio-title">Everyone</div>
+                <div className="settings-radio-desc">
+                  Anyone in the Problematic community can message you directly into your Inbox.
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`settings-radio-row ${currentPermission === 'nobody' ? 'selected' : ''}`}
+            >
+              <input
+                type="radio"
+                name="messagingPermission"
+                value="nobody"
+                checked={currentPermission === 'nobody'}
+                onChange={() => handlePermissionChange('nobody')}
+                className="settings-radio-input"
+              />
+              <div className={`settings-radio-circle ${currentPermission === 'nobody' ? 'checked' : ''}`} aria-hidden="true">
+                {currentPermission === 'nobody' && <div className="settings-radio-dot" />}
+              </div>
+              <div className="settings-radio-text">
+                <div className="settings-radio-title">Nobody (Closed)</div>
+                <div className="settings-radio-desc">
+                  Disable incoming direct messages completely. No one can message you.
+                </div>
+              </div>
+            </label>
           </div>
         </div>
 

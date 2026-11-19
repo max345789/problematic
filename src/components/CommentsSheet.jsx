@@ -1,10 +1,35 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from './Icons';
 import { timeAgo } from '../services/utils';
+import { getRespectadeoTier } from '../services/storage';
+
+function renderWithMentions(content, onMention) {
+  if (!content) return null;
+  const parts = content.split(/(@[a-zA-Z0-9_]+)/g);
+  return parts.map((part, idx) => {
+    if (/^@[a-zA-Z0-9_]+$/.test(part)) {
+      return (
+        <button
+          key={idx}
+          type="button"
+          className="comment-mention-tag"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMention?.(part);
+          }}
+        >
+          {part}
+        </button>
+      );
+    }
+    return part;
+  });
+}
 
 export default function CommentsSheet({
   post,
   comments,
+  users = [],
   currentUser,
   isModerator = false,
   onAdd,
@@ -12,6 +37,7 @@ export default function CommentsSheet({
   onAccept,
   onRevokeSolution,
   onDisqualify,
+  onDirectMessage,
   onClose,
   showToast,
 }) {
@@ -21,6 +47,13 @@ export default function CommentsSheet({
   const listRef = useRef(null);
 
   const isAuthor = post.authorId === currentUser?.id;
+  const acceptedComment = (comments || []).find(
+    (c) => c.isAccepted || c.id === post.acceptedSolutionId
+  );
+  const solverUser = users.find(
+    (u) => u.id === acceptedComment?.authorId || u.handle === acceptedComment?.handle
+  );
+  const solverTier = getRespectadeoTier(solverUser?.respectadeo || 1.0);
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -49,6 +82,26 @@ export default function CommentsSheet({
     } catch (err) {
       showToast?.('Could not accept solution.');
     }
+  };
+
+  const handleMention = (handleToken) => {
+    const cleanHandle = handleToken.trim();
+    if (!text.includes(cleanHandle)) {
+      setText((prev) => (prev ? `${cleanHandle} ${prev}` : `${cleanHandle} `));
+    }
+  };
+
+  const handleDirectMessageUser = (userId, handle) => {
+    if (!userId) {
+      const match = users.find((u) => u.handle.toLowerCase() === handle.toLowerCase());
+      if (match) userId = match.id;
+    }
+    if (userId === currentUser?.id) {
+      showToast?.('That is your own account.');
+      return;
+    }
+    onClose?.();
+    onDirectMessage?.(userId, handle);
   };
 
   return (
@@ -83,9 +136,60 @@ export default function CommentsSheet({
             <span style={{ fontSize: 13, color: 'var(--text-sub, #94A3B8)' }}>{post.handle}</span>
           </div>
           <div style={{ fontSize: 14, color: 'var(--text-main, #F1F5F9)', lineHeight: 1.45, paddingLeft: 38 }}>
-            {post.text}
+            {renderWithMentions(post.text, handleMention)}
           </div>
         </div>
+
+        {/* Solution Resolver Mention Card if Solved */}
+        {acceptedComment && (
+          <div className="solver-mention-card">
+            <div className="solver-mention-header">
+              <div className="solver-mention-badge">
+                <Icon.Check size={14} />
+                <span>Solution Resolver</span>
+              </div>
+              <span className="solver-tier-pill" style={{ color: solverTier.color }}>
+                {solverTier.title}
+              </span>
+            </div>
+
+            <div className="solver-mention-body">
+              <div className="av" style={{ background: acceptedComment.avatarBg, width: 34, height: 34, fontSize: 14, flex: 'none' }}>
+                {acceptedComment.avatar}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontWeight: 700, fontSize: 13.5, color: '#FFFFFF' }}>{acceptedComment.author}</span>
+                  <span style={{ fontSize: 12.5, color: 'var(--text-sub)' }}>{acceptedComment.handle}</span>
+                </div>
+                <div className="solver-mention-quote">
+                  "{acceptedComment.text.slice(0, 110)}{acceptedComment.text.length > 110 ? '…' : ''}"
+                </div>
+              </div>
+            </div>
+
+            <div className="solver-mention-actions">
+              {acceptedComment.authorId !== currentUser?.id && (
+                <button
+                  type="button"
+                  className="solver-action-btn"
+                  onClick={() => handleDirectMessageUser(acceptedComment.authorId, acceptedComment.handle)}
+                >
+                  <Icon.Message size={13} />
+                  <span>Message Resolver</span>
+                </button>
+              )}
+              <button
+                type="button"
+                className="solver-action-btn"
+                onClick={() => handleMention(acceptedComment.handle)}
+              >
+                <Icon.AtSign size={13} />
+                <span>Mention @{acceptedComment.handle?.replace(/^@/, '')}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Replies List */}
         <div
@@ -126,6 +230,17 @@ export default function CommentsSheet({
                       <span style={{ fontSize: 13, color: 'var(--text-sub, #536471)' }}>{c.handle}</span>
                       <span style={{ fontSize: 12, color: 'var(--text-muted, #8B98A5)' }}>·</span>
                       <span style={{ fontSize: 12, color: 'var(--text-sub, #536471)' }}>{timeAgo(c.createdAt)}</span>
+                      {c.authorId !== currentUser?.id && (
+                        <button
+                          type="button"
+                          className="comment-msg-icon-btn"
+                          title={`Message ${c.author}`}
+                          aria-label={`Message ${c.author}`}
+                          onClick={() => handleDirectMessageUser(c.authorId, c.handle)}
+                        >
+                          <Icon.Message size={13} />
+                        </button>
+                      )}
                     </div>
 
                     {(c.authorId === currentUser?.id || isModerator) && (
@@ -220,7 +335,7 @@ export default function CommentsSheet({
                       marginTop: 2,
                     }}
                   >
-                    {c.text}
+                    {renderWithMentions(c.text, handleMention)}
                   </div>
 
                   {/* Problem Author or Moderator Action: "Accept as Solution" / Flag */}
@@ -265,6 +380,20 @@ export default function CommentsSheet({
             );
           })}
         </div>
+
+        {/* Quick Mention Resolver Pill */}
+        {acceptedComment && (
+          <div className="comments-quick-mention-bar">
+            <button
+              type="button"
+              className="quick-mention-btn"
+              onClick={() => handleMention(acceptedComment.handle)}
+            >
+              <Icon.AtSign size={13} />
+              <span>Mention Resolver ({acceptedComment.handle})</span>
+            </button>
+          </div>
+        )}
 
         {/* Post Reply Input Form */}
         <form onSubmit={submit} className="comments-input-form">

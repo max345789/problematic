@@ -138,12 +138,12 @@ export const Icon = {
       viewBox="0 0 24 24"
       fill={filled ? '#FFFFFF' : 'none'}
       stroke={filled ? '#FFFFFF' : 'currentColor'}
-      strokeWidth={filled ? '0' : '2'}
+      strokeWidth={filled ? '1.5' : '1.8'}
       strokeLinecap="round"
       strokeLinejoin="round"
       {...p}
     >
-      <path d="M12 20.5L3.6 6.3C3.1 5.4 3.7 4.2 4.8 4.2h14.4c1.1 0 1.7 1.2 1.2 2.1L12 20.5z" />
+      <path d="M 6.2 8.2 H 17.8 C 18.55 8.2 19 9.05 18.6 9.7 L 12.8 17.3 C 12.42 17.8 11.58 17.8 11.2 17.3 L 5.4 9.7 C 5 9.05 5.45 8.2 6.2 8.2 Z" />
     </svg>
   ),
   Heart: (p) => (
@@ -162,6 +162,29 @@ export const Icon = {
   Bookmark: (p) => (
     <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
       <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
+    </svg>
+  ),
+  Message: (p) => (
+    <svg width="22" height="22" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+    </svg>
+  ),
+  Mail: (p) => (
+    <svg width="22" height="22" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  ),
+  AtSign: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-3.92 7.94" />
+    </svg>
+  ),
+  CheckCircle: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
   ),
   Sparkle: (p) => (

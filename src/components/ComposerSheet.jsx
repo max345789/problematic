@@ -4,12 +4,13 @@ import { fileToCompressedDataUrl } from '../services/utils';
 
 const CATEGORIES = [
   '#tech',
+  '#mental',
+  '#physical',
+  '#dailylife',
+  '#career',
   '#mobile',
   '#backend',
   '#frontend',
-  '#design',
-  '#career',
-  '#hardware',
   '#general',
 ];
 
@@ -236,11 +237,18 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
 
     try {
       setBusy(true);
+      let domain = 'general';
+      if (selectedTag.includes('mental')) domain = 'mental';
+      else if (selectedTag.includes('physical')) domain = 'physical';
+      else if (selectedTag.includes('dailylife') || selectedTag.includes('diy') || selectedTag.includes('home')) domain = 'dailylife';
+      else if (selectedTag.includes('tech') || selectedTag.includes('mobile') || selectedTag.includes('backend') || selectedTag.includes('frontend')) domain = 'tech';
+
       await onPublish({
         title: safeSliceUnicode(cleanText, 60),
         text: cleanText,
         tags: selectedTag,
         category: selectedTag,
+        domain,
         image,
         poll,
       });

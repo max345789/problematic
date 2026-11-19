@@ -15,6 +15,9 @@ export const STORAGE_KEYS = {
   SEEDED: 'problamatic_seeded_v5',
   ONBOARDING: 'problamatic_onboarding_v5',
   CUSTOM_BG: 'problamatic_custom_bg_v5',
+  CONVERSATIONS: 'problamatic_conversations_v5',
+  MESSAGES: 'problamatic_messages_v5',
+  MIGRATION_UNIVERSAL_V1: 'problamatic_migration_universal_v1',
 };
 
 export const DEFAULT_THEME = 'dark';
@@ -38,6 +41,16 @@ export async function getStoredData(key, defaultValue) {
   } catch (error) {
     console.error(`[storage] read failed for ${key}:`, error);
     return defaultValue;
+  }
+}
+
+export async function safeGetStoredData(key) {
+  try {
+    const { value } = await Preferences.get({ key });
+    return { error: null, exists: value != null, data: value != null ? JSON.parse(value) : null };
+  } catch (error) {
+    console.error(`[storage] read failed for ${key}:`, error);
+    return { error, exists: false, data: null };
   }
 }
 
@@ -89,12 +102,16 @@ function normalizeHandle(raw = '') {
 
 export async function getUsers() {
   const users = await getStoredData(STORAGE_KEYS.USERS, []);
-  // Ensure demo account rohitha always has moderator status
+  // Ensure demo account rohitha always has moderator status and all users have messagingPermission
   return users.map((u) => {
+    const withDefaults = {
+      messagingPermission: u.messagingPermission || (u.id === 'user_arjun' ? 'everyone' : 'requests'),
+      ...u,
+    };
     if (u.id === 'user_rohitha' || u.handle === '@rohitha') {
-      return { ...u, role: 'moderator', isModerator: true };
+      return { ...withDefaults, role: 'moderator', isModerator: true };
     }
-    return u;
+    return withDefaults;
   });
 }
 
@@ -139,6 +156,7 @@ export async function createUser({ name, handle, password }) {
     respectadeo: 0.1, // starting seed bonus
     problemsSolved: 0,
     problemsPosted: 0,
+    messagingPermission: 'requests',
     penalties: 0,
     createdAt: Date.now(),
   };
@@ -664,6 +682,7 @@ function seedCommunity() {
     respectadeo: 1.4,
     problemsSolved: 14,
     problemsPosted: 10,
+    messagingPermission: 'requests',
     pendingPoints: 1.0,
     collectedPostMilestones: 0,
     penalties: 0,
@@ -678,10 +697,11 @@ function seedCommunity() {
       passwordHash: hashPassword('password'),
       avatar: 'A',
       avatarBg: '#C2562F',
-      bio: 'Senior UX architect. Helping people clarify design & layout problems.',
+      bio: 'Senior UX architect & movement coach. Clarifying design, ergonomics & focus.',
       respectadeo: 5.8,
       problemsSolved: 58,
       problemsPosted: 6,
+      messagingPermission: 'everyone',
       penalties: 0,
       createdAt: daysAgo(120),
     },
@@ -692,10 +712,11 @@ function seedCommunity() {
       passwordHash: hashPassword('password'),
       avatar: 'M',
       avatarBg: '#1F6F6B',
-      bio: 'Backend & database specialist. SQL optimizations and schema migrations.',
+      bio: 'Neuro-ergonomics & database specialist. Deep work protocols and SQL tuning.',
       respectadeo: 3.2,
       problemsSolved: 32,
       problemsPosted: 4,
+      messagingPermission: 'requests',
       penalties: 0,
       createdAt: daysAgo(60),
     },
@@ -706,10 +727,11 @@ function seedCommunity() {
       passwordHash: hashPassword('password'),
       avatar: 'N',
       avatarBg: '#3B5BDB',
-      bio: 'Mobile & Capacitor dev. Debugging native builds and touch gestures.',
+      bio: 'Mobile dev & acoustic DIYer. Debugging native builds and home mechanics.',
       respectadeo: 2.1,
       problemsSolved: 21,
       problemsPosted: 2,
+      messagingPermission: 'requests',
       penalties: 0,
       createdAt: daysAgo(90),
     },
@@ -720,10 +742,11 @@ function seedCommunity() {
       passwordHash: hashPassword('password'),
       avatar: 'S',
       avatarBg: '#8A5CF6',
-      bio: 'Exploring distributed systems & systems design.',
+      bio: 'Exploring distributed systems, daily life engineering & habit loops.',
       respectadeo: 0.8,
       problemsSolved: 8,
       problemsPosted: 5,
+      messagingPermission: 'requests',
       penalties: 0,
       createdAt: daysAgo(30),
     },
@@ -743,7 +766,8 @@ function seedPosts() {
       avatarBg: '#C2562F',
       title: 'Capacitor Android build fails: AAPT attribute android:attr/lStar not found',
       text: 'Every time I run gradle assembleDebug on Android 14, AAPT throws this attribute missing error. Already updated Android SDK 34 and core-ktx. What is the clean fix?',
-      category: '#mobile #android #build',
+      category: '#tech #android #build',
+      domain: 'tech',
       status: 'solved',
       acceptedSolutionId: 'sol_1_rohitha',
       aiTriage: {
@@ -758,6 +782,85 @@ function seedPosts() {
       createdAt: minutesAgo(25),
     },
     {
+      id: 'prob_4',
+      authorId: 'user_sanjay',
+      author: 'Sanjay',
+      handle: '@sanjay',
+      avatar: 'S',
+      avatarBg: '#8A5CF6',
+      title: 'Chronic 3 PM mental fatigue & cognitive fog after intense deep work',
+      text: 'By mid-afternoon my cognitive capacity completely drops off a cliff. Tried doubling coffee which only caused brain fog and jittery anxiety. How do high performers reset neurotransmitters and sustain mental clarity without stimulants?',
+      category: '#mental #burnout #focus #recovery',
+      domain: 'mental',
+      status: 'solved',
+      acceptedSolutionId: 'sol_4_meera',
+      aiTriage: {
+        verified: true,
+        score: 98,
+        agentReview: 'Verified authentic cognitive wellness problem.',
+      },
+      image: null,
+      poll: null,
+      likes: 34,
+      likedByIds: ['user_rohitha', 'user_arjun'],
+      createdAt: hoursAgo(4),
+    },
+    {
+      id: 'prob_5',
+      authorId: 'user_meera',
+      author: 'Meera',
+      handle: '@meera',
+      avatar: 'M',
+      avatarBg: '#1F6F6B',
+      title: 'Severe lower back stiffness and hip flexor lockup from prolonged sitting',
+      text: 'Even with an ergonomic setup, after 8 hours my lower back and hip flexors tighten severely, radiating dull pain into the glutes. Standing desk helps partially but legs fatigue. What daily routine actually reverses this tightness?',
+      category: '#physical #ergonomics #posture #health',
+      domain: 'physical',
+      status: 'solved',
+      acceptedSolutionId: 'sol_5_arjun',
+      aiTriage: {
+        verified: true,
+        score: 96,
+        agentReview: 'Verified authentic physical health problem.',
+      },
+      image: null,
+      poll: null,
+      likes: 27,
+      likedByIds: ['user_rohitha', 'user_sanjay'],
+      createdAt: hoursAgo(8),
+    },
+    {
+      id: 'prob_6',
+      authorId: 'user_nila',
+      author: 'Nila',
+      handle: '@nila',
+      avatar: 'N',
+      avatarBg: '#3B5BDB',
+      title: 'Apartment thin ceiling acoustic resonance & footstep thud from upstairs',
+      text: 'Moved into a modern concrete apartment, but low frequency heel impacts from upstairs neighbors carry through the ceiling joists. Rugs and white noise only mask high frequencies. How do you dampen low frequency impact noise on a rental budget?',
+      category: '#dailylife #acoustics #home #diy',
+      domain: 'dailylife',
+      status: 'open',
+      acceptedSolutionId: null,
+      aiTriage: {
+        verified: true,
+        score: 95,
+        agentReview: 'Verified everyday real-world problem.',
+      },
+      image: null,
+      poll: {
+        options: [
+          { text: 'Ceiling bass traps & acoustic clouds', votes: 14 },
+          { text: 'Gift high-density underlay rug upstairs', votes: 22 },
+          { text: 'Brown noise / Subwoofer cancellation', votes: 9 },
+        ],
+        voterIds: [],
+      },
+      likes: 19,
+      likedByIds: ['user_rohitha'],
+      createdAt: hoursAgo(12),
+    },
+    {
       id: 'prob_2',
       authorId: 'user_meera',
       author: 'Meera',
@@ -766,7 +869,8 @@ function seedPosts() {
       avatarBg: '#1F6F6B',
       title: 'PostgreSQL connection pool exhaustion on serverless webhook surges',
       text: 'Our microservice spawns 200+ ephemeral lambdas during webhook surges, immediately killing Postgres max_connections. Need a zero-downtime pooling solution without changing cloud providers.',
-      category: '#backend #database #scaling',
+      category: '#tech #backend #database #scaling',
+      domain: 'tech',
       status: 'open',
       acceptedSolutionId: null,
       aiTriage: {
@@ -778,7 +882,7 @@ function seedPosts() {
       poll: null,
       likes: 24,
       likedByIds: ['user_arjun', 'user_nila', 'user_sanjay'],
-      createdAt: hoursAgo(2),
+      createdAt: hoursAgo(16),
     },
     {
       id: 'prob_3',
@@ -789,7 +893,8 @@ function seedPosts() {
       avatarBg: '#8A5CF6',
       title: 'CSS sticky nav jumps when iOS virtual keyboard opens',
       text: 'When a user taps an input inside our bottom sheet on iOS Safari, the bottom dock pops abruptly above the viewport boundary instead of respecting safe-area-inset-bottom. Best practices?',
-      category: '#frontend #css #ios',
+      category: '#tech #frontend #css #ios',
+      domain: 'tech',
       status: 'open',
       acceptedSolutionId: null,
       aiTriage: {
@@ -808,7 +913,7 @@ function seedPosts() {
       },
       likes: 11,
       likedByIds: ['user_rohitha'],
-      createdAt: hoursAgo(5),
+      createdAt: hoursAgo(20),
     },
   ];
 }
@@ -837,12 +942,88 @@ function seedComments() {
         handle: '@nila',
         avatar: 'N',
         avatarBg: '#3B5BDB',
-        text: 'Can confirm Rohitha’s fix! Also run npx cap sync android after changing the gradle file.',
+        text: 'Can confirm @rohitha’s fix! Also run npx cap sync android after changing the gradle file.',
         isAccepted: false,
         aiStatus: 'verified',
         disqualificationReason: null,
         pointsAwarded: 0,
         createdAt: minutesAgo(12),
+      },
+    ],
+    prob_4: [
+      {
+        id: 'sol_4_meera',
+        authorId: 'user_meera',
+        author: 'Meera',
+        handle: '@meera',
+        avatar: 'M',
+        avatarBg: '#1F6F6B',
+        text: 'Adopt a 20-minute NSDR (Non-Sleep Deep Rest) or Yoga Nidra session immediately after your second 90-minute ultradian block, paired with 500ml cold electrolyte water. It restores striatal dopamine without caffeine jitter. Transformed my afternoon mental clarity completely.',
+        isAccepted: true,
+        aiStatus: 'verified',
+        disqualificationReason: null,
+        pointsAwarded: 0.1,
+        createdAt: hoursAgo(3),
+      },
+      {
+        id: 'sol_4_arjun',
+        authorId: 'user_arjun',
+        author: 'Arjun',
+        handle: '@arjun',
+        avatar: 'A',
+        avatarBg: '#C2562F',
+        text: 'Backed 100%! Also delay caffeine intake 90 mins after waking so adenosine clears naturally. That prevents the afternoon crash entirely.',
+        isAccepted: false,
+        aiStatus: 'verified',
+        disqualificationReason: null,
+        pointsAwarded: 0,
+        createdAt: hoursAgo(2),
+      },
+    ],
+    prob_5: [
+      {
+        id: 'sol_5_arjun',
+        authorId: 'user_arjun',
+        author: 'Arjun',
+        handle: '@arjun',
+        avatar: 'A',
+        avatarBg: '#C2562F',
+        text: 'The culprit is tight psoas and inhibited glutes causing anterior pelvic tilt. Do the "Couch Stretch" (2 mins per side against a wall) paired with 3 sets of 15 bodyweight glute bridges every day at 4 PM. Unlocks hips and eliminates lumbar shear within 3 days.',
+        isAccepted: true,
+        aiStatus: 'verified',
+        disqualificationReason: null,
+        pointsAwarded: 0.1,
+        createdAt: hoursAgo(6),
+      },
+      {
+        id: 'sol_5_sanjay',
+        authorId: 'user_sanjay',
+        author: 'Sanjay',
+        handle: '@sanjay',
+        avatar: 'S',
+        avatarBg: '#8A5CF6',
+        text: 'Trying @arjun’s couch stretch today! Already feeling the hip decompression.',
+        isAccepted: false,
+        aiStatus: 'verified',
+        disqualificationReason: null,
+        pointsAwarded: 0,
+        createdAt: hoursAgo(5),
+      },
+    ],
+    prob_6: [
+      {
+        id: 'sol_6_sanjay',
+        authorId: 'user_sanjay',
+        author: 'Sanjay',
+        handle: '@sanjay',
+        avatar: 'S',
+        avatarBg: '#8A5CF6',
+        text: 'For rental ceilings where you cannot alter structure: get a friendly neighbor approach. Gift them a $40 high-density rubber carpet pad for their primary walkway. Decoupling the impact at the point of origin is 10x more effective than ceiling treatments.',
+        isAccepted: false,
+        aiStatus: 'verified',
+        disqualificationReason: null,
+        pointsAwarded: 0,
+        createdAt: hoursAgo(10),
       },
     ],
     prob_2: [
@@ -878,6 +1059,379 @@ function seedComments() {
   };
 }
 
+/* --------------------------- Direct Messaging (DMs) ----------------------- */
+export async function getConversations(userId) {
+  const convs = await getStoredData(STORAGE_KEYS.CONVERSATIONS, []);
+  if (!Array.isArray(convs)) return [];
+  if (!userId) return convs;
+  return convs.filter((c) => Array.isArray(c.participantIds) && c.participantIds.includes(userId));
+}
+
+export async function saveConversations(conversations) {
+  return setStoredData(STORAGE_KEYS.CONVERSATIONS, conversations);
+}
+
+export async function getMessages(conversationId) {
+  const all = await getStoredData(STORAGE_KEYS.MESSAGES, {});
+  if (!all || typeof all !== 'object') return [];
+  return all[conversationId] || [];
+}
+
+export async function saveMessages(messagesMap) {
+  return setStoredData(STORAGE_KEYS.MESSAGES, messagesMap);
+}
+
+let messageMutex = Promise.resolve();
+
+function enqueueMessageMutation(task) {
+  return new Promise((resolve, reject) => {
+    messageMutex = messageMutex
+      .then(async () => {
+        try {
+          const res = await task();
+          resolve(res);
+        } catch (err) {
+          reject(err);
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+async function internalSendMessage({ senderId, recipientId, text }) {
+  if (!senderId || !recipientId) {
+    throw new Error('Sender and recipient are required.');
+  }
+  if (senderId === recipientId) {
+    throw new Error('You cannot message yourself.');
+  }
+  const cleanText = (text || '').trim();
+  if (!cleanText) {
+    throw new Error('Message cannot be empty.');
+  }
+
+  const users = await getUsers();
+  const sender = users.find((u) => u.id === senderId);
+  const recipient = users.find((u) => u.id === recipientId);
+
+  if (!recipient) {
+    throw new Error('Recipient user was not found.');
+  }
+
+  const recipientPermission = recipient.messagingPermission || 'requests';
+  if (recipientPermission === 'nobody') {
+    throw new Error(`${recipient.name || recipient.handle} does not accept direct messages.`);
+  }
+
+  const convId = `conv_${[senderId, recipientId].sort().join('_')}`;
+
+  // Read and validate both conversation and message collections before any writes
+  const convRes = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
+  if (convRes.error) {
+    throw new Error('Failed to read conversations from storage; message mutation aborted to protect data.');
+  }
+  const msgRes = await safeGetStoredData(STORAGE_KEYS.MESSAGES);
+  if (msgRes.error) {
+    throw new Error('Failed to read messages from storage; message mutation aborted to protect data.');
+  }
+
+  const safeConvs = Array.isArray(convRes.data) ? convRes.data : [];
+  let conv = safeConvs.find((c) => c.id === convId);
+
+  const messageId = makeId('msg');
+  const now = Date.now();
+  const newMsg = {
+    id: messageId,
+    conversationId: convId,
+    senderId,
+    text: cleanText,
+    createdAt: now,
+    read: false,
+  };
+
+  if (!conv) {
+    // New conversation: determine initial status based on recipient permissions
+    const status = recipientPermission === 'everyone' ? 'active' : 'pending';
+    conv = {
+      id: convId,
+      participantIds: [senderId, recipientId],
+      initiatorId: senderId,
+      recipientId: recipientId,
+      status, // 'active' | 'pending' | 'declined'
+      lastMessage: {
+        id: messageId,
+        text: cleanText,
+        senderId,
+        createdAt: now,
+      },
+      unreadCount: {
+        [senderId]: 0,
+        [recipientId]: 1,
+      },
+      createdAt: now,
+      updatedAt: now,
+    };
+    const savedConvs = await saveConversations([conv, ...safeConvs]);
+    if (!savedConvs) throw new Error('Failed to save new conversation.');
+  } else {
+    // Existing conversation
+    const currentUnread = conv.unreadCount?.[recipientId] || 0;
+    const isRestartingDeclined = conv.status === 'declined';
+    const nextStatus = isRestartingDeclined
+      ? (recipientPermission === 'everyone' ? 'active' : 'pending')
+      : conv.status;
+
+    conv = {
+      ...conv,
+      status: nextStatus,
+      ...(isRestartingDeclined ? { initiatorId: senderId, recipientId } : {}),
+      lastMessage: {
+        id: messageId,
+        text: cleanText,
+        senderId,
+        createdAt: now,
+      },
+      unreadCount: {
+        ...(conv.unreadCount || {}),
+        [recipientId]: currentUnread + 1,
+      },
+      updatedAt: now,
+    };
+    const nextConvs = safeConvs.map((c) => (c.id === convId ? conv : c));
+    const savedConvs = await saveConversations(nextConvs);
+    if (!savedConvs) throw new Error('Failed to update conversation.');
+  }
+
+  // Save message to validated messages map
+  const rawMessages = msgRes.data && typeof msgRes.data === 'object' ? msgRes.data : {};
+  const safeMessages = { ...rawMessages };
+  const convMsgs = safeMessages[convId] || [];
+  safeMessages[convId] = [...convMsgs, newMsg];
+  const savedMsgs = await saveMessages(safeMessages);
+  if (!savedMsgs) {
+    // Roll back conversation update before reporting failure
+    await saveConversations(safeConvs);
+    throw new Error('Failed to save message.');
+  }
+
+  // Notification for recipient
+  if (conv.status === 'pending') {
+    await addNotification({
+      type: 'message_request',
+      name: sender?.name || 'Someone',
+      avatar: sender?.avatar || '💬',
+      avatarBg: sender?.avatarBg || '#1D9BF0',
+      text: `sent you a direct message request: "${cleanText.slice(0, 45)}${cleanText.length > 45 ? '…' : ''}"`,
+      postId: null,
+      conversationId: convId,
+      unread: true,
+    });
+  } else {
+    await addNotification({
+      type: 'direct_message',
+      name: sender?.name || 'Someone',
+      avatar: sender?.avatar || '💬',
+      avatarBg: sender?.avatarBg || '#1D9BF0',
+      text: `sent you a message: "${cleanText.slice(0, 45)}${cleanText.length > 45 ? '…' : ''}"`,
+      postId: null,
+      conversationId: convId,
+      unread: true,
+    });
+  }
+
+  return { conversation: conv, message: newMsg };
+}
+
+export async function sendMessage({ senderId, recipientId, text }) {
+  return enqueueMessageMutation(() => internalSendMessage({ senderId, recipientId, text }));
+}
+
+async function internalAcceptMessageRequest(conversationId, recipientId) {
+  const convRes = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
+  if (convRes.error || !Array.isArray(convRes.data)) throw new Error('Failed to read conversations from storage; accept aborted.');
+
+  const allConvs = convRes.data;
+  let updated = null;
+  const nextConvs = allConvs.map((c) => {
+    if (c.id !== conversationId) return c;
+    updated = {
+      ...c,
+      status: 'active',
+      unreadCount: {
+        ...(c.unreadCount || {}),
+        [recipientId]: 0,
+      },
+      updatedAt: Date.now(),
+    };
+    return updated;
+  });
+
+  const saved = await saveConversations(nextConvs);
+  if (!saved) throw new Error('Failed to persist accepted message request.');
+  return updated;
+}
+
+export async function acceptMessageRequest(conversationId, recipientId) {
+  return enqueueMessageMutation(() => internalAcceptMessageRequest(conversationId, recipientId));
+}
+
+async function internalDeclineMessageRequest(conversationId, recipientId) {
+  const convRes = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
+  if (convRes.error || !Array.isArray(convRes.data)) throw new Error('Failed to read conversations from storage; decline aborted.');
+
+  const allConvs = convRes.data;
+  let updated = null;
+  const nextConvs = allConvs.map((c) => {
+    if (c.id !== conversationId) return c;
+    updated = {
+      ...c,
+      status: 'declined',
+      unreadCount: {
+        ...(c.unreadCount || {}),
+        [recipientId]: 0,
+      },
+      updatedAt: Date.now(),
+    };
+    return updated;
+  });
+
+  const saved = await saveConversations(nextConvs);
+  if (!saved) throw new Error('Failed to persist declined message request.');
+  return updated;
+}
+
+export async function declineMessageRequest(conversationId, recipientId) {
+  return enqueueMessageMutation(() => internalDeclineMessageRequest(conversationId, recipientId));
+}
+
+async function internalMarkConversationRead(conversationId, userId) {
+  const convRes = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
+  if (convRes.error || !Array.isArray(convRes.data)) return null;
+
+  const msgRes = await safeGetStoredData(STORAGE_KEYS.MESSAGES);
+  if (msgRes.error) return null;
+
+  const allConvs = convRes.data;
+  let updated = null;
+  const nextConvs = allConvs.map((c) => {
+    if (c.id !== conversationId) return c;
+    updated = {
+      ...c,
+      unreadCount: {
+        ...(c.unreadCount || {}),
+        [userId]: 0,
+      },
+    };
+    return updated;
+  });
+
+  const convSaved = await saveConversations(nextConvs);
+  if (!convSaved) return null;
+
+  const allMessages = msgRes.data && typeof msgRes.data === 'object' ? { ...msgRes.data } : {};
+  if (allMessages && allMessages[conversationId]) {
+    allMessages[conversationId] = allMessages[conversationId].map((m) =>
+      m.senderId !== userId ? { ...m, read: true } : m
+    );
+    const msgSaved = await saveMessages(allMessages);
+    if (!msgSaved) return null;
+  }
+
+  return updated;
+}
+
+export async function markConversationRead(conversationId, userId) {
+  return enqueueMessageMutation(() => internalMarkConversationRead(conversationId, userId));
+}
+
+function seedConversations() {
+  const convArjunId = 'conv_user_arjun_user_rohitha';
+  const convSanjayId = 'conv_user_rohitha_user_sanjay';
+
+  const convArjun = {
+    id: convArjunId,
+    participantIds: ['user_rohitha', 'user_arjun'],
+    initiatorId: 'user_arjun',
+    recipientId: 'user_rohitha',
+    status: 'active',
+    lastMessage: {
+      id: 'msg_arjun_3',
+      text: 'Awesome! Let me know if you ever need UX or layout testing on any new features.',
+      senderId: 'user_arjun',
+      createdAt: minutesAgo(10),
+    },
+    unreadCount: {
+      user_rohitha: 0,
+      user_arjun: 0,
+    },
+    createdAt: hoursAgo(1),
+    updatedAt: minutesAgo(10),
+  };
+
+  const convSanjay = {
+    id: convSanjayId,
+    participantIds: ['user_rohitha', 'user_sanjay'],
+    initiatorId: 'user_sanjay',
+    recipientId: 'user_rohitha',
+    status: 'pending', // Message Request!
+    lastMessage: {
+      id: 'msg_sanjay_1',
+      text: 'Hi Rohitha! I saw your moderator note on community guidelines. Can I ask how you handle off-topic flags on physical/mental health posts?',
+      senderId: 'user_sanjay',
+      createdAt: minutesAgo(35),
+    },
+    unreadCount: {
+      user_rohitha: 1,
+      user_sanjay: 0,
+    },
+    createdAt: minutesAgo(35),
+    updatedAt: minutesAgo(35),
+  };
+
+  const messagesMap = {
+    [convArjunId]: [
+      {
+        id: 'msg_arjun_1',
+        conversationId: convArjunId,
+        senderId: 'user_arjun',
+        text: 'Hey Rohitha, thanks so much for the AAPT solution, it saved our release yesterday!',
+        createdAt: minutesAgo(20),
+        read: true,
+      },
+      {
+        id: 'msg_rohitha_2',
+        conversationId: convArjunId,
+        senderId: 'user_rohitha',
+        text: 'Glad it helped Arjun! Setting compileSdk 34 and forcing core-ktx 1.12.0 usually fixes the transitive dependency clash.',
+        createdAt: minutesAgo(15),
+        read: true,
+      },
+      {
+        id: 'msg_arjun_3',
+        conversationId: convArjunId,
+        senderId: 'user_arjun',
+        text: 'Awesome! Let me know if you ever need UX or layout testing on any new features.',
+        createdAt: minutesAgo(10),
+        read: true,
+      },
+    ],
+    [convSanjayId]: [
+      {
+        id: 'msg_sanjay_1',
+        conversationId: convSanjayId,
+        senderId: 'user_sanjay',
+        text: 'Hi Rohitha! I saw your moderator note on community guidelines. Can I ask how you handle off-topic flags on physical/mental health posts?',
+        createdAt: minutesAgo(35),
+        read: false,
+      },
+    ],
+  };
+
+  return { conversations: [convArjun, convSanjay], messages: messagesMap };
+}
+
 function seedNotifications(userId) {
   return [
     {
@@ -892,15 +1446,16 @@ function seedNotifications(userId) {
       createdAt: minutesAgo(15),
     },
     {
-      id: 'notif_prob_1',
-      type: 'comment',
-      name: 'Arjun',
-      avatar: 'A',
-      avatarBg: '#C2562F',
-      text: 'proposed a solution to your problem.',
-      postId: 'prob_2',
+      id: 'notif_req_1',
+      type: 'message_request',
+      name: 'Sanjay',
+      avatar: 'S',
+      avatarBg: '#8A5CF6',
+      text: 'sent you a direct message request.',
+      postId: null,
+      conversationId: 'conv_user_rohitha_user_sanjay',
       unread: true,
-      createdAt: hoursAgo(1),
+      createdAt: minutesAgo(35),
     },
     {
       id: 'notif_welcome_app',
@@ -908,7 +1463,7 @@ function seedNotifications(userId) {
       name: 'Problematic Community',
       avatar: 'P',
       avatarBg: '#1F6F6B',
-      text: 'Welcome to Problematic. Broadcast your first problem or help others solve theirs!',
+      text: 'Welcome to Problematic — Universal Problem Solving for Mental, Physical, Daily Life, and Technology.',
       postId: null,
       unread: false,
       createdAt: daysAgo(1),
@@ -925,6 +1480,10 @@ export async function seedInitialData() {
   await setStoredData(STORAGE_KEYS.COMMENTS, seedComments());
   await saveNotifications(seedNotifications('user_rohitha'));
   await setSession('user_rohitha');
+
+  const seedDMs = seedConversations();
+  await saveConversations(seedDMs.conversations);
+  await saveMessages(seedDMs.messages);
 
   const theme = await getTheme();
   if (!theme) await saveTheme(DEFAULT_THEME);
@@ -943,7 +1502,84 @@ export async function setOnboardingCompleted(completed = true) {
 
 export async function initializeStorage() {
   await seedInitialData();
-  const [users, session, posts, notifications, comments, theme, onboarded, customBg] = await Promise.all([
+
+  // Migration/Seed check for conversations: distinguish read failure from confirmed missing key
+  const convResult = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
+  const msgResult = await safeGetStoredData(STORAGE_KEYS.MESSAGES);
+  if (convResult.error || msgResult.error) {
+    console.warn('[storage] Failed to read conversations or messages; skipping demo re-seed to preserve user data.');
+  } else {
+    const seed = seedConversations();
+    if (!convResult.exists || !Array.isArray(convResult.data) || convResult.data.length === 0) {
+      await saveConversations(seed.conversations);
+    }
+    // Merge seed messages with existing message collection instead of replacing
+    const existingMessages = msgResult.data && typeof msgResult.data === 'object' ? msgResult.data : {};
+    let messagesNeedSave = false;
+    const mergedMessages = { ...existingMessages };
+    for (const [cId, cMsgs] of Object.entries(seed.messages)) {
+      if (!mergedMessages[cId] || mergedMessages[cId].length === 0) {
+        mergedMessages[cId] = cMsgs;
+        messagesNeedSave = true;
+      }
+    }
+    if (!msgResult.exists || messagesNeedSave) {
+      await saveMessages(mergedMessages);
+    }
+  }
+
+  // Migration check: ensure universal posts and domain seeds are applied once and retryable
+  const universalMigrated = await getStoredData(STORAGE_KEYS.MIGRATION_UNIVERSAL_V1, false);
+  if (!universalMigrated) {
+    const postsRes = await safeGetStoredData(STORAGE_KEYS.POSTS);
+    const commentsRes = await safeGetStoredData(STORAGE_KEYS.COMMENTS);
+
+    // If either read fails, abort migration merge to protect data and keep retryable
+    if (!postsRes.error && !commentsRes.error) {
+      let postsSuccess = true;
+      let commentsSuccess = true;
+
+      // 1. Ensure posts are seeded
+      const storedPosts = Array.isArray(postsRes.data) ? postsRes.data : [];
+      const freshSeedPosts = seedPosts();
+      const newPostsToAppend = freshSeedPosts.filter((fp) => !storedPosts.some((sp) => sp.id === fp.id));
+      if (newPostsToAppend.length > 0) {
+        postsSuccess = await savePosts([...storedPosts, ...newPostsToAppend]);
+      }
+
+      // 2. Ensure comments are seeded independently of whether posts needed appending
+      const freshSeedComments = seedComments();
+      const currentComments = commentsRes.data && typeof commentsRes.data === 'object' ? commentsRes.data : {};
+      const mergedComments = { ...freshSeedComments, ...currentComments };
+      commentsSuccess = await setStoredData(STORAGE_KEYS.COMMENTS, mergedComments);
+
+      // 3. Only set migration flag if both writes succeeded
+      if (postsSuccess && commentsSuccess) {
+        await setStoredData(STORAGE_KEYS.MIGRATION_UNIVERSAL_V1, true);
+      }
+    }
+  }
+
+  // Ensure all users have messagingPermission: read raw user records first before getUsers()
+  const rawUsersRes = await safeGetStoredData(STORAGE_KEYS.USERS);
+  if (!rawUsersRes.error && Array.isArray(rawUsersRes.data)) {
+    let usersNeedUpdate = false;
+    const migratedUsers = rawUsersRes.data.map((u) => {
+      if (!u.messagingPermission) {
+        usersNeedUpdate = true;
+        return {
+          ...u,
+          messagingPermission: u.id === 'user_arjun' ? 'everyone' : 'requests',
+        };
+      }
+      return u;
+    });
+    if (usersNeedUpdate) {
+      await saveUsers(migratedUsers);
+    }
+  }
+
+  const [users, session, posts, notifications, comments, theme, onboarded, customBg, conversations] = await Promise.all([
     getUsers(),
     getSession(),
     getPosts(),
@@ -952,6 +1588,7 @@ export async function initializeStorage() {
     getTheme(),
     hasCompletedOnboarding(),
     getCustomBg(),
+    getConversations(),
   ]);
 
   const currentUser = session?.userId
@@ -963,7 +1600,18 @@ export async function initializeStorage() {
     currentUser.isModerator = true;
   }
 
-  return { users, session, currentUser, posts, notifications, comments, theme, onboarded, customBg };
+  return {
+    users,
+    session,
+    currentUser,
+    posts,
+    notifications,
+    comments,
+    theme,
+    onboarded,
+    customBg,
+    conversations: conversations || [],
+  };
 }
 
 export async function clearAllData() {

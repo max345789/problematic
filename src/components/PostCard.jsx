@@ -54,22 +54,40 @@ export default function PostCard({
   currentUserId,
   isModerator = false,
   commentCount = 0,
+  comments = [],
   onLike,
   onComment,
   onShare,
   onVote,
   onDelete,
   onRevokeSolution,
+  onDirectMessage,
 }) {
   const liked = (post.likedByIds || []).includes(currentUserId);
   const isOwn = post.authorId === currentUserId;
   const canDelete = isOwn || isModerator;
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const solverComment = post.status === 'solved'
+    ? comments.find((c) => c.id === post.acceptedSolutionId || c.isAccepted)
+    : null;
+
   // Extract tags from text or post.tags
   const tagsList = post.tags
     ? post.tags.split(' ').filter((t) => t.startsWith('#'))
     : [];
+
+  const getDomainPill = (domain) => {
+    switch (domain) {
+      case 'mental': return { icon: '🧠', label: 'Mental' };
+      case 'physical': return { icon: '🏃', label: 'Physical' };
+      case 'dailylife': return { icon: '🛠️', label: 'Daily Life' };
+      case 'tech': return { icon: '💻', label: 'Technology' };
+      default: return null;
+    }
+  };
+
+  const domainPill = getDomainPill(post.domain);
 
   return (
     <div className="tweet-card">
@@ -101,6 +119,17 @@ export default function PostCard({
             <span className="tweet-handle">{post.handle}</span>
             <span className="tweet-dot">·</span>
             <span className="tweet-time">{timeAgo(post.createdAt)}</span>
+            {!isOwn && (
+              <button
+                type="button"
+                className="tweet-header-msg-btn"
+                title={`Message ${post.author}`}
+                aria-label={`Message ${post.author}`}
+                onClick={() => onDirectMessage?.(post.authorId, post.handle)}
+              >
+                <Icon.Message size={13} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -171,6 +200,31 @@ export default function PostCard({
                   </button>
                 )}
 
+                {!isOwn && (
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onDirectMessage?.(post.authorId, post.handle);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                      padding: '9px 12px',
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: '#1D9BF0',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Icon.Message size={15} /> Message {post.author}
+                  </button>
+                )}
+
                 <button
                   onClick={() => {
                     setMenuOpen(false);
@@ -199,6 +253,32 @@ export default function PostCard({
         </div>
       </div>
 
+      {/* Verified Resolution Strip */}
+      {post.status === 'solved' && solverComment && (
+        <div className="post-solver-strip">
+          <div className="post-solver-left">
+            <span className="post-solver-badge-icon">✓</span>
+            <span className="post-solver-text">
+              Resolved by <strong className="post-solver-handle">{solverComment.handle}</strong>
+            </span>
+          </div>
+          {solverComment.authorId !== currentUserId && (
+            <button
+              type="button"
+              className="post-solver-msg-btn"
+              title={`Message ${solverComment.author}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDirectMessage?.(solverComment.authorId, solverComment.handle);
+              }}
+            >
+              <Icon.Message size={12} />
+              <span>Message</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Post Title (if different from text) */}
       {post.title && post.title !== post.text && (
         <div className="tweet-post-title">{post.title}</div>
@@ -207,9 +287,14 @@ export default function PostCard({
       {/* Post Text */}
       <div className="tweet-text">{post.text}</div>
 
-      {/* Tags */}
-      {tagsList.length > 0 && (
+      {/* Tags & Domain Pill */}
+      {(domainPill || tagsList.length > 0) && (
         <div className="tweet-tags">
+          {domainPill && (
+            <span className="tweet-domain-pill">
+              {domainPill.icon} {domainPill.label}
+            </span>
+          )}
           {tagsList.map((tag, idx) => (
             <span key={idx} className="tweet-tag">
               {tag}

@@ -37,11 +37,11 @@ export default function FeedScreen({
   const [domainFilter, setDomainFilter] = useState('all'); // 'all' | 'mental' | 'physical' | 'dailylife' | 'tech'
 
   const DOMAIN_FILTERS = [
-    { id: 'all', label: 'All Domains' },
-    { id: 'mental', label: '🧠 Mental' },
-    { id: 'physical', label: '🏃 Physical' },
-    { id: 'dailylife', label: '🛠️ Daily Life' },
-    { id: 'tech', label: '💻 Tech' },
+    { id: 'all', label: 'All', icon: Icon.Globe },
+    { id: 'mental', label: 'Mental', icon: Icon.Brain },
+    { id: 'physical', label: 'Physical', icon: Icon.Activity },
+    { id: 'dailylife', label: 'Daily life', icon: Icon.Compass },
+    { id: 'tech', label: 'Tech', icon: Icon.Terminal },
   ];
 
   const filteredPosts = posts.filter((p) => {
@@ -94,43 +94,50 @@ export default function FeedScreen({
 
   return (
     <>
-      <header className="h" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div className="logo">
-          <span>Problematic</span>
+      <header className="h feed-header">
+        <div className="feed-brand-wrap">
+          <span className="feed-brand-title">Problematic</span>
         </div>
         <button
           type="button"
           className="feed-header-create-btn"
           onClick={onOpenComposer}
-          aria-label="Create Problem"
-          title="Create Problem"
+          aria-label="Create problem"
+          title="Create problem"
         >
-          <Icon.Plus size={24} />
+          <Icon.Plus size={19} />
         </button>
       </header>
 
       {/* Universal Problem Domains Pill Bar */}
-      <div className="feed-domains-bar">
-        {DOMAIN_FILTERS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={`domain-filter-pill ${domainFilter === f.id ? 'active' : ''}`}
-            onClick={() => setDomainFilter(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="feed-domains-bar" role="group" aria-label="Filter problems by domain">
+        {DOMAIN_FILTERS.map((f) => {
+          const FilterIcon = f.icon;
+          const isActive = domainFilter === f.id;
+          return (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={isActive}
+              className={`domain-filter-pill ${isActive ? 'active' : ''}`}
+              onClick={() => setDomainFilter(f.id)}
+            >
+              {FilterIcon && <FilterIcon size={14} className="domain-pill-icon" />}
+              <span>{f.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <main id="main-content" tabIndex={-1} className="screen-scroll">
         {/* Global Problems List */}
         <div>
           {filteredPosts.length === 0 && (
-            <div className="pc empty-card" style={{ textAlign: 'center', padding: 28 }}>
-              <div className="pnm" style={{ marginBottom: 6 }}>No problems found in this category</div>
-              <div className="pm instruction-text">
-                Broadcast a problem or switch filter back to "All Domains".
+            <div className="empty-state-card">
+              <Icon.Layers size={26} className="empty-state-icon" />
+              <div className="empty-state-title">No problems in this category</div>
+              <div className="empty-state-desc">
+                Broadcast a problem or switch filter back to all domains.
               </div>
             </div>
           )}

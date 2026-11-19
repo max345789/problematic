@@ -169,8 +169,8 @@ export default function MessagesScreen({
         <div className="messages-list">
           {currentList.length === 0 ? (
             <div className="messages-empty-card">
-              <div style={{ fontSize: 32, marginBottom: 8 }}>
-                {activeTab === 'inbox' ? '💬' : '📬'}
+              <div style={{ marginBottom: 10, display: 'flex', justifyContent: 'center', opacity: 0.45 }}>
+                {activeTab === 'inbox' ? <Icon.Message size={30} /> : <Icon.Mail size={30} />}
               </div>
               <div className="messages-empty-title">
                 {activeTab === 'inbox' ? 'No messages yet' : 'No message requests'}
@@ -217,7 +217,9 @@ export default function MessagesScreen({
                       <div className="message-card-name-group">
                         <span className="message-card-name">{other?.name}</span>
                         {other?.isModerator && (
-                          <span className="chat-mod-tag">🛡️ MOD</span>
+                          <span className="chat-mod-tag">
+                            <Icon.Shield size={11} /> Moderator
+                          </span>
                         )}
                         <span className="message-card-handle">{other?.handle}</span>
                       </div>
@@ -297,7 +299,11 @@ export default function MessagesScreen({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontWeight: 700, fontSize: 14, color: '#FFFFFF' }}>{u.name}</span>
-                          {u.isModerator && <span className="chat-mod-tag">🛡️ MOD</span>}
+                          {u.isModerator && (
+                            <span className="chat-mod-tag">
+                              <Icon.Shield size={11} /> Moderator
+                            </span>
+                          )}
                           <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{u.handle}</span>
                         </div>
                         <div style={{ fontSize: 12, color: tier.color, marginTop: 2 }}>

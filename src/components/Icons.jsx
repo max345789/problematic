@@ -249,6 +249,48 @@ export const Icon = {
       <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
     </svg>
   ),
+  Shield: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  Brain: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M9.5 2A4.5 4.5 0 005 6.5c0 .41.06.8.16 1.18A4 4 0 003 11a4 4 0 002 3.46 4.5 4.5 0 006.5 4.04V2z" />
+      <path d="M14.5 2A4.5 4.5 0 0119 6.5c0 .41-.06.8-.16 1.18A4 4 0 0121 11a4 4 0 01-2 3.46 4.5 4.5 0 01-6.5 4.04V2z" />
+    </svg>
+  ),
+  Activity: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  ),
+  Compass: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+    </svg>
+  ),
+  Terminal: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <polyline points="4 17 10 11 4 5" />
+      <line x1="12" y1="19" x2="20" y2="19" />
+    </svg>
+  ),
+  Globe: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+    </svg>
+  ),
+  Layers: (p) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...base} {...p}>
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  ),
   Copy: (p) => (
     <svg width="20" height="20" viewBox="0 0 24 24" {...base} {...p}>
       <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />

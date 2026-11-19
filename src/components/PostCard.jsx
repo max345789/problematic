@@ -79,10 +79,10 @@ export default function PostCard({
 
   const getDomainPill = (domain) => {
     switch (domain) {
-      case 'mental': return { icon: '🧠', label: 'Mental' };
-      case 'physical': return { icon: '🏃', label: 'Physical' };
-      case 'dailylife': return { icon: '🛠️', label: 'Daily Life' };
-      case 'tech': return { icon: '💻', label: 'Technology' };
+      case 'mental': return { icon: Icon.Brain, label: 'Mental' };
+      case 'physical': return { icon: Icon.Activity, label: 'Physical' };
+      case 'dailylife': return { icon: Icon.Compass, label: 'Daily life' };
+      case 'tech': return { icon: Icon.Terminal, label: 'Tech' };
       default: return null;
     }
   };
@@ -171,7 +171,7 @@ export default function PostCard({
                       cursor: 'pointer',
                     }}
                   >
-                    <Icon.Trash /> {isOwn ? 'Delete post' : '🛡️ Delete post (Mod)'}
+                    <Icon.Trash /> {isOwn ? 'Delete problem' : 'Delete problem (Moderator)'}
                   </button>
                 )}
 
@@ -196,7 +196,7 @@ export default function PostCard({
                       cursor: 'pointer',
                     }}
                   >
-                    <Icon.Close /> 🛡️ Revoke resolution (Mod)
+                    <Icon.Close /> Revoke resolution (Moderator)
                   </button>
                 )}
 
@@ -292,7 +292,8 @@ export default function PostCard({
         <div className="tweet-tags">
           {domainPill && (
             <span className="tweet-domain-pill">
-              {domainPill.icon} {domainPill.label}
+              {domainPill.icon && <domainPill.icon size={12} className="domain-tag-icon" />}
+              <span>{domainPill.label}</span>
             </span>
           )}
           {tagsList.map((tag, idx) => (

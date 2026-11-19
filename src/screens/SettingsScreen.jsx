@@ -386,13 +386,13 @@ export default function SettingsScreen({
 
         {/* Section 5: About */}
         <div className="settings-card" style={{ textAlign: 'center', padding: '24px 16px' }}>
-          <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', letterSpacing: '2px', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
             Problematic
           </div>
-          <div style={{ fontSize: 12, color: '#A1A1AA', marginTop: 4 }}>
-            Version 1.0.0 (Production Build)
+          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
+            Version 1.0.0
           </div>
-          <div style={{ fontSize: 11, color: '#71717A', marginTop: 8 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
             Designed for focused, noise-free problem solving.
           </div>
 
@@ -406,7 +406,7 @@ export default function SettingsScreen({
               showToast?.('Logged out successfully.');
             }}
           >
-            <Icon.LogOut /> Sign Out
+            <Icon.LogOut size={16} /> Sign out
           </button>
         </div>
       </main>

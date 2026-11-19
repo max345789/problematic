@@ -289,7 +289,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
             Cancel
           </button>
           <div id="composer-heading" className="composer-header-title">
-            New Problem
+            New problem
           </div>
           <button
             ref={postBtnRef}
@@ -375,7 +375,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
           <div className="composer-poll-card">
             <div className="composer-poll-header">
               <div className="composer-poll-title">
-                <Icon.Poll /> Community Poll
+                <Icon.Poll /> Community poll
               </div>
               <button
                 type="button"
@@ -431,7 +431,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
 
         {/* Topic / Category Selector */}
         <div className="composer-category-section">
-          <span className="composer-category-label">Select Topic</span>
+          <span className="composer-category-label">Topic</span>
           <div className="composer-category-scroll">
             {CATEGORIES.map((cat) => (
               <button

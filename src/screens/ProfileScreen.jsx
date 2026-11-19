@@ -78,7 +78,7 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
                     }}
                     title="Community Moderator"
                   >
-                    🛡️ MOD
+                    <Icon.Shield size={11} /> Moderator
                   </span>
                 )}
               </div>
@@ -128,11 +128,11 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
         {isModerator && (
           <div
             style={{
-              margin: '0 16px 12px',
-              padding: '12px 16px',
-              borderRadius: 14,
-              background: '#16181C',
-              border: '1px solid #2F3336',
+              margin: '0 14px 10px',
+              padding: '12px 14px',
+              borderRadius: 12,
+              background: 'var(--card-bg)',
+              border: '1px solid var(--border-light)',
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -140,44 +140,41 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
           >
             <div
               style={{
-                width: 36,
-                height: 36,
+                width: 34,
+                height: 34,
                 borderRadius: '50%',
                 background: 'rgba(29, 155, 240, 0.12)',
-                border: '1px solid rgba(29, 155, 240, 0.3)',
+                border: '1px solid rgba(29, 155, 240, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 16,
                 flexShrink: 0,
               }}
             >
-              🛡️
+              <Icon.Shield size={16} style={{ color: '#1D9BF0' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#E7E9EA' }}>
-                Moderator Account
+              <div style={{ fontSize: 13, fontWeight: 650, color: 'var(--text-main)' }}>
+                Moderator account
               </div>
-              <div style={{ fontSize: 12, color: '#71767B', marginTop: 1, lineHeight: 1.35 }}>
-                Full moderation access: delete unwanted problems, remove comments & revoke solutions.
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 1, lineHeight: 1.35 }}>
+                Full moderation access: delete problems, remove comments, and revoke resolutions.
               </div>
             </div>
           </div>
         )}
 
         {/* ================= COMMUNITY ACTIVITY METRICS ================= */}
-        <div className="pc" style={{ margin: '0 16px 12px', padding: '16px' }}>
+        <div className="pc" style={{ margin: '0 14px 10px', padding: '14px 16px' }}>
           <div
             style={{
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
+              fontSize: 12.5,
+              fontWeight: 650,
               color: 'var(--text-sub)',
-              marginBottom: 12,
+              marginBottom: 10,
             }}
           >
-            Community Activity
+            Community activity
           </div>
           <div className="rd-metrics-row" style={{ marginTop: 0 }}>
             <div className="rd-metric-item">

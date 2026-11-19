@@ -141,7 +141,9 @@ export default function ChatScreen({
             <div className="chat-header-name-row">
               <span className="chat-header-name">{recipient?.name || 'User'}</span>
               {recipient?.isModerator && (
-                <span className="chat-mod-tag">🛡️ MOD</span>
+                <span className="chat-mod-tag">
+                  <Icon.Shield size={11} /> Moderator
+                </span>
               )}
             </div>
             <div className="chat-header-meta">
@@ -161,7 +163,8 @@ export default function ChatScreen({
         {isPendingRequest && (
           <div className="chat-request-banner">
             <div className="chat-request-title">
-              <span>📩 Message Request</span>
+              <Icon.Mail size={16} />
+              <span>Message request</span>
             </div>
             <div className="chat-request-desc">
               <strong>{recipient?.name}</strong> wants to send you a message. They won't know you have seen it until you accept.
@@ -172,7 +175,7 @@ export default function ChatScreen({
                 className="chat-accept-btn"
                 onClick={handleAccept}
               >
-                <Icon.Check size={16} /> Accept Request
+                <Icon.Check size={16} /> Accept request
               </button>
               <button
                 type="button"
@@ -209,7 +212,9 @@ export default function ChatScreen({
         {/* Error State with Retry */}
         {!loadingHistory && loadError && (
           <div className="chat-error-state" style={{ textAlign: 'center', padding: '30px 16px', color: 'var(--text-sub)' }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>⚠️</div>
+            <div style={{ marginBottom: 10, display: 'flex', justifyContent: 'center', opacity: 0.5 }}>
+              <Icon.Lock size={26} />
+            </div>
             <div style={{ color: '#F87171', fontWeight: 600, marginBottom: 12, fontSize: 14 }}>
               {loadError}
             </div>
@@ -227,7 +232,9 @@ export default function ChatScreen({
         {/* Empty State */}
         {!loadingHistory && !loadError && messages.length === 0 && !isPendingRequest && (
           <div className="chat-empty-state">
-            <div className="chat-empty-icon">💬</div>
+            <div className="chat-empty-icon" style={{ opacity: 0.5, marginBottom: 8, display: 'flex', justifyContent: 'center' }}>
+              <Icon.Message size={30} />
+            </div>
             <div className="chat-empty-title">Start a conversation</div>
             <div className="chat-empty-desc">
               Connect with <strong>{recipient?.name}</strong> to exchange solutions, insights, or advice.

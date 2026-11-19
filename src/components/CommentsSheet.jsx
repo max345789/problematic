@@ -198,9 +198,11 @@ export default function CommentsSheet({
         >
           {(!comments || comments.length === 0) && (
             <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-sub, #536471)' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>💬</div>
-              <div style={{ fontWeight: 700, color: 'var(--text-main, #0F1419)', marginBottom: 4 }}>No replies yet</div>
-              <div style={{ fontSize: 13 }}>Be the first to share an answer or solution.</div>
+              <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'center', opacity: 0.5 }}>
+                <Icon.Comment size={26} />
+              </div>
+              <div style={{ fontWeight: 650, color: 'var(--text-main)', marginBottom: 4 }}>No replies yet</div>
+              <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>Share an answer or proposed solution.</div>
             </div>
           )}
 
@@ -257,7 +259,7 @@ export default function CommentsSheet({
                           }
                         }}
                         aria-label="Delete comment"
-                        title={isModerator && c.authorId !== currentUser?.id ? '🛡️ Moderate: Delete comment' : 'Delete'}
+                        title={isModerator && c.authorId !== currentUser?.id ? 'Moderate: Delete comment' : 'Delete'}
                         style={{
                           padding: '4px 6px',
                           color: isModerator && c.authorId !== currentUser?.id ? '#EF4444' : 'var(--text-sub, #536471)',
@@ -282,7 +284,7 @@ export default function CommentsSheet({
                   {isAccepted && (
                     <div style={{ margin: '6px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, flexWrap: 'wrap' }}>
                       <span className="badge-accepted">
-                        ✓ Accepted Solution (+0.1 RD)
+                        <Icon.Check size={12} /> Accepted solution (+0.1 RD)
                       </span>
                       {(isAuthor || isModerator) && onRevokeSolution && (
                         <button
@@ -310,7 +312,7 @@ export default function CommentsSheet({
                             gap: 4,
                           }}
                         >
-                          ✕ Revoke Resolution
+                          <Icon.Close size={12} /> Revoke resolution
                         </button>
                       )}
                     </div>
@@ -346,7 +348,7 @@ export default function CommentsSheet({
                         onClick={() => handleAccept(c)}
                         title="Mark this comment as the accepted solution"
                       >
-                        ✓ Accept as Solution
+                        <Icon.Check size={13} /> Accept as solution
                       </button>
                       {isModerator && onDisqualify && (
                         <button

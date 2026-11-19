@@ -3586,10 +3586,10 @@ textarea::placeholder {
 
 /* Feed Header with enlarged title and corner-aligned + button */
 .feed-header {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: 40px 1fr 40px !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  padding: max(14px, calc(env(safe-area-inset-top, 0px) + 10px)) 16px 12px 18px !important;
+  padding: max(14px, calc(env(safe-area-inset-top, 0px) + 10px)) 16px 12px 16px !important;
   background: rgba(0, 0, 0, 0.88) !important;
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
@@ -3604,15 +3604,19 @@ textarea::placeholder {
 .feed-brand-wrap {
   display: flex;
   align-items: center;
+  justify-content: center;
+  grid-column: 2;
 }
 
 .feed-brand-title {
-  font-family: var(--font-heading);
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
   color: var(--text-main);
   user-select: none;
+  line-height: 1;
 }
 
 /* Simple plus icon only in feed screen header: NO round shape, single plus icon on corner side */
@@ -3623,13 +3627,14 @@ textarea::placeholder {
   box-shadow: none;
   border-radius: 0;
   padding: 4px;
-  margin-right: -2px;
+  margin-right: 0;
   color: var(--text-main, #FFFFFF);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   cursor: pointer;
   transition: opacity 0.15s ease, transform 0.15s ease;
+  grid-column: 3;
 }
 
 .feed-header-create-btn:hover {

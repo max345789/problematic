@@ -76,6 +76,8 @@ export default function FeedScreen({
   return (
     <>
       <header className="h feed-header">
+        {/* col 1 — spacer so title stays perfectly centred */}
+        <div aria-hidden="true" />
         <div className="feed-brand-wrap">
           <span className="feed-brand-title">Problematic</span>
         </div>

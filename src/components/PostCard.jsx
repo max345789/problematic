@@ -72,22 +72,30 @@ export default function PostCard({
     ? comments.find((c) => c.id === post.acceptedSolutionId || c.isAccepted)
     : null;
 
-  // Extract tags from text or post.tags
-  const tagsList = post.tags
-    ? post.tags.split(' ').filter((t) => t.startsWith('#'))
+  // Extract tags from text or post.tags or post.category
+  const rawTags = post.tags || post.category || '';
+  const tagsList = rawTags
+    ? rawTags.split(' ').filter((t) => t.startsWith('#'))
     : [];
+
+  const postDomain = post.domain || (
+    rawTags.toLowerCase().includes('#tech') || rawTags.toLowerCase().includes('#android') || rawTags.toLowerCase().includes('#backend') || rawTags.toLowerCase().includes('#mobile') ? 'tech' :
+    rawTags.toLowerCase().includes('#mental') ? 'mental' :
+    rawTags.toLowerCase().includes('#physical') ? 'physical' :
+    rawTags.toLowerCase().includes('#daily') ? 'dailylife' : null
+  );
 
   const getDomainPill = (domain) => {
     switch (domain) {
-      case 'mental': return { icon: Icon.Brain, label: 'Mental' };
-      case 'physical': return { icon: Icon.Activity, label: 'Physical' };
-      case 'dailylife': return { icon: Icon.Compass, label: 'Daily life' };
-      case 'tech': return { icon: Icon.Terminal, label: 'Tech' };
+      case 'mental': return { icon: Icon.Brain, label: 'Mental', color: '#A78BFA', bg: 'rgba(167, 139, 250, 0.12)', border: 'rgba(167, 139, 250, 0.25)' };
+      case 'physical': return { icon: Icon.Activity, label: 'Physical', color: '#34D399', bg: 'rgba(52, 211, 153, 0.12)', border: 'rgba(52, 211, 153, 0.25)' };
+      case 'dailylife': return { icon: Icon.Compass, label: 'Daily life', color: '#FBBF24', bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.25)' };
+      case 'tech': return { icon: Icon.Terminal, label: 'Tech', color: '#38BDF8', bg: 'rgba(56, 189, 248, 0.12)', border: 'rgba(56, 189, 248, 0.25)' };
       default: return null;
     }
   };
 
-  const domainPill = getDomainPill(post.domain);
+  const domainPill = getDomainPill(postDomain);
 
   return (
     <div className="tweet-card">
@@ -312,7 +320,14 @@ export default function PostCard({
       {(domainPill || tagsList.length > 0) && (
         <div className="tweet-tags">
           {domainPill && (
-            <span className="tweet-domain-pill">
+            <span
+              className="tweet-domain-pill"
+              style={{
+                color: domainPill.color,
+                background: domainPill.bg,
+                borderColor: domainPill.border,
+              }}
+            >
               {domainPill.icon && <domainPill.icon size={12} className="domain-tag-icon" />}
               <span>{domainPill.label}</span>
             </span>
@@ -341,7 +356,7 @@ export default function PostCard({
         <Poll post={post} currentUserId={currentUserId} onVote={(i) => onVote?.(post.id, i)} />
       ) : null}
 
-      {/* Modern Compact Flat Action Bar (Like, Reply, Share) - No text */}
+      {/* Modern Compact Flat Action Bar with Live Counts (Like, Reply, Share) */}
       <div className="tweet-actions-bar">
         {/* Downside Triangle Like Button (Fills with white when pressed) */}
         <button
@@ -353,6 +368,7 @@ export default function PostCard({
           onClick={() => onLike?.(post.id)}
         >
           <Icon.TriangleDown filled={liked} />
+          <span className="tweet-action-count">{post.likes ?? 0}</span>
         </button>
 
         {/* Reply / Comment */}
@@ -364,6 +380,7 @@ export default function PostCard({
           onClick={() => onComment?.(post)}
         >
           <Icon.Comment />
+          <span className="tweet-action-count">{commentCount ?? 0}</span>
         </button>
 
         {/* Share */}

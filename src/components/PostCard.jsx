@@ -208,7 +208,7 @@ export default function PostCard({
 
       {/* Modern Compact Flat Action Bar (Like, Reply, Share) - No text */}
       <div className="tweet-actions-bar">
-        {/* Like */}
+        {/* Downside Triangle Like Button (Fills with white when pressed) */}
         <button
           type="button"
           className={`tweet-action-btn tweet-like-btn ${liked ? 'liked' : ''}`}
@@ -217,7 +217,7 @@ export default function PostCard({
           aria-pressed={liked}
           onClick={() => onLike?.(post.id)}
         >
-          <Icon.Heart />
+          <Icon.TriangleDown filled={liked} />
         </button>
 
         {/* Reply / Comment */}

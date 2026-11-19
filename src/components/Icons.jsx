@@ -131,6 +131,21 @@ export const Icon = {
       <path d="M16 17l5-5-5-5M21 12H9" />
     </svg>
   ),
+  TriangleDown: ({ filled = false, size = 18, ...p }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={filled ? '#FFFFFF' : 'none'}
+      stroke={filled ? '#FFFFFF' : 'currentColor'}
+      strokeWidth={filled ? '0' : '2'}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...p}
+    >
+      <path d="M12 20.5L3.6 6.3C3.1 5.4 3.7 4.2 4.8 4.2h14.4c1.1 0 1.7 1.2 1.2 2.1L12 20.5z" />
+    </svg>
+  ),
   Heart: (p) => (
     <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
       <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />

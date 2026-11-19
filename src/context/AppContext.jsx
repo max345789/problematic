@@ -233,6 +233,20 @@ export function AppProvider({ children }) {
   const toggleLike = useCallback(
     async (postId) => {
       if (!currentUser) return null;
+
+      // Optimistic instant UI update (zero network delay)
+      setPosts((prev) =>
+        prev.map((p) => {
+          if (p.id !== postId) return p;
+          const isLiked = (p.likedByIds || []).includes(currentUser.id);
+          const nextLikedByIds = isLiked
+            ? (p.likedByIds || []).filter((id) => id !== currentUser.id)
+            : [...(p.likedByIds || []), currentUser.id];
+          const nextLikes = isLiked ? Math.max(0, (p.likes || 1) - 1) : (p.likes || 0) + 1;
+          return { ...p, likedByIds: nextLikedByIds, likes: nextLikes };
+        })
+      );
+
       let updated = null;
       try {
         updated = await api.toggleLikePost(postId, currentUser.id);

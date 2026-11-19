@@ -890,11 +890,56 @@ svg {
   padding-top: 10px;
   margin-top: 4px;
   border-top: 1px solid var(--border-divider);
-  gap: 10px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.tweet-action-btn,
+.tweet-action-btn {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #71767B;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.tweet-action-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.tweet-action-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tweet-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.tweet-action-btn:active {
+  transform: scale(0.92);
+  box-shadow: none !important;
+}
+
 .b {
   flex: none;
   width: 34px;
@@ -916,13 +961,11 @@ svg {
   user-select: none;
 }
 
-.tweet-action-btn:focus-visible,
 .b:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.tweet-action-btn svg,
 .b svg {
   width: 16px;
   height: 16px;
@@ -930,7 +973,6 @@ svg {
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.tweet-action-btn:hover,
 .b:hover {
   background: var(--surface-subtle-hover);
   border-color: rgba(255, 255, 255, 0.35);
@@ -939,24 +981,23 @@ svg {
   transform: translateY(-1px);
 }
 
-.tweet-action-btn:active,
 .b:active {
   transform: scale(0.92);
   box-shadow: none !important;
 }
 
-/* Downside Triangle Like Button (Fills with plain white inside, no glow) */
+/* Downside Triangle Like Button (Pure plain icon, no circular border/container, fills with solid white when liked) */
 .tweet-like-btn {
   color: #71767B;
-  background: transparent;
-  border-color: #2F3336;
+  background: transparent !important;
+  border: none !important;
   box-shadow: none !important;
   filter: none !important;
 }
 .tweet-like-btn:hover {
   color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
   box-shadow: none !important;
   filter: none !important;
 }
@@ -964,22 +1005,19 @@ svg {
   stroke: #FFFFFF;
   transform: scale(1.12);
 }
-.tweet-like-btn.liked,
-.b.liked {
-  color: #FFFFFF;
+.tweet-like-btn.liked {
+  color: #FFFFFF !important;
   background: transparent !important;
-  border-color: #2F3336 !important;
+  border: none !important;
   box-shadow: none !important;
   filter: none !important;
 }
-.tweet-like-btn.liked:hover,
-.b.liked:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: #2F3336 !important;
+.tweet-like-btn.liked:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
   box-shadow: none !important;
 }
-.tweet-like-btn.liked svg,
-.b.liked svg {
+.tweet-like-btn.liked svg {
   fill: #FFFFFF !important;
   stroke: #FFFFFF !important;
   filter: none !important;
@@ -988,8 +1026,8 @@ svg {
 
 .tweet-reply-btn:hover {
   color: var(--text-main, #FFFFFF) !important;
-  background: var(--btn-reply-bg-hover);
-  border-color: rgba(29, 155, 240, 0.45);
+  background: rgba(29, 155, 240, 0.1) !important;
+  border: none !important;
   box-shadow: none !important;
 }
 .tweet-reply-btn:hover svg {
@@ -999,8 +1037,8 @@ svg {
 
 .tweet-share-btn:hover {
   color: var(--text-main, #FFFFFF) !important;
-  background: var(--btn-share-bg-hover);
-  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(0, 186, 124, 0.1) !important;
+  border: none !important;
   box-shadow: none !important;
 }
 .tweet-share-btn:hover svg {
@@ -3537,14 +3575,44 @@ textarea::placeholder {
   transform: scale(0.92);
 }
 
-/* Simple plus icon only in feed screen header: NO round shape, single plus icon */
+/* Feed Header with enlarged title and corner-aligned + button */
+.feed-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: max(14px, calc(env(safe-area-inset-top, 0px) + 10px)) 12px 12px 18px !important;
+  background: var(--app-bg) !important;
+  border-bottom: 1px solid var(--border-divider) !important;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feed-brand-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.feed-brand-title {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--text-main);
+  user-select: none;
+}
+
+/* Simple plus icon only in feed screen header: NO round shape, single plus icon on corner side */
 .feed-header-create-btn {
   background: transparent;
   border: none;
   outline: none;
   box-shadow: none;
   border-radius: 0;
-  padding: 6px;
+  padding: 4px;
+  margin-right: -2px;
   color: var(--text-main, #FFFFFF);
   display: flex;
   align-items: center;
@@ -4099,6 +4167,61 @@ textarea::placeholder {
 }
 .post-solver-msg-btn:hover {
   background: rgba(29, 155, 240, 0.25);
+}
+
+/* Inline Solver Mention Citation at the end of problem text */
+.tweet-solver-inline-mention {
+  color: var(--text-sub);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.tweet-solver-mention-link {
+  display: inline;
+  color: #34D399;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+.tweet-solver-mention-link:hover {
+  color: #10B981;
+}
+
+/* Messages Screen 3-Dot Navigation Button */
+.messages-more-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: var(--text-main);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.messages-more-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.08);
+}
+.messages-more-btn:active {
+  transform: scale(0.92);
+}
+.messages-dot-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #F59E0B;
 }
 .tweet-header-msg-btn {
   padding: 3px 5px;

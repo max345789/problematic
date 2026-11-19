@@ -21,6 +21,7 @@ export default function MessagesScreen({
   const [selectedRecipientId, setSelectedRecipientId] = useState(initialRecipientId);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // When initialRecipientId changes from outside (e.g. tapping "Message" on a post or comment)
   useEffect(() => {
@@ -104,54 +105,113 @@ export default function MessagesScreen({
   return (
     <div className="messages-screen">
       {/* Header */}
-      <header className="h messages-header">
-        <div className="logo">
-          <span>Messages</span>
+      <header className="h messages-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'max(14px, calc(env(safe-area-inset-top, 0px) + 10px)) 14px 12px 18px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {activeTab === 'requests' && (
+            <button
+              type="button"
+              className="settings-back-btn"
+              onClick={() => setActiveTab('inbox')}
+              aria-label="Back to Inbox"
+              style={{ width: 32, height: 32, padding: 0 }}
+            >
+              <Icon.Back size={20} />
+            </button>
+          )}
+          <div className="logo" style={{ margin: 0, textAlign: 'left' }}>
+            <span>{activeTab === 'requests' ? 'Requests' : 'Inbox'}</span>
+          </div>
         </div>
-        <button
-          type="button"
-          className="messages-new-btn"
-          onClick={() => setShowNewChatModal(true)}
-          aria-label="New Message"
-          title="New Message"
-        >
-          <Icon.Plus size={22} />
-        </button>
+
+        <div style={{ position: 'relative' }}>
+          <button
+            type="button"
+            className="messages-more-btn"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="More options"
+            aria-expanded={menuOpen}
+          >
+            <Icon.More />
+            {pendingRequestsCount > 0 && activeTab !== 'requests' && (
+              <span className="messages-dot-badge" />
+            )}
+          </button>
+
+          {menuOpen && (
+            <>
+              <div
+                onClick={() => setMenuOpen(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+              />
+              <div className="glass-dropdown-menu" style={{ right: 0, top: '100%', minWidth: 190 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setActiveTab(activeTab === 'requests' ? 'inbox' : 'requests');
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--text-main)',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Icon.Mail size={15} />
+                    <span>{activeTab === 'requests' ? 'View Inbox' : 'Message requests'}</span>
+                  </span>
+                  {pendingRequestsCount > 0 && (
+                    <span className="messages-tab-badge-amber">{pendingRequestsCount}</span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setShowNewChatModal(true);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--text-main)',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Icon.Plus size={15} />
+                  <span>New conversation</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </header>
 
       {/* Main Content */}
       <main className="screen-scroll messages-content" tabIndex={-1}>
-        {/* Navigation Tabs: Inbox vs Requests */}
-        <div className="messages-tabs-bar">
-          <button
-            type="button"
-            className={`messages-tab-pill ${activeTab === 'inbox' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inbox')}
-          >
-            <span>Inbox</span>
-            {inboxList.length > 0 && (
-              <span className="messages-tab-count">{inboxList.length}</span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            className={`messages-tab-pill ${activeTab === 'requests' ? 'active' : ''}`}
-            onClick={() => setActiveTab('requests')}
-          >
-            <span>Requests</span>
-            {pendingRequestsCount > 0 && (
-              <span className="messages-tab-badge-amber">{pendingRequestsCount}</span>
-            )}
-          </button>
-        </div>
-
         {/* Search input */}
         <div className="messages-search-wrap">
           <input
             type="text"
             className="messages-search-input"
-            placeholder="Search conversations…"
+            placeholder={activeTab === 'requests' ? 'Search requests…' : 'Search direct messages…'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

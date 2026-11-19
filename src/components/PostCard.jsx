@@ -111,9 +111,6 @@ export default function PostCard({
         <div className="tweet-user-info-stacked">
           <div className="tweet-author-line">
             <span className="tweet-name">{post.author}</span>
-            {post.status === 'solved' && (
-              <span className="badge-status badge-solved" style={{ flexShrink: 0 }}>Solved</span>
-            )}
           </div>
           <div className="tweet-meta-sub">
             <span className="tweet-handle">{post.handle}</span>
@@ -253,16 +250,48 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* Verified Resolution Strip */}
-      {post.status === 'solved' && solverComment && (
+      {/* Post Title (if different from text) */}
+      {post.title && post.title !== post.text && (
+        <div className="tweet-post-title">{post.title}</div>
+      )}
+
+      {/* Post Text with solver mention citation at the end */}
+      <div className="tweet-text">
+        {post.text}
+        {post.status === 'solved' && solverComment && (
+          <span className="tweet-solver-inline-mention">
+            {' '}— resolved by{' '}
+            <button
+              type="button"
+              className="tweet-solver-mention-link"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDirectMessage?.(solverComment.authorId, solverComment.handle);
+              }}
+              title={`Message ${solverComment.author || solverComment.handle}`}
+            >
+              {solverComment.handle}
+            </button>
+          </span>
+        )}
+      </div>
+
+      {/* Verified Resolution Strip - Moved down to the end of problem text */}
+      {post.status === 'solved' && (
         <div className="post-solver-strip">
           <div className="post-solver-left">
             <span className="post-solver-badge-icon">✓</span>
             <span className="post-solver-text">
-              Resolved by <strong className="post-solver-handle">{solverComment.handle}</strong>
+              {solverComment ? (
+                <>
+                  Resolved by <strong className="post-solver-handle">{solverComment.handle}</strong>
+                </>
+              ) : (
+                <>Resolved</>
+              )}
             </span>
           </div>
-          {solverComment.authorId !== currentUserId && (
+          {solverComment && solverComment.authorId !== currentUserId && (
             <button
               type="button"
               className="post-solver-msg-btn"
@@ -278,14 +307,6 @@ export default function PostCard({
           )}
         </div>
       )}
-
-      {/* Post Title (if different from text) */}
-      {post.title && post.title !== post.text && (
-        <div className="tweet-post-title">{post.title}</div>
-      )}
-
-      {/* Post Text */}
-      <div className="tweet-text">{post.text}</div>
 
       {/* Tags & Domain Pill */}
       {(domainPill || tagsList.length > 0) && (

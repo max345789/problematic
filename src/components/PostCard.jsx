@@ -177,7 +177,7 @@ export default function PostCard({
                   </button>
                 )}
 
-                {isModerator && post.status === 'solved' && onRevokeSolution && (
+                {(isOwn || isModerator) && post.status === 'solved' && onRevokeSolution && (
                   <button
                     onClick={() => {
                       setMenuOpen(false);
@@ -198,7 +198,7 @@ export default function PostCard({
                       cursor: 'pointer',
                     }}
                   >
-                    <Icon.Close /> Revoke resolution (Moderator)
+                    <Icon.Close /> {isOwn ? 'Revoke resolution' : 'Revoke resolution (Moderator)'}
                   </button>
                 )}
 

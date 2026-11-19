@@ -6,7 +6,6 @@ import EditProfileSheet from '../components/EditProfileSheet';
 export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showToast }) {
   const {
     currentUser,
-    isModerator,
     posts,
     comments,
     saveProfile,
@@ -58,33 +57,15 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
                 background: currentUser?.avatarBg || '#1F6F6B',
               }}
             >
-              {currentUser?.avatar || '?'}
+              {currentUser?.avatar || 'U'}
             </div>
             <div className="profile-user-details">
               <div className="profile-user-name" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                <span>{currentUser?.name || 'You'}</span>
-                {isModerator && (
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 3,
-                      fontSize: 10,
-                      fontWeight: 800,
-                      letterSpacing: '0.05em',
-                      padding: '2px 7px',
-                      borderRadius: 9999,
-                      background: 'rgba(29, 155, 240, 0.15)',
-                      color: '#1D9BF0',
-                      border: '1px solid rgba(29, 155, 240, 0.35)',
-                    }}
-                    title="Community Moderator"
-                  >
-                    <Icon.Shield size={11} /> Moderator
-                  </span>
-                )}
+                <span>{currentUser?.name || 'User'}</span>
               </div>
-              <div className="profile-user-handle">{currentUser?.handle}</div>
+              <div className="profile-user-handle">
+                {currentUser?.handle || '@user'}
+              </div>
               <div className="profile-user-bio">
                 {currentUser?.bio || 'Problem solver & community collaborator.'}
               </div>
@@ -162,46 +143,6 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
             </button>
           </div>
         </div>
-
-        {/* ================= MODERATOR ACCOUNT PRIVILEGES CARD ================= */}
-        {isModerator && (
-          <div
-            style={{
-              margin: '0 14px 10px',
-              padding: '12px 14px',
-              borderRadius: 12,
-              background: 'var(--card-bg)',
-              border: '1px solid var(--border-light)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <div
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: '50%',
-                background: 'rgba(29, 155, 240, 0.12)',
-                border: '1px solid rgba(29, 155, 240, 0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <Icon.Shield size={16} style={{ color: '#1D9BF0' }} />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 650, color: 'var(--text-main)' }}>
-                Moderator account
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 1, lineHeight: 1.35 }}>
-                Full moderation access: delete problems, remove comments, and revoke resolutions.
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* ================= COMMUNITY ACTIVITY METRICS ================= */}
         <div className="pc" style={{ margin: '0 14px 10px', padding: '14px 16px' }}>

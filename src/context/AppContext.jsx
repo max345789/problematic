@@ -4,6 +4,26 @@ import * as api from '../services/api';
 
 const AppContext = createContext(null);
 
+function sanitizeUser(u) {
+  if (!u) return u;
+  let sanitized = { ...u };
+  if (sanitized.id === 'user_rohitha') {
+    sanitized.name = 'Max';
+    sanitized.handle = '@max';
+    sanitized.avatar = 'M';
+    sanitized.role = 'user';
+    sanitized.isModerator = false;
+  } else if (sanitized.id === 'user_arjun' || sanitized.id === 'user_meera' || sanitized.id === 'user_nila' || sanitized.id === 'user_sanjay' || sanitized.id === 'user_elena') {
+    sanitized.role = 'user';
+    sanitized.isModerator = false;
+  } else {
+    const isMod = Boolean(sanitized.role === 'moderator' || sanitized.isModerator === true);
+    sanitized.role = isMod ? 'moderator' : (sanitized.role || 'user');
+    sanitized.isModerator = isMod;
+  }
+  return sanitized;
+}
+
 export function AppProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -22,8 +42,9 @@ export function AppProvider({ children }) {
     setLoading(true);
     try {
       const data = await storage.initializeStorage();
-      setUsers(data.users || []);
-      setCurrentUser(data.currentUser || null);
+      const sanitizedInitialUsers = (data.users || []).map(sanitizeUser);
+      setUsers(sanitizedInitialUsers);
+      setCurrentUser(sanitizeUser(data.currentUser) || null);
       setPosts(data.posts || []);
       setNotifications(data.notifications || []);
       setComments(data.comments || {});
@@ -45,11 +66,12 @@ export function AppProvider({ children }) {
           await storage.saveComments(remote.comments);
         }
         if (remote && remote.users && remote.users.length) {
-          setUsers(remote.users);
-          await storage.saveUsers(remote.users);
+          const cleanUsers = remote.users.map(sanitizeUser);
+          setUsers(cleanUsers);
+          await storage.saveUsers(cleanUsers);
           if (data.currentUser) {
-            const updatedMe = remote.users.find((u) => u.id === data.currentUser.id);
-            if (updatedMe) setCurrentUser(updatedMe);
+            const updatedMe = cleanUsers.find((u) => u.id === data.currentUser.id);
+            if (updatedMe) setCurrentUser(sanitizeUser(updatedMe));
           }
         }
         if (remote && remote.notifications) {
@@ -112,26 +134,32 @@ export function AppProvider({ children }) {
     } catch (apiErr) {
       user = await storage.verifyUser(handle, password);
     }
-    await storage.setSession(user.id);
-    setCurrentUser(user);
+    const cleanUser = sanitizeUser(user);
+    await storage.setSession(cleanUser.id);
+    setCurrentUser(cleanUser);
     setUsers((prev) => {
-      const others = prev.filter((u) => u.id !== user.id);
-      return [user, ...others];
+      const others = prev.filter((u) => u.id !== cleanUser.id);
+      return [cleanUser, ...others];
     });
-    return user;
+    return cleanUser;
   }, []);
 
-  const signup = useCallback(async ({ name, handle, password }) => {
+  const registerUser = useCallback(async ({ name, handle, password }) => {
     let user;
     try {
       const res = await api.signup({ name, handle, password });
       user = res.user;
     } catch (apiErr) {
-      user = await storage.createUser({ name, handle, password });
+      user = await (storage.registerUser || storage.createUser)({ name, handle, password });
     }
-    await storage.setSession(user.id);
-    setCurrentUser(user);
-    setUsers((prev) => [...prev, user]);
+    const cleanUser = sanitizeUser({
+      ...user,
+      role: 'user',
+      isModerator: false,
+    });
+    await storage.setSession(cleanUser.id);
+    setCurrentUser(cleanUser);
+    setUsers((prev) => [...prev.filter((u) => u.id !== cleanUser.id), cleanUser]);
     const welcome = {
       type: 'welcome',
       name: 'Problematic Community',
@@ -143,8 +171,10 @@ export function AppProvider({ children }) {
     };
     const saved = await storage.addNotification(welcome);
     setNotifications((prev) => [saved, ...prev]);
-    return user;
+    return cleanUser;
   }, []);
+
+  const signup = registerUser;
 
   const logout = useCallback(async () => {
     api.setAuthToken(null);
@@ -599,9 +629,7 @@ export function AppProvider({ children }) {
 
   const isModerator = Boolean(
     currentUser?.role === 'moderator' ||
-    currentUser?.isModerator === true ||
-    currentUser?.handle === '@rohitha' ||
-    currentUser?.id === 'user_rohitha'
+    currentUser?.isModerator === true
   );
 
   /* -------------------------------- value --------------------------------- */
@@ -632,6 +660,8 @@ export function AppProvider({ children }) {
 
     login,
     signup,
+    registerUser,
+    onRegister: registerUser,
     logout,
     saveProfile,
 

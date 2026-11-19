@@ -66,7 +66,7 @@ export default function FeedScreen({
   const handleRevokeSolution = async (postId, solutionId, solverId) => {
     try {
       await revokeSolution(postId, solutionId, solverId);
-      showToast?.('Resolution revoked by Moderator.');
+      showToast?.(isModerator ? 'Resolution revoked by Moderator.' : 'Resolution revoked.');
     } catch (err) {
       showToast?.('Could not revoke resolution.');
       throw err;

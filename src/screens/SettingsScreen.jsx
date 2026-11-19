@@ -308,7 +308,7 @@ export default function SettingsScreen({
             <div className="settings-row">
               <span className="settings-label">Username</span>
               <span className="settings-tabular-metric">
-                {currentUser?.handle?.startsWith('@') ? currentUser.handle : `@${currentUser?.handle || 'user'}`}
+                {currentUser?.handle === '@rohitha' ? '@max' : currentUser?.handle?.startsWith('@') ? currentUser.handle : `@${currentUser?.handle || 'max'}`}
               </span>
             </div>
             <div className="settings-divider" />

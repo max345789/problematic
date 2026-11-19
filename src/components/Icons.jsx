@@ -208,6 +208,25 @@ export const Icon = {
       <path d="M9 18l6-6-6-6" />
     </svg>
   ),
+  Eye: (p) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  EyeOff: (p) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...base} {...p}>
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  ),
+  AlertCircle: (p) => (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...p}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  ),
   BrandMark: ({ size = 24, ...p }) => (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="currentColor" {...p}>
       <path d="M 110 90 L 80 60 L 95 45 L 110 60 L 145 25 L 160 40 Z" />

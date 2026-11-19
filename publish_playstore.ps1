@@ -90,7 +90,7 @@ Write-Host "  - Signed Play Store Bundle (AAB): $DestAab ($AabSize MB)" -Foregro
 Write-Host "  - Direct Install APK:             $DestApk ($ApkSize MB)" -ForegroundColor Green
 
 # 4. Check Store Listing Graphics
-Write-Host "`n--> Checking Store Listing Assets in $ReleaseDir:" -ForegroundColor Yellow
+Write-Host "`n--> Checking Store Listing Assets in ${ReleaseDir}:" -ForegroundColor Yellow
 $IconPath = "$ReleaseDir\playstore-icon-512.png"
 $FgPath = "$ReleaseDir\playstore-feature-graphic-1024x500.png"
 

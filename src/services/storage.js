@@ -102,15 +102,36 @@ function normalizeHandle(raw = '') {
 
 export async function getUsers() {
   const users = await getStoredData(STORAGE_KEYS.USERS, []);
-  // Ensure demo account rohitha always has moderator status and all users have messagingPermission
+  // Ensure default seed users and standard users have standard permissions
   return users.map((u) => {
-    const withDefaults = {
-      messagingPermission: u.messagingPermission || (u.id === 'user_arjun' ? 'everyone' : 'requests'),
-      ...u,
-    };
-    if (u.id === 'user_rohitha' || u.handle === '@rohitha') {
-      return { ...withDefaults, role: 'moderator', isModerator: true };
+    let userObj = { ...u };
+    if (userObj.id === 'user_rohitha') {
+      userObj = {
+        ...userObj,
+        name: 'Max',
+        handle: '@max',
+        avatar: 'M',
+        role: 'user',
+        isModerator: false,
+      };
+    } else if (userObj.id === 'user_arjun' || userObj.id === 'user_meera' || userObj.id === 'user_nila' || userObj.id === 'user_sanjay' || userObj.id === 'user_elena') {
+      userObj = {
+        ...userObj,
+        role: 'user',
+        isModerator: false,
+      };
+    } else {
+      const isMod = Boolean(userObj.role === 'moderator' || userObj.isModerator === true);
+      userObj = {
+        ...userObj,
+        role: isMod ? 'moderator' : (userObj.role || 'user'),
+        isModerator: isMod,
+      };
     }
+    const withDefaults = {
+      messagingPermission: userObj.messagingPermission || (userObj.id === 'user_arjun' ? 'everyone' : 'requests'),
+      ...userObj,
+    };
     return withDefaults;
   });
 }
@@ -150,8 +171,10 @@ export async function createUser({ name, handle, password }) {
     name: cleanName,
     handle: normalizedHandle,
     passwordHash: hashPassword(password),
-    avatar: cleanName.charAt(0).toUpperCase(),
+    avatar: cleanName.charAt(0).toUpperCase() || 'U',
     avatarBg: pickColor(normalizedHandle),
+    role: 'user',
+    isModerator: false,
     bio: 'Problem solver & community collaborator.',
     respectadeo: 0.1, // starting seed bonus
     problemsSolved: 0,
@@ -163,6 +186,10 @@ export async function createUser({ name, handle, password }) {
 
   await saveUsers([...users, user]);
   return user;
+}
+
+export async function registerUser({ name, handle, password }) {
+  return createUser({ name, handle, password });
 }
 
 export async function verifyUser(handle, password) {
@@ -671,14 +698,14 @@ function daysAgo(d) {
 function seedCommunity() {
   const rohitha = {
     id: 'user_rohitha',
-    name: 'Rohitha',
-    handle: '@rohitha',
+    name: 'Max',
+    handle: '@max',
     passwordHash: hashPassword('password'),
-    role: 'moderator',
-    isModerator: true,
-    avatar: 'R',
+    role: 'user',
+    isModerator: false,
+    avatar: 'M',
     avatarBg: '#1F6F6B',
-    bio: 'Community Moderator & Front-end engineer. Keeping Problematic authentic.',
+    bio: 'Front-end engineer & problem solver. Keeping Problematic authentic.',
     respectadeo: 1.4,
     problemsSolved: 14,
     problemsPosted: 10,
@@ -695,6 +722,8 @@ function seedCommunity() {
       name: 'Arjun',
       handle: '@arjun',
       passwordHash: hashPassword('password'),
+      role: 'user',
+      isModerator: false,
       avatar: 'A',
       avatarBg: '#C2562F',
       bio: 'Senior UX architect & movement coach. Clarifying design, ergonomics & focus.',
@@ -710,6 +739,8 @@ function seedCommunity() {
       name: 'Meera',
       handle: '@meera',
       passwordHash: hashPassword('password'),
+      role: 'user',
+      isModerator: false,
       avatar: 'M',
       avatarBg: '#1F6F6B',
       bio: 'Neuro-ergonomics & database specialist. Deep work protocols and SQL tuning.',
@@ -725,6 +756,8 @@ function seedCommunity() {
       name: 'Nila',
       handle: '@nila',
       passwordHash: hashPassword('password'),
+      role: 'user',
+      isModerator: false,
       avatar: 'N',
       avatarBg: '#3B5BDB',
       bio: 'Mobile dev & acoustic DIYer. Debugging native builds and home mechanics.',
@@ -740,6 +773,8 @@ function seedCommunity() {
       name: 'Sanjay',
       handle: '@sanjay',
       passwordHash: hashPassword('password'),
+      role: 'user',
+      isModerator: false,
       avatar: 'S',
       avatarBg: '#8A5CF6',
       bio: 'Exploring distributed systems, daily life engineering & habit loops.',
@@ -924,9 +959,9 @@ function seedComments() {
       {
         id: 'sol_1_rohitha',
         authorId: 'user_rohitha',
-        author: 'Rohitha',
-        handle: '@rohitha',
-        avatar: 'R',
+        author: 'Max',
+        handle: '@max',
+        avatar: 'M',
         avatarBg: '#1F6F6B',
         text: 'This happens because older transitive dependencies force an older compileSdkVersion. In your android/variables.gradle, set compileSdkVersion = 34 and force androidx.core:core:1.12.0 in your build.gradle app dependencies block.',
         isAccepted: true,
@@ -1595,9 +1630,12 @@ export async function initializeStorage() {
     ? users.find((u) => u.id === session.userId) || users[0] || null
     : users[0] || null;
 
-  if (currentUser && (currentUser.id === 'user_rohitha' || currentUser.handle === '@rohitha')) {
-    currentUser.role = 'moderator';
-    currentUser.isModerator = true;
+  if (currentUser && currentUser.id === 'user_rohitha') {
+    currentUser.name = 'Max';
+    currentUser.handle = '@max';
+    currentUser.avatar = 'M';
+    currentUser.role = 'user';
+    currentUser.isModerator = false;
   }
 
   return {

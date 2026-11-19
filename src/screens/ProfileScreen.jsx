@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import Icon from '../components/Icons';
 import EditProfileSheet from '../components/EditProfileSheet';
 
-export default function ProfileScreen({ showToast }) {
+export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showToast }) {
   const {
     currentUser,
     posts,
@@ -38,7 +38,16 @@ export default function ProfileScreen({ showToast }) {
 
       <main id="main-content" className="screen-scroll" tabIndex={-1}>
         {/* User Profile Card */}
-        <div className="profile-user-card">
+        <div className="profile-user-card" style={{ position: 'relative' }}>
+          <button
+            type="button"
+            className="profile-settings-btn"
+            onClick={onOpenSettings}
+            aria-label="Settings"
+            title="Settings"
+          >
+            <Icon.Gear />
+          </button>
           <div className="profile-header-top">
             <div
               className="av profile-avatar"

@@ -5,7 +5,7 @@ import PostCard from '../components/PostCard';
 import CommentsSheet from '../components/CommentsSheet';
 import ShareModal from '../components/ShareModal';
 
-export default function FeedScreen({ onOpenNotifications, showToast }) {
+export default function FeedScreen({ onOpenNotifications, onOpenComposer, showToast }) {
   const {
     posts,
     currentUser,
@@ -56,10 +56,19 @@ export default function FeedScreen({ onOpenNotifications, showToast }) {
 
   return (
     <>
-      <header className="h">
+      <header className="h" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div className="logo">
           <span>Problematic</span>
         </div>
+        <button
+          type="button"
+          className="feed-header-create-btn"
+          onClick={onOpenComposer}
+          aria-label="Create Problem"
+          title="Create Problem"
+        >
+          <Icon.Plus size={24} />
+        </button>
       </header>
 
       <main id="main-content" tabIndex={-1} className="screen-scroll">

@@ -10,6 +10,7 @@ import OnboardingScreen from './screens/OnboardingScreen';
 import ComposerSheet from './components/ComposerSheet';
 import SplashScreen from './components/SplashScreen';
 import StoryLandingPage from './components/landing/StoryLandingPage';
+import SettingsScreen from './screens/SettingsScreen';
 
 const TAB_OFFSETS = { feed: 6, notifications: 64, profile: 122 };
 
@@ -28,6 +29,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('feed');
   const [viewMode, setViewMode] = useState('app');
   const [showSplash, setShowSplash] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
   const [composerSessionId, setComposerSessionId] = useState(0);
   const composerSessionRef = useRef(0);
@@ -35,6 +37,46 @@ export default function App() {
   const [toastMessage, setToastMessage] = useState(null);
   const toastTimerRef = useRef(null);
   const dockCreateBtnRef = useRef(null);
+
+  const [autoLayoutLock, setAutoLayoutLock] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('problematic_auto_layout_lock');
+      if (saved !== null) return saved === 'true';
+    }
+    return true;
+  });
+
+  const [navScale, setNavScale] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('problematic_nav_scale');
+      if (saved) return parseFloat(saved);
+      if (window.innerWidth <= 360) return 0.88;
+      if (window.innerWidth <= 430) return 1.0;
+      return 1.05;
+    }
+    return 1.0;
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('problematic_nav_scale', String(navScale));
+      document.documentElement.style.setProperty('--nav-scale', String(navScale));
+    }
+  }, [navScale]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('problematic_auto_layout_lock', String(autoLayoutLock));
+      if (autoLayoutLock) {
+        let optimal = 1.0;
+        if (window.innerWidth <= 360) optimal = 0.88;
+        else if (window.innerWidth <= 430) optimal = 1.0;
+        else optimal = 1.05;
+        setNavScale(optimal);
+        document.documentElement.style.setProperty('--ui-scale', '1.0');
+      }
+    }
+  }, [autoLayoutLock]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -152,6 +194,7 @@ export default function App() {
             {activeTab === 'feed' && (
               <FeedScreen
                 onOpenNotifications={() => setActiveTab('notifications')}
+                onOpenComposer={openComposer}
                 showToast={showToast}
               />
             )}
@@ -161,59 +204,67 @@ export default function App() {
             )}
 
             {activeTab === 'profile' && (
-              <ProfileScreen
-                onOpenNotifications={() => setActiveTab('notifications')}
-                onOpenOnboarding={() => setPreviewOnboarding(true)}
-                showToast={showToast}
-              />
+              showSettings ? (
+                <SettingsScreen
+                  onBack={() => setShowSettings(false)}
+                  navScale={navScale}
+                  setNavScale={setNavScale}
+                  autoLayoutLock={autoLayoutLock}
+                  setAutoLayoutLock={setAutoLayoutLock}
+                  onOpenOnboarding={() => setPreviewOnboarding(true)}
+                  showToast={showToast}
+                />
+              ) : (
+                <ProfileScreen
+                  onOpenNotifications={() => setActiveTab('notifications')}
+                  onOpenOnboarding={() => setPreviewOnboarding(true)}
+                  onOpenSettings={() => setShowSettings(true)}
+                  showToast={showToast}
+                />
+              )
             )}
 
-            {/* Dual-Cluster Dynamic Capsule Navigation */}
+            {/* Dynamic Capsule Navigation Dock (Centered, Sized by User/AutoLayout) */}
             <nav
               className="bnav"
               inert={showComposer ? '' : undefined}
               aria-hidden={showComposer ? 'true' : undefined}
             >
-              <div className="nav-dual-cluster">
-                {/* Cluster 1: Browsing Capsule */}
-                <div className="nav-capsule-main">
-                  <button
-                    className={`dock-tab ${activeTab === 'feed' ? 'active' : ''}`}
-                    aria-label="Home"
-                    aria-current={activeTab === 'feed' ? 'page' : undefined}
-                    onClick={() => setActiveTab('feed')}
-                  >
-                    <Icon.Home />
-                  </button>
-                  <button
-                    className={`dock-tab ${activeTab === 'notifications' ? 'active' : ''}`}
-                    aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
-                    aria-current={activeTab === 'notifications' ? 'page' : undefined}
-                    onClick={() => setActiveTab('notifications')}
-                  >
-                    <Icon.Bell />
-                    {unreadCount > 0 && (
-                      <span className="dock-unread-dot" />
-                    )}
-                  </button>
-                  <button
-                    className={`dock-tab ${activeTab === 'profile' ? 'active' : ''}`}
-                    aria-label="Profile"
-                    aria-current={activeTab === 'profile' ? 'page' : undefined}
-                    onClick={() => setActiveTab('profile')}
-                  >
-                    <Icon.User />
-                  </button>
-                </div>
-
-                {/* Cluster 2: Standalone Hero Action Orb */}
+              <div
+                className="nav-capsule-main"
+                style={{
+                  pointerEvents: 'auto',
+                  transform: `scale(${navScale})`,
+                  transformOrigin: 'bottom center',
+                  transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
                 <button
-                  className="nav-action-orb dock-create-btn"
-                  aria-label="Create Problem Post"
-                  title="Create Problem Post"
-                  onClick={openComposer}
+                  className={`dock-tab ${activeTab === 'feed' ? 'active' : ''}`}
+                  aria-label="Home"
+                  aria-current={activeTab === 'feed' ? 'page' : undefined}
+                  onClick={() => { setActiveTab('feed'); setShowSettings(false); }}
                 >
-                  <Icon.Plus />
+                  <Icon.Home />
+                </button>
+                <button
+                  className={`dock-tab ${activeTab === 'notifications' ? 'active' : ''}`}
+                  aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
+                  aria-current={activeTab === 'notifications' ? 'page' : undefined}
+                  onClick={() => { setActiveTab('notifications'); setShowSettings(false); }}
+                >
+                  <Icon.Bell />
+                  {unreadCount > 0 && (
+                    <span className="dock-unread-dot" />
+                  )}
+                </button>
+                <button
+                  className={`dock-tab ${activeTab === 'profile' && !showSettings ? 'active' : ''}`}
+                  aria-label="Profile"
+                  aria-current={activeTab === 'profile' && !showSettings ? 'page' : undefined}
+                  onClick={() => { setActiveTab('profile'); setShowSettings(false); }}
+                >
+                  <Icon.User />
                 </button>
               </div>
             </nav>

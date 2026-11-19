@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a beautiful, cinematic storytelling scroll landing page for Problematic (Murmur) illustrating its mission, mental/tech/physical problem sharing, and active moderation/verification architecture.
+**Goal:** Build a beautiful, cinematic storytelling scroll landing page for Problematic illustrating its mission, mental/tech/physical problem sharing, and active moderation/verification architecture.
 
 **Architecture:** A modular React landing page component (`StoryLandingPage.jsx`) structured in 5 narrative scroll acts with an interactive IntersectionObserver animation trigger system, standalone bespoke CSS (`LandingPage.css`), and seamless routing integration in `App.jsx` allowing users to tour the story and launch the live app.
 
 **Tech Stack:** React 18, Vite, Lucide Icons, CSS3 animations / custom transitions.
 
-**Spec:** [2026-11-19-storytelling-landing-page-design.md](file:///c:/Users/Unified/.gemini/antigravity/scratch/murmur-app/docs/superpowers/specs/2026-11-19-storytelling-landing-page-design.md)
+**Spec:** [2026-11-19-storytelling-landing-page-design.md](file:///c:/Users/Unified/.gemini/antigravity/scratch/problematic/docs/superpowers/specs/2026-11-19-storytelling-landing-page-design.md)
 
 ## Global Constraints
 

@@ -40,7 +40,7 @@ To make every user across the globe see everyone's posts in real-time, the backe
 ```bash
 # Clone and enter server
 git clone <your-repo>
-cd murmur-app/server
+cd problematic/server
 npm install
 
 # Start with PM2 for background process management & auto-restart

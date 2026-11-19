@@ -1,4 +1,4 @@
-# Storytelling Landing Page for Problematic (Murmur) Design Document
+# Storytelling Landing Page for Problematic Design Document
 
 **Date:** 2026-11-19  
 **Status:** Approved  
@@ -8,7 +8,7 @@
 
 ## 1. Intent & The Why
 
-Problematic (Murmur) is a safe-harbor social network built specifically for sharing, untangling, and resolving real-life challenges across mental health, technology/engineering hurdles, physical well-being, and daily life. Traditional social networks incentivize performative success, outrage, or unmoderated toxicity. People carry silent burdens because existing platforms feel unsafe or unhelpful.
+Problematic is a safe-harbor social network built specifically for sharing, untangling, and resolving real-life challenges across mental health, technology/engineering hurdles, physical well-being, and daily life. Traditional social networks incentivize performative success, outrage, or unmoderated toxicity. People carry silent burdens because existing platforms feel unsafe or unhelpful.
 
 The landing page needs to captivate visitors through an immersive storytelling scroll narrative: leading them through the weight of unvoiced problems, the fear of speaking up, the reassurance of active human moderation & verification, real community resonance, and a direct invitation into the active community app.
 

@@ -4930,6 +4930,321 @@ textarea::placeholder {
 }
 
 /* ========================================================================== */
+/*  Profile Theme Card (Simple Dark / Light Mode Switcher)                    */
+/* ========================================================================== */
+.profile-theme-card {
+  margin: 0 14px 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-theme-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-theme-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-subtle);
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.profile-theme-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-theme-heading {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.profile-theme-subheading {
+  font-size: 11.5px;
+  color: var(--text-sub);
+}
+
+.profile-theme-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-subtle);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  gap: 2px;
+}
+
+.profile-theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.profile-theme-toggle-btn:hover {
+  color: var(--text-main);
+}
+
+.profile-theme-toggle-btn.active {
+  background: var(--card-bg);
+  color: var(--text-main);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================================================== */
+/*  Light Mode Architecture                                                   */
+/* ========================================================================== */
+[data-theme="light"],
+.theme-light,
+.s.theme-light {
+  --app-bg: #F8F9FA;
+  --card-bg: #FFFFFF;
+  --surface-subtle: #F1F3F5;
+  --surface-subtle-hover: #E9ECEF;
+
+  --text-main: #0F172A;
+  --text-sub: #475569;
+  --text-muted: #64748B;
+
+  --border-light: rgba(0, 0, 0, 0.08);
+  --border-divider: rgba(0, 0, 0, 0.06);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --focus-ring: #0284C7;
+
+  --btn-pri-bg: #0F172A;
+  --btn-pri-border: 1px solid rgba(0, 0, 0, 0.2);
+  --btn-pri-text: #FFFFFF;
+  --btn-pri-hover: #1E293B;
+  --btn-pri-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] body,
+body[data-theme="light"],
+.theme-light {
+  background: #F8F9FA !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .feed-header,
+.theme-light .feed-header {
+  background: rgba(248, 249, 250, 0.9) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .h,
+.theme-light .h {
+  background: #F8F9FA !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .feed-brand-title,
+.theme-light .feed-brand-title {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .feed-header-create-btn,
+.theme-light .feed-header-create-btn {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .tweet-card,
+.theme-light .tweet-card,
+[data-theme="light"] .pc,
+.theme-light .pc,
+[data-theme="light"] .profile-user-card,
+.theme-light .profile-user-card,
+[data-theme="light"] .profile-theme-card,
+.theme-light .profile-theme-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .tweet-card:hover,
+.theme-light .tweet-card:hover {
+  border-color: rgba(0, 0, 0, 0.16) !important;
+}
+
+/* Light mode high-contrast domain pills (WCAG AA 4.5:1+) */
+[data-theme="light"] .tweet-domain-pill.domain-tech,
+.theme-light .tweet-domain-pill.domain-tech {
+  color: #0369A1 !important;
+  background: rgba(3, 105, 161, 0.08) !important;
+  border-color: rgba(3, 105, 161, 0.22) !important;
+}
+
+[data-theme="light"] .tweet-domain-pill.domain-mental,
+.theme-light .tweet-domain-pill.domain-mental {
+  color: #6D28D9 !important;
+  background: rgba(109, 40, 217, 0.08) !important;
+  border-color: rgba(109, 40, 217, 0.22) !important;
+}
+
+[data-theme="light"] .tweet-domain-pill.domain-physical,
+.theme-light .tweet-domain-pill.domain-physical {
+  color: #047857 !important;
+  background: rgba(4, 120, 87, 0.08) !important;
+  border-color: rgba(4, 120, 87, 0.22) !important;
+}
+
+[data-theme="light"] .tweet-domain-pill.domain-dailylife,
+.theme-light .tweet-domain-pill.domain-dailylife {
+  color: #B45309 !important;
+  background: rgba(180, 83, 9, 0.08) !important;
+  border-color: rgba(180, 83, 9, 0.22) !important;
+}
+
+[data-theme="light"] .bnav,
+.theme-light .bnav {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .nav-capsule-main .dock-tab,
+.theme-light .nav-capsule-main .dock-tab {
+  color: #64748B;
+}
+
+[data-theme="light"] .nav-capsule-main .dock-tab:hover,
+.theme-light .nav-capsule-main .dock-tab:hover {
+  color: #0F172A;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .nav-capsule-main .dock-tab.active,
+.theme-light .nav-capsule-main .dock-tab.active {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .nav-capsule-main .dock-tab.active svg,
+.theme-light .nav-capsule-main .dock-tab.active svg {
+  stroke: #0F172A !important;
+}
+
+[data-theme="light"] .nav-capsule-main .dock-tab.active::after,
+.theme-light .nav-capsule-main .dock-tab.active::after {
+  background: #0F172A !important;
+}
+
+[data-theme="light"] .settings-screen,
+.theme-light .settings-screen,
+[data-theme="light"] .chat-screen,
+.theme-light .chat-screen {
+  background: #F8F9FA !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .settings-group,
+.theme-light .settings-group {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .settings-radio-row.selected,
+.theme-light .settings-radio-row.selected {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-theme="light"] .settings-radio-circle.checked,
+.theme-light .settings-radio-circle.checked {
+  border-color: #0F172A !important;
+}
+
+[data-theme="light"] .settings-radio-dot,
+.theme-light .settings-radio-dot {
+  background: #0F172A !important;
+}
+
+[data-theme="light"] .settings-radio-title,
+.theme-light .settings-radio-title {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .settings-radio-desc,
+.theme-light .settings-radio-desc {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .settings-divider,
+.theme-light .settings-divider {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .messages-search-input,
+.theme-light .messages-search-input {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .composer-screen-independent,
+.theme-light .composer-screen-independent {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .composer-header-bar,
+.theme-light .composer-header-bar {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .composer-textarea,
+.theme-light .composer-textarea {
+  background: transparent !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .composer-bottom-bar,
+.theme-light .composer-bottom-bar {
+  background: #FFFFFF !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .composer-header-title,
+.theme-light .composer-header-title {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .composer-cancel-btn,
+.theme-light .composer-cancel-btn {
+  color: #64748B !important;
+}
+
+[data-theme="light"] .composer-author-name,
+.theme-light .composer-author-name {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .composer-author-handle,
+.theme-light .composer-author-handle {
+  color: #64748B !important;
+}
+
+/* ========================================================================== */
 /*  Accessibility: Prefers-Reduced-Motion Support                             */
 /* ========================================================================== */
 @media (prefers-reduced-motion: reduce) {

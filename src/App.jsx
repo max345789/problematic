@@ -25,6 +25,7 @@ export default function App() {
     pendingRequestsCount,
     hasOnboarded,
     completeOnboarding,
+    isDark,
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('feed');
@@ -168,9 +169,9 @@ export default function App() {
   }
 
   return (
-    <div className="mobile-app">
+    <div className={`mobile-app theme-${isDark ? 'dark' : 'light'}`} data-theme={isDark ? 'dark' : 'light'}>
       <a href="#main-content" className="skip-link">Skip to main content</a>
-      <div className="s">
+      <div className={`s theme-${isDark ? 'dark' : 'light'}`}>
         {/* ================= ONBOARDING SCREENS ================= */}
         {showOnboarding ? (
           <OnboardingScreen onComplete={handleFinishOnboarding} />

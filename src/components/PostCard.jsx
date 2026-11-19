@@ -72,17 +72,14 @@ export default function PostCard({
     ? comments.find((c) => c.id === post.acceptedSolutionId || c.isAccepted)
     : null;
 
-  // Extract tags from text or post.tags or post.category
-  const rawTags = post.tags || post.category || '';
-  const tagsList = rawTags
-    ? rawTags.split(' ').filter((t) => t.startsWith('#'))
-    : [];
+  // Extract domain from text or post.domain or category with word-boundary match to prevent false positives (e.g. environmental -> mental)
+  const rawCategory = post.tags || post.category || '';
 
   const postDomain = post.domain || (
-    rawTags.toLowerCase().includes('#tech') || rawTags.toLowerCase().includes('#android') || rawTags.toLowerCase().includes('#backend') || rawTags.toLowerCase().includes('#mobile') ? 'tech' :
-    rawTags.toLowerCase().includes('#mental') ? 'mental' :
-    rawTags.toLowerCase().includes('#physical') ? 'physical' :
-    rawTags.toLowerCase().includes('#daily') ? 'dailylife' : null
+    /\b#?(tech|android|backend|mobile|frontend)\b/i.test(rawCategory) ? 'tech' :
+    /\b#?mental\b/i.test(rawCategory) ? 'mental' :
+    /\b#?physical\b/i.test(rawCategory) ? 'physical' :
+    /\b#?(dailylife|daily)\b/i.test(rawCategory) ? 'dailylife' : null
   );
 
   const getDomainPill = (domain) => {
@@ -316,40 +313,22 @@ export default function PostCard({
         </div>
       )}
 
-      {/* Tags & Domain Pill */}
-      {(domainPill || tagsList.length > 0) && (
+      {/* Domain Pill */}
+      {domainPill && (
         <div className="tweet-tags">
-          {domainPill && (
-            <span
-              className="tweet-domain-pill"
-              style={{
-                color: domainPill.color,
-                background: domainPill.bg,
-                borderColor: domainPill.border,
-              }}
-            >
-              {domainPill.icon && <domainPill.icon size={12} className="domain-tag-icon" />}
-              <span>{domainPill.label}</span>
-            </span>
-          )}
-          {tagsList.map((tag, idx) => (
-            <span key={idx} className="tweet-tag">
-              {tag}
-            </span>
-          ))}
+          <span
+            className={`tweet-domain-pill domain-${postDomain || 'general'}`}
+            style={{
+              color: domainPill.color,
+              background: domainPill.bg,
+              borderColor: domainPill.border,
+            }}
+          >
+            {domainPill.icon && <domainPill.icon size={12} className="domain-tag-icon" />}
+            <span>{domainPill.label}</span>
+          </span>
         </div>
       )}
-
-      {/* Media attachment with rounded preview */}
-      {post.image ? (
-        <div className="tweet-image-wrapper">
-          <img
-            src={post.image}
-            alt="Attachment"
-            className="tweet-image-content"
-          />
-        </div>
-      ) : null}
 
       {/* Optional Poll */}
       {post.poll ? (

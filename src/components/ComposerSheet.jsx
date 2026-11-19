@@ -1,33 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Icon from './Icons';
-import { fileToCompressedDataUrl } from '../services/utils';
-
-const CATEGORIES = [
-  '#tech',
-  '#mental',
-  '#physical',
-  '#dailylife',
-  '#career',
-  '#mobile',
-  '#backend',
-  '#frontend',
-  '#general',
-];
 
 export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, onClose, onError }) {
   const [text, setText] = useState('');
-  const [selectedTag, setSelectedTag] = useState('#tech');
   const [pollOptions, setPollOptions] = useState(['', '']);
-  const [image, setImage] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [photoProcessing, setPhotoProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [showPoll, setShowPoll] = useState(false);
 
-  const fileInputRef = useRef(null);
   const sheetRef = useRef(null);
   const postBtnRef = useRef(null);
-  const photoReqCounterRef = useRef(0);
   const restoreTargetRef = useRef(restoreFocusEl);
   restoreTargetRef.current = restoreFocusEl;
   const isComposingRef = useRef(false);
@@ -55,8 +37,6 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
   // Restore keyboard focus only on actual composer unmount
   useEffect(() => {
     return () => {
-      // Invalidate any in-flight photo compression from this dismissed draft
-      photoReqCounterRef.current++;
       setTimeout(() => {
         if (restoreTargetRef.current && typeof restoreTargetRef.current.focus === 'function') {
           restoreTargetRef.current.focus();
@@ -170,44 +150,6 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
     }, 0);
   };
 
-  const handleImageFile = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file || photoProcessing || busy) return;
-
-    const currentReqId = ++photoReqCounterRef.current;
-    try {
-      setPhotoProcessing(true);
-      setError(null);
-      const dataUrl = await fileToCompressedDataUrl(file);
-      if (currentReqId === photoReqCounterRef.current) {
-        setImage(dataUrl);
-      }
-    } catch (err) {
-      if (currentReqId === photoReqCounterRef.current) {
-        const msg = err?.message || 'Could not process that image.';
-        setError(msg);
-        onError?.(msg);
-      }
-    } finally {
-      if (currentReqId === photoReqCounterRef.current) {
-        setPhotoProcessing(false);
-      }
-    }
-  };
-
-  const handleRemoveImage = () => {
-    if (busy) return;
-    photoReqCounterRef.current++;
-    setPhotoProcessing(false);
-    setImage(null);
-    setTimeout(() => {
-      if (!sheetRef.current?.contains(document.activeElement)) {
-        sheetRef.current?.querySelector('textarea:not([disabled]), input:not([disabled]), button:not([disabled])')?.focus();
-      }
-    }, 0);
-  };
-
   const safeSliceUnicode = (str, limit = 60) => {
     const codePoints = Array.from(str);
     return codePoints.length <= limit ? str : codePoints.slice(0, limit).join('');
@@ -215,7 +157,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
 
   const handlePublish = async (event) => {
     event?.preventDefault?.();
-    if (busy || photoProcessing) return;
+    if (busy) return;
     setError(null);
 
     const cleanText = text.trim();
@@ -237,19 +179,13 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
 
     try {
       setBusy(true);
-      let domain = 'general';
-      if (selectedTag.includes('mental')) domain = 'mental';
-      else if (selectedTag.includes('physical')) domain = 'physical';
-      else if (selectedTag.includes('dailylife') || selectedTag.includes('diy') || selectedTag.includes('home')) domain = 'dailylife';
-      else if (selectedTag.includes('tech') || selectedTag.includes('mobile') || selectedTag.includes('backend') || selectedTag.includes('frontend')) domain = 'tech';
-
       await onPublish({
         title: safeSliceUnicode(cleanText, 60),
         text: cleanText,
-        tags: selectedTag,
-        category: selectedTag,
-        domain,
-        image,
+        tags: '',
+        category: 'general',
+        domain: 'general',
+        image: null,
         poll,
       });
       // Parent App manages dismissal on success
@@ -265,7 +201,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
     }
   };
 
-  const canPost = !busy && !photoProcessing && text.trim().length > 0;
+  const canPost = !busy && text.trim().length > 0;
 
   return (
     <div
@@ -298,7 +234,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
             onClick={handlePublish}
             disabled={!canPost}
           >
-            {busy ? 'Posting…' : photoProcessing ? 'Processing…' : 'Post'}
+            {busy ? 'Posting…' : 'Post'}
           </button>
         </div>
 
@@ -308,7 +244,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
           role="status"
           aria-live="polite"
         >
-          {busy ? 'Publishing problem, please wait…' : photoProcessing ? 'Optimizing photo, please wait…' : ''}
+          {busy ? 'Publishing problem, please wait…' : ''}
         </div>
 
         {/* Error Notification live region kept mounted so screen readers announce changes */}
@@ -332,9 +268,6 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
             <span className="composer-author-name">{currentUser?.name || 'Anonymous'}</span>
             <span className="composer-author-handle">{currentUser?.handle || '@user'}</span>
           </div>
-          <div className="composer-tag-badge">
-            {selectedTag}
-          </div>
         </div>
 
         {/* Single Main Text Box (No Heading, No Auto-Focus) */}
@@ -353,22 +286,6 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
             />
           </div>
         </div>
-
-        {/* Image Attachment Preview */}
-        {image && (
-          <div className="composer-image-preview">
-            <img src={image} alt="Attachment" className="composer-preview-img" />
-            <button
-              type="button"
-              className="composer-remove-img-btn"
-              onClick={handleRemoveImage}
-              disabled={busy}
-              aria-label="Remove image"
-            >
-              <Icon.Close />
-            </button>
-          </div>
-        )}
 
         {/* Optional Community Poll */}
         {showPoll && (
@@ -429,53 +346,9 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
           </div>
         )}
 
-        {/* Topic / Category Selector */}
-        <div className="composer-category-section">
-          <span className="composer-category-label">Topic</span>
-          <div className="composer-category-scroll">
-            {CATEGORIES.map((cat) => (
-              <button
-                type="button"
-                key={cat}
-                onClick={() => {
-                  if (!busy) setSelectedTag(cat);
-                }}
-                disabled={busy}
-                aria-pressed={selectedTag === cat}
-                className={`composer-tag-chip ${selectedTag === cat ? 'active' : ''}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Toolbar: Photo + Poll Actions & Char Count */}
+        {/* Bottom Toolbar: Poll Action & Char Count */}
         <div className="composer-bottom-bar">
           <div className="composer-tools">
-            <button
-              type="button"
-              className={`composer-tool-btn ${image ? 'active' : ''}`}
-              onClick={() => {
-                if (!photoProcessing && !busy) fileInputRef.current?.click();
-              }}
-              disabled={busy}
-              aria-disabled={photoProcessing || busy}
-              aria-busy={photoProcessing}
-              title="Add photo from gallery"
-            >
-              <Icon.Photo />
-              <span>{photoProcessing ? 'Processing…' : image ? 'Change photo' : 'Add photo'}</span>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageFile}
-              disabled={busy}
-              style={{ display: 'none' }}
-            />
-
             <button
               type="button"
               className={`composer-tool-btn ${showPoll ? 'active' : ''}`}

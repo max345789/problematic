@@ -11,6 +11,8 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
     comments,
     saveProfile,
     logout,
+    isDark,
+    changeTheme,
   } = useApp();
 
   const [editing, setEditing] = useState(false);
@@ -120,6 +122,43 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
               }}
             >
               Log out
+            </button>
+          </div>
+        </div>
+
+        {/* ================= SIMPLE THEME TOGGLE (DARK / LIGHT MODE) ================= */}
+        <div className="profile-theme-card">
+          <div className="profile-theme-info">
+            <div className="profile-theme-icon-wrap" aria-hidden="true">
+              {isDark ? <Icon.Moon size={18} /> : <Icon.Sun size={18} />}
+            </div>
+            <div className="profile-theme-text-col">
+              <span className="profile-theme-heading">Appearance</span>
+              <span className="profile-theme-subheading">
+                {isDark ? 'Dark mode' : 'Light mode'}
+              </span>
+            </div>
+          </div>
+          <div className="profile-theme-toggle-group" role="group" aria-label="Theme mode selection">
+            <button
+              type="button"
+              role="button"
+              aria-pressed={!isDark}
+              className={`profile-theme-toggle-btn ${!isDark ? 'active' : ''}`}
+              onClick={() => changeTheme('light')}
+            >
+              <Icon.Sun size={14} />
+              <span>Light</span>
+            </button>
+            <button
+              type="button"
+              role="button"
+              aria-pressed={isDark}
+              className={`profile-theme-toggle-btn ${isDark ? 'active' : ''}`}
+              onClick={() => changeTheme('dark')}
+            >
+              <Icon.Moon size={14} />
+              <span>Dark</span>
             </button>
           </div>
         </div>

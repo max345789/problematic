@@ -545,7 +545,15 @@ export function AppProvider({ children }) {
   /* --------------------------------- theme -------------------------------- */
   const wallpaperSeqRef = useRef(0);
 
-  const isDark = theme !== 'default';
+  const isDark = theme !== 'light';
+
+  useEffect(() => {
+    const currentTheme = isDark ? 'dark' : 'light';
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      document.body.setAttribute('data-theme', currentTheme);
+    }
+  }, [isDark]);
 
   const changeTheme = useCallback(async (next) => {
     const marker = ++wallpaperSeqRef.current;
@@ -558,7 +566,7 @@ export function AppProvider({ children }) {
   }, []);
 
   const toggleDarkMode = useCallback(async () => {
-    const next = isDark ? 'default' : 'dark';
+    const next = isDark ? 'light' : 'dark';
     await changeTheme(next);
   }, [isDark, changeTheme]);
 

@@ -12,7 +12,9 @@
     "test:server": "node server/test.js",
     "sync": "npm run build && npx cap sync",
     "android": "npm run build && npx cap sync android && npx cap open android",
-    "android:build": "npm run build && npx cap sync android"
+    "android:build": "npm run build && npx cap sync android",
+    "playstore:build": "powershell -ExecutionPolicy Bypass -File ./publish_playstore.ps1",
+    "playstore:assets": "node --experimental-websocket ./capture_store_assets.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^6.2.0",

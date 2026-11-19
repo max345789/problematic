@@ -14,7 +14,7 @@
   "android": {
     "allowMixedContent": true,
     "captureInput": true,
-    "webContentsDebuggingEnabled": true,
+    "webContentsDebuggingEnabled": false,
     "mixedContentMode": 0,
     "backgroundColor": "#000000",
     "overrideUserAgent": "Problematic/1.0"

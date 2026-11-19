@@ -1,0 +1,35 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build the signed Android App Bundle (AAB)"
+  lane :build do
+    gradle(
+      task: "bundleRelease",
+      project_dir: "android/"
+    )
+  end
+
+  desc "Build and upload AAB to Google Play Internal Testing track"
+  lane :deploy_internal do
+    build
+    upload_to_play_store(
+      track: "internal",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build and upload AAB to Google Play Production track"
+  lane :deploy_production do
+    build
+    upload_to_play_store(
+      track: "production",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false
+    )
+  end
+end

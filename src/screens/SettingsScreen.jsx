@@ -381,6 +381,20 @@ export default function SettingsScreen({
               <span className="settings-tabular-metric">v1.0.0</span>
             </div>
             <div className="settings-divider" />
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="settings-action-btn"
+              style={{ textDecoration: 'none' }}
+            >
+              <div className="settings-action-text">
+                <div className="settings-label">Privacy policy</div>
+                <div className="settings-description">Data safety, user rights, and retention</div>
+              </div>
+              <Icon.ChevronRight size={18} />
+            </a>
+            <div className="settings-divider" />
             <button
               type="button"
               className="settings-logout-btn"

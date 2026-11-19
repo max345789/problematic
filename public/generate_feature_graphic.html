@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Problematic - Play Store Feature Graphic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      width: 1024px;
+      height: 500px;
+      overflow: hidden;
+      background: #080B11;
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .banner {
+      width: 1024px;
+      height: 500px;
+      position: relative;
+      background: radial-gradient(circle at 75% 30%, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.08) 35%, rgba(8, 11, 17, 1) 70%),
+                  linear-gradient(135deg, #07090E 0%, #0C1019 50%, #080B11 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 72px;
+      overflow: hidden;
+    }
+    /* Subtle background grid pattern */
+    .banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    /* Ambient glow orb */
+    .glow-orb {
+      position: absolute;
+      right: 120px;
+      top: 50px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(99, 102, 241, 0.1) 50%, transparent 70%);
+      filter: blur(40px);
+      pointer-events: none;
+    }
+    .left-content {
+      position: relative;
+      z-index: 2;
+      max-width: 540px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #93C5FD;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #3B82F6;
+      box-shadow: 0 0 10px #3B82F6;
+    }
+    .title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-style: italic;
+      font-size: 78px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+      line-height: 0.95;
+      margin-bottom: 16px;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    }
+    .subtitle {
+      font-size: 19px;
+      line-height: 1.45;
+      color: #94A3B8;
+      font-weight: 400;
+      margin-bottom: 28px;
+    }
+    .features-row {
+      display: flex;
+      gap: 20px;
+    }
+    .feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #E2E8F0;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .feature-pill svg {
+      color: #38BDF8;
+    }
+    /* Right side visual showcase */
+    .right-visual {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-stack {
+      position: relative;
+      width: 280px;
+      height: 340px;
+    }
+    .mock-card {
+      position: absolute;
+      width: 260px;
+      border-radius: 20px;
+      background: rgba(18, 22, 34, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      backdrop-filter: blur(16px);
+    }
+    .card-front {
+      top: 40px;
+      right: 0;
+      z-index: 3;
+      transform: rotate(-3deg);
+    }
+    .card-back {
+      top: 0px;
+      right: 25px;
+      z-index: 2;
+      opacity: 0.6;
+      transform: rotate(4deg);
+      background: rgba(14, 17, 26, 0.7);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #FFF;
+      font-size: 14px;
+    }
+    .user-info .name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFF;
+    }
+    .user-info .handle {
+      font-size: 11px;
+      color: #64748B;
+    }
+    .problem-snippet {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #CBD5E1;
+      margin-bottom: 16px;
+    }
+    .rd-score-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+    .rd-score-badge span:first-child {
+      font-size: 11px;
+      color: #93C5FD;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .rd-score-badge span:last-child {
+      font-size: 13px;
+      color: #60A5FA;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">
+    <div class="glow-orb"></div>
+    <div class="left-content">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Global Problem Solving
+      </div>
+      <h1 class="title">Problematic</h1>
+      <p class="subtitle">
+        Share real-world problems. Discover verified community solutions. Earn Respectadeo (RD) scores.
+      </p>
+      <div class="features-row">
+        <div class="feature-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          3-Agent AI Moderated
+        </div>
+        <div class="feature-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path></svg>
+          Worldwide Broadcast
+        </div>
+        <div class="feature-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          RD Reputation System
+        </div>
+      </div>
+    </div>
+    
+    <div class="right-visual">
+      <div class="card-stack">
+        <div class="mock-card card-back">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #10B981, #059669);">K</div>
+            <div class="user-info">
+              <div class="name">Kavya R.</div>
+              <div class="handle">@kavya &bull; 1h ago</div>
+            </div>
+          </div>
+          <div class="problem-snippet">
+            Urban hydroponic system keeps getting algae blooms in direct sunlight...
+          </div>
+        </div>
+
+        <div class="mock-card card-front">
+          <div class="card-header">
+            <div class="avatar">A</div>
+            <div class="user-info">
+              <div class="name">Alex Chen</div>
+              <div class="handle">@alexchen &bull; Solution Verified</div>
+            </div>
+          </div>
+          <div class="problem-snippet">
+            "Used food-grade opaque UV wrap around reservoirs. Algae eliminated in 48 hours without chemicals."
+          </div>
+          <div class="rd-score-badge">
+            <span>Respectadeo Reward</span>
+            <span>+0.1 RD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

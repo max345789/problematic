@@ -321,7 +321,7 @@ export default function CommentsSheet({
                   {isDisqualified && (
                     <div style={{ margin: '4px 0 6px' }}>
                       <span className="badge-disqualified">
-                        Filtered by community moderation (Off-topic)
+                        Filtered by moderation (Off-topic)
                       </span>
                     </div>
                   )}

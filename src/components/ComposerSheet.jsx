@@ -287,12 +287,12 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
           </div>
         </div>
 
-        {/* Optional Community Poll */}
+        {/* Optional Poll */}
         {showPoll && (
           <div className="composer-poll-card">
             <div className="composer-poll-header">
               <div className="composer-poll-title">
-                <Icon.Poll /> Community poll
+                <Icon.Poll /> Poll
               </div>
               <button
                 type="button"
@@ -357,7 +357,7 @@ export default function ComposerSheet({ currentUser, restoreFocusEl, onPublish, 
               }}
               disabled={busy}
               aria-pressed={showPoll}
-              title={showPoll ? 'Remove poll' : 'Add a community poll'}
+              title={showPoll ? 'Remove poll' : 'Add a poll'}
             >
               <Icon.Poll />
               <span>{showPoll ? 'Remove poll' : 'Add poll'}</span>

@@ -5,20 +5,20 @@ const SLIDES = [
   {
     id: 'problems',
     stepNumber: '01',
-    title: ['SHARE PROBLEMS,', 'FIND SOLUTIONS'],
-    subtitle: 'A borderless worldwide network where every challenge gets solved without follow gates.',
+    title: ['SHARE PAINS,', 'REAL THOUGHTS'],
+    subtitle: 'A social platform not for entertainment, but to share your genuine thoughts, pains, issues, and struggles.',
   },
   {
     id: 'quality',
     stepNumber: '02',
-    title: ['QUALITY &', 'SPAM-FREE'],
-    subtitle: 'Active community moderation keeps discussions authentic, focused, and free of noise.',
+    title: ['AUTHENTIC &', 'NOISE-FREE'],
+    subtitle: 'No algorithms pushing entertainment or vanity metrics. Genuine discussions where being real comes first.',
   },
   {
     id: 'solutions',
     stepNumber: '03',
-    title: ['HELP OTHERS,', 'SHARE KNOWLEDGE'],
-    subtitle: 'Collaborate to solve real-world challenges. When problem authors accept your answer, it is marked as the verified solution.',
+    title: ['HELP OTHERS,', 'FIND SOLUTIONS'],
+    subtitle: 'Connect with people navigating the same issues. Exchange perspectives, offer empathy, and solve problems together.',
   },
 ];
 

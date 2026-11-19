@@ -67,7 +67,7 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
                 {currentUser?.handle || '@user'}
               </div>
               <div className="profile-user-bio">
-                {currentUser?.bio || 'Problem solver & community collaborator.'}
+                {currentUser?.bio || 'Sharing real thoughts, pains, and everyday problems.'}
               </div>
               <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span
@@ -154,7 +154,7 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
               marginBottom: 10,
             }}
           >
-            Community activity
+            Activity & Standing
           </div>
           <div className="rd-metrics-row" style={{ marginTop: 0 }}>
             <div className="rd-metric-item">

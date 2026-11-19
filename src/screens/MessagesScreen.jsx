@@ -326,7 +326,7 @@ export default function MessagesScreen({
             </div>
 
             <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 14 }}>
-              Select a community member or problem solver to message:
+              Select someone to message:
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto' }}>

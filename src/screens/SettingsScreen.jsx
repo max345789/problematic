@@ -11,7 +11,7 @@ const PERMISSION_OPTIONS = [
   {
     id: 'everyone',
     title: 'Everyone',
-    desc: 'Anyone in the community can send messages directly into your inbox.',
+    desc: 'Anyone on the platform can send messages directly into your inbox.',
   },
   {
     id: 'nobody',

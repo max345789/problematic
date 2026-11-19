@@ -162,10 +162,10 @@ export function AppProvider({ children }) {
     setUsers((prev) => [...prev.filter((u) => u.id !== cleanUser.id), cleanUser]);
     const welcome = {
       type: 'welcome',
-      name: 'Problematic Community',
+      name: 'Problematic',
       avatar: 'P',
       avatarBg: '#1F6F6B',
-      text: 'Welcome to Problematic. Broadcast your first problem or help others solve theirs!',
+      text: 'Welcome to Problematic. A social platform to share your thoughts, pains, and real issues.',
       postId: null,
       unread: true,
     };

@@ -946,17 +946,20 @@ svg {
   box-shadow: none !important;
 }
 
-/* Downside Triangle Like Button (Fills with white when pressed) */
+/* Downside Triangle Like Button (Fills with plain white inside, no glow) */
 .tweet-like-btn {
   color: #71767B;
   background: transparent;
   border-color: #2F3336;
+  box-shadow: none !important;
+  filter: none !important;
 }
 .tweet-like-btn:hover {
   color: #FFFFFF;
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.32);
   box-shadow: none !important;
+  filter: none !important;
 }
 .tweet-like-btn:hover svg {
   stroke: #FFFFFF;
@@ -965,14 +968,22 @@ svg {
 .tweet-like-btn.liked,
 .b.liked {
   color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.2) !important;
+  background: transparent !important;
+  border-color: #2F3336 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+.tweet-like-btn.liked:hover,
+.b.liked:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: #2F3336 !important;
+  box-shadow: none !important;
 }
 .tweet-like-btn.liked svg,
 .b.liked svg {
   fill: #FFFFFF !important;
   stroke: #FFFFFF !important;
+  filter: none !important;
   animation: heartPop 0.35s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
 }
 

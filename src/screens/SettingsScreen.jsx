@@ -11,7 +11,7 @@ export default function SettingsScreen({
   onOpenOnboarding,
   showToast,
 }) {
-  const { currentUser, saveProfile, logout, posts, comments } = useApp();
+  const { currentUser, saveProfile, logout, posts, reload } = useApp();
   const [serverStatus, setServerStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [screenInfo, setScreenInfo] = useState({ width: 0, height: 0, dpr: 1 });
 
@@ -20,30 +20,25 @@ export default function SettingsScreen({
   const handlePermissionChange = async (perm) => {
     try {
       await saveProfile({ messagingPermission: perm });
-      const label = perm === 'everyone' ? 'Everyone' : perm === 'nobody' ? 'Nobody (Closed)' : 'Message Requests';
+      const label = perm === 'everyone' ? 'Everyone' : perm === 'nobody' ? 'Closed' : 'Message requests';
       showToast?.(`Direct message privacy set to: ${label}`);
-    } catch (err) {
+    } catch {
       showToast?.('Could not update privacy setting.');
     }
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setScreenInfo({
-        width: window.innerWidth,
-        height: window.innerHeight,
-        dpr: window.devicePixelRatio ? Math.round(window.devicePixelRatio * 100) / 100 : 1,
-      });
-
-      const handleResize = () => {
+      const updateScreen = () => {
         setScreenInfo({
           width: window.innerWidth,
           height: window.innerHeight,
           dpr: window.devicePixelRatio ? Math.round(window.devicePixelRatio * 100) / 100 : 1,
         });
       };
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      updateScreen();
+      window.addEventListener('resize', updateScreen);
+      return () => window.removeEventListener('resize', updateScreen);
     }
   }, []);
 
@@ -60,7 +55,9 @@ export default function SettingsScreen({
       }
     };
     checkHealth();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleSliderChange = (e) => {
@@ -68,7 +65,7 @@ export default function SettingsScreen({
     setNavScale(val);
     if (autoLayoutLock) {
       setAutoLayoutLock(false);
-      showToast?.('Custom nav size applied (Auto Layout unlocked).');
+      showToast?.('Custom scale applied. Auto layout unlocked.');
     }
   };
 
@@ -76,27 +73,36 @@ export default function SettingsScreen({
     const next = !autoLayoutLock;
     setAutoLayoutLock(next);
     if (next) {
-      // Calculate optimal recommended scale based on device width
       let optimal = 1.0;
       if (screenInfo.width <= 360) optimal = 0.88;
       else if (screenInfo.width <= 430) optimal = 1.0;
       else optimal = 1.08;
       setNavScale(optimal);
-      showToast?.(`Auto Layout locked: ${Math.round(optimal * 100)}% optimal scale.`);
+      showToast?.(`Auto layout locked: ${Math.round(optimal * 100)}% optimal scale.`);
     } else {
-      showToast?.('Auto Layout unlocked for manual tuning.');
+      showToast?.('Auto layout unlocked.');
     }
   };
 
   const setPreset = (val) => {
     setNavScale(val);
     if (autoLayoutLock) setAutoLayoutLock(false);
-    showToast?.(`Nav bar size set to ${Math.round(val * 100)}%`);
+    showToast?.(`Scale set to ${Math.round(val * 100)}%`);
   };
 
-  const handleClearCache = () => {
+  const handleClearCache = async () => {
     try {
-      showToast?.('Cache cleaned. Local database refreshed.');
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        const cacheKeys = await window.caches.keys();
+        await Promise.all(cacheKeys.map((k) => window.caches.delete(k)));
+      }
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+      if (typeof reload === 'function') {
+        await reload();
+      }
+      showToast?.('Local cache purged. State refreshed.');
     } catch {
       showToast?.('Could not clear cache.');
     }
@@ -105,7 +111,7 @@ export default function SettingsScreen({
   const getScaleLabel = (scale) => {
     if (scale <= 0.88) return 'Compact';
     if (scale >= 1.12) return 'Spacious';
-    return 'Recommended';
+    return 'Default';
   };
 
   return (
@@ -122,142 +128,96 @@ export default function SettingsScreen({
         <div className="logo">
           <span>Settings</span>
         </div>
-        <div style={{ width: 36 }} /> {/* Balance spacer */}
+        <div style={{ width: 36 }} />
       </header>
 
       <main className="screen-scroll settings-content" tabIndex={-1}>
-        {/* Section 1: Display & Navigation Bar Tuning */}
-        <div className="settings-card">
-          <div className="settings-card-header">
-            <div className="settings-icon-pill">
-              <Icon.Sliders />
-            </div>
-            <div>
-              <div className="settings-card-title">Navigation & Layout</div>
-              <div className="settings-card-subtitle">Adjust navigation dock & UI dimensions</div>
-            </div>
-          </div>
-
-          {/* Auto Layout Lock Toggle */}
-          <div className="settings-toggle-row" onClick={handleToggleAutoLock}>
-            <div className="settings-toggle-info">
-              <div className="settings-row-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Icon.Lock size={16} />
-                <span>Auto Layout Lock</span>
+        {/* Navigation & Layout Section */}
+        <section className="settings-section">
+          <div className="settings-section-title">Navigation & dock</div>
+          <div className="settings-group">
+            {/* Auto Layout Lock Toggle */}
+            <div
+              className="settings-row settings-row-interactive"
+              onClick={handleToggleAutoLock}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleToggleAutoLock();
+                }
+              }}
+              aria-pressed={autoLayoutLock}
+            >
+              <div className="settings-row-text">
+                <div className="settings-label">Auto layout lock</div>
+                <div className="settings-description">
+                  {autoLayoutLock
+                    ? `Locked for ${screenInfo.width}×${screenInfo.height} (${screenInfo.dpr}x DPR)`
+                    : `Lock recommended scale for ${screenInfo.width}×${screenInfo.height}`}
+                </div>
               </div>
-              <div className="settings-row-desc">
-                Automatically lock recommended UI element sizes for your screen ({screenInfo.width}×{screenInfo.height})
+              <div className={`settings-switch ${autoLayoutLock ? 'active' : ''}`} aria-hidden="true">
+                <div className="settings-switch-thumb" />
               </div>
             </div>
-            <div className={`settings-switch ${autoLayoutLock ? 'active' : ''}`}>
-              <div className="settings-switch-thumb" />
-            </div>
-          </div>
 
-          {autoLayoutLock && (
-            <div className="settings-badge-note">
-              <span className="settings-pulse-dot" />
-              <span>Optimal layout locked for {screenInfo.width}px viewport @ {screenInfo.dpr}x DPR</span>
-            </div>
-          )}
+            <div className="settings-divider" />
 
-          {/* Swiping Bar for Nav Bar Scale */}
-          <div className="settings-slider-section">
-            <div className="settings-slider-header">
-              <span className="settings-slider-title">Nav Bar Size</span>
-              <span className="settings-slider-badge">
-                {Math.round(navScale * 100)}% • {getScaleLabel(navScale)}
-              </span>
-            </div>
+            {/* Slider & Presets */}
+            <div className="settings-slider-card">
+              <div className="settings-slider-header">
+                <span className="settings-label">Dock scale</span>
+                <span className="settings-tabular-metric">
+                  {Math.round(navScale * 100)}% · {getScaleLabel(navScale)}
+                </span>
+              </div>
 
-            <div className="settings-slider-track-wrap">
-              <input
-                type="range"
-                className="settings-range-slider"
-                min="0.75"
-                max="1.30"
-                step="0.05"
-                value={navScale}
-                onChange={handleSliderChange}
-                aria-label="Navigation Bar Size"
-              />
-            </div>
+              <div className="settings-slider-track-wrap">
+                <input
+                  type="range"
+                  className="settings-range-slider"
+                  min="0.75"
+                  max="1.30"
+                  step="0.05"
+                  value={navScale}
+                  onChange={handleSliderChange}
+                  aria-label="Navigation dock scale"
+                />
+              </div>
 
-            {/* Quick Presets */}
-            <div className="settings-presets-row">
-              <button
-                type="button"
-                className={`settings-preset-btn ${Math.abs(navScale - 0.85) < 0.03 ? 'active' : ''}`}
-                onClick={() => setPreset(0.85)}
-              >
-                Compact (85%)
-              </button>
-              <button
-                type="button"
-                className={`settings-preset-btn ${Math.abs(navScale - 1.0) < 0.03 ? 'active' : ''}`}
-                onClick={() => setPreset(1.0)}
-              >
-                Default (100%)
-              </button>
-              <button
-                type="button"
-                className={`settings-preset-btn ${Math.abs(navScale - 1.15) < 0.03 ? 'active' : ''}`}
-                onClick={() => setPreset(1.15)}
-              >
-                Spacious (115%)
-              </button>
-            </div>
-
-            {/* Live Interactive Dock Preview */}
-            <div className="settings-dock-preview-wrap">
-              <div className="settings-preview-label">Live Dock Preview</div>
-              <div
-                className="settings-preview-capsule"
-                style={{ transform: `scale(${navScale})` }}
-              >
-                <div className="preview-tab active"><Icon.Home /></div>
-                <div className="preview-tab"><Icon.Bell /></div>
-                <div className="preview-tab"><Icon.User /></div>
+              <div className="settings-presets-row" role="group" aria-label="Scale presets">
+                <button
+                  type="button"
+                  className={`settings-preset-btn ${Math.abs(navScale - 0.85) < 0.03 ? 'active' : ''}`}
+                  onClick={() => setPreset(0.85)}
+                >
+                  85% Compact
+                </button>
+                <button
+                  type="button"
+                  className={`settings-preset-btn ${Math.abs(navScale - 1.0) < 0.03 ? 'active' : ''}`}
+                  onClick={() => setPreset(1.0)}
+                >
+                  100% Default
+                </button>
+                <button
+                  type="button"
+                  className={`settings-preset-btn ${Math.abs(navScale - 1.15) < 0.03 ? 'active' : ''}`}
+                  onClick={() => setPreset(1.15)}
+                >
+                  115% Spacious
+                </button>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Section 2: Account & Security */}
-        <div className="settings-card">
-          <div className="settings-card-header">
-            <div className="settings-icon-pill">
-              <Icon.User />
-            </div>
-            <div>
-              <div className="settings-card-title">Account</div>
-              <div className="settings-card-subtitle">{currentUser?.name || 'Problem Solver'}</div>
-            </div>
-          </div>
-
-          <div className="settings-row-static">
-            <span className="settings-row-label">Username Handle</span>
-            <span className="settings-value-pill">{currentUser?.handle?.startsWith('@') ? currentUser.handle : `@${currentUser?.handle || 'user'}`}</span>
-          </div>
-          <div className="settings-row-static">
-            <span className="settings-row-label">Broadcasted Problems</span>
-            <span className="settings-value-pill">{posts.length}</span>
-          </div>
-        </div>
-
-        {/* Section: Direct Message Permissions & Privacy */}
-        <div className="settings-card">
-          <div className="settings-card-header">
-            <div className="settings-icon-pill">
-              <Icon.Message />
-            </div>
-            <div>
-              <div className="settings-card-title">Direct Messages Privacy</div>
-              <div className="settings-card-subtitle">Control who can send you messages</div>
-            </div>
-          </div>
-
-          <div className="settings-permission-options" role="radiogroup" aria-label="Direct Messages Privacy">
+        {/* Direct Messages Section */}
+        <section className="settings-section">
+          <div className="settings-section-title">Direct messages</div>
+          <div className="settings-group" role="radiogroup" aria-label="Direct messages privacy">
             <label
               className={`settings-radio-row ${currentPermission === 'requests' ? 'selected' : ''}`}
             >
@@ -273,12 +233,14 @@ export default function SettingsScreen({
                 {currentPermission === 'requests' && <div className="settings-radio-dot" />}
               </div>
               <div className="settings-radio-text">
-                <div className="settings-radio-title">Message Requests (Recommended)</div>
+                <div className="settings-radio-title">Message requests (Recommended)</div>
                 <div className="settings-radio-desc">
-                  Messages from new profiles arrive as requests. You approve before chatting.
+                  Messages from new profiles require your approval before opening a chat.
                 </div>
               </div>
             </label>
+
+            <div className="settings-divider" />
 
             <label
               className={`settings-radio-row ${currentPermission === 'everyone' ? 'selected' : ''}`}
@@ -297,10 +259,12 @@ export default function SettingsScreen({
               <div className="settings-radio-text">
                 <div className="settings-radio-title">Everyone</div>
                 <div className="settings-radio-desc">
-                  Anyone in the Problematic community can message you directly into your Inbox.
+                  Anyone in the community can send messages directly into your inbox.
                 </div>
               </div>
             </label>
+
+            <div className="settings-divider" />
 
             <label
               className={`settings-radio-row ${currentPermission === 'nobody' ? 'selected' : ''}`}
@@ -317,98 +281,109 @@ export default function SettingsScreen({
                 {currentPermission === 'nobody' && <div className="settings-radio-dot" />}
               </div>
               <div className="settings-radio-text">
-                <div className="settings-radio-title">Nobody (Closed)</div>
+                <div className="settings-radio-title">Closed</div>
                 <div className="settings-radio-desc">
-                  Disable incoming direct messages completely. No one can message you.
+                  Disable incoming direct messages completely.
                 </div>
               </div>
             </label>
           </div>
-        </div>
+        </section>
 
-        {/* Section 3: Server & Network */}
-        <div className="settings-card">
-          <div className="settings-card-header">
-            <div className="settings-icon-pill">
-              <Icon.Send />
+        {/* Account Section */}
+        <section className="settings-section">
+          <div className="settings-section-title">Account</div>
+          <div className="settings-group">
+            <div className="settings-row">
+              <span className="settings-label">Username</span>
+              <span className="settings-tabular-metric">
+                {currentUser?.handle?.startsWith('@') ? currentUser.handle : `@${currentUser?.handle || 'user'}`}
+              </span>
             </div>
-            <div>
-              <div className="settings-card-title">Network & Server</div>
-              <div className="settings-card-subtitle">REST API & Synchronization</div>
-            </div>
-          </div>
-
-          <div className="settings-row-static">
-            <span className="settings-row-label">Host Domain</span>
-            <span className="settings-value-pill">api.dabcloud.in</span>
-          </div>
-          <div className="settings-row-static">
-            <span className="settings-row-label">Service Status</span>
-            <span className={`settings-status-tag ${serverStatus}`}>
-              {serverStatus === 'online' ? '● Online (HTTP 200)' : serverStatus === 'checking' ? 'Checking...' : 'Offline'}
-            </span>
-          </div>
-        </div>
-
-        {/* Section 4: Data & Maintenance */}
-        <div className="settings-card">
-          <div className="settings-card-header">
-            <div className="settings-icon-pill">
-              <Icon.Refresh />
-            </div>
-            <div>
-              <div className="settings-card-title">Maintenance</div>
-              <div className="settings-card-subtitle">Cache and walkthrough controls</div>
+            <div className="settings-divider" />
+            <div className="settings-row">
+              <span className="settings-label">Broadcasted problems</span>
+              <span className="settings-tabular-metric">{posts.length}</span>
             </div>
           </div>
+        </section>
 
-          <button
-            type="button"
-            className="settings-action-row"
-            onClick={handleClearCache}
-          >
-            <div className="settings-row-label">Clean Cache</div>
-            <div className="settings-action-desc">Purge stale cache & verify data</div>
-          </button>
-
-          <button
-            type="button"
-            className="settings-action-row"
-            onClick={() => {
-              onBack?.();
-              onOpenOnboarding?.();
-            }}
-          >
-            <div className="settings-row-label">Replay Onboarding</div>
-            <div className="settings-action-desc">View the welcome guide again</div>
-          </button>
-        </div>
-
-        {/* Section 5: About */}
-        <div className="settings-card" style={{ textAlign: 'center', padding: '24px 16px' }}>
-          <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-main)', letterSpacing: '-0.3px' }}>
-            Problematic
+        {/* System & Network Section */}
+        <section className="settings-section">
+          <div className="settings-section-title">System & network</div>
+          <div className="settings-group">
+            <div className="settings-row">
+              <span className="settings-label">API endpoint</span>
+              <span className="settings-tabular-metric">api.dabcloud.in</span>
+            </div>
+            <div className="settings-divider" />
+            <div className="settings-row">
+              <span className="settings-label">Server status</span>
+              <div className={`settings-status-pill ${serverStatus}`}>
+                <span className="settings-status-dot" />
+                <span>
+                  {serverStatus === 'online' ? 'Online' : serverStatus === 'checking' ? 'Checking' : 'Offline'}
+                </span>
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
-            Version 1.0.0
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
-            Designed for focused, noise-free problem solving.
-          </div>
+        </section>
 
-          <button
-            type="button"
-            className="gh profile-btn danger"
-            style={{ marginTop: 20, width: '100%' }}
-            onClick={async () => {
-              await logout();
-              onBack?.();
-              showToast?.('Logged out successfully.');
-            }}
-          >
-            <Icon.LogOut size={16} /> Sign out
-          </button>
-        </div>
+        {/* Maintenance Section */}
+        <section className="settings-section">
+          <div className="settings-section-title">Maintenance</div>
+          <div className="settings-group">
+            <button
+              type="button"
+              className="settings-action-btn"
+              onClick={handleClearCache}
+            >
+              <div className="settings-action-text">
+                <div className="settings-label">Clean cache</div>
+                <div className="settings-description">Purge local cache and sync fresh state</div>
+              </div>
+              <Icon.ChevronRight size={18} />
+            </button>
+            <div className="settings-divider" />
+            <button
+              type="button"
+              className="settings-action-btn"
+              onClick={() => {
+                onBack?.();
+                onOpenOnboarding?.();
+              }}
+            >
+              <div className="settings-action-text">
+                <div className="settings-label">Replay onboarding</div>
+                <div className="settings-description">Review the introductory walkthrough</div>
+              </div>
+              <Icon.ChevronRight size={18} />
+            </button>
+          </div>
+        </section>
+
+        {/* App Info & Sign out */}
+        <section className="settings-section">
+          <div className="settings-group">
+            <div className="settings-row">
+              <span className="settings-label">Problematic</span>
+              <span className="settings-tabular-metric">v1.0.0</span>
+            </div>
+            <div className="settings-divider" />
+            <button
+              type="button"
+              className="settings-logout-btn"
+              onClick={async () => {
+                await logout();
+                onBack?.();
+                showToast?.('Logged out successfully.');
+              }}
+            >
+              <Icon.LogOut size={16} />
+              <span>Sign out</span>
+            </button>
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -3642,7 +3642,7 @@ textarea::placeholder {
 }
 
 /* ========================================================================== */
-/*  Settings Screen & Nav Bar Size Adjustment Slider Styles                   */
+/*  Settings Screen (Unslopped iOS / Linear Design System)                    */
 /* ========================================================================== */
 .settings-screen {
   display: flex;
@@ -3674,104 +3674,104 @@ textarea::placeholder {
 }
 
 .settings-back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .settings-content {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-bottom: 120px;
+  gap: 24px;
+  padding-bottom: 128px;
 }
 
-.settings-card {
-  background: #16181C;
-  border: 1px solid #2F3336;
-  border-radius: 18px;
-  padding: 18px;
+.settings-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 
-.settings-card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 2px;
-}
-
-.settings-icon-pill {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #202327;
-  border: 1px solid #2F3336;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #E7E9EA;
-  flex-shrink: 0;
-}
-
-.settings-card-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #E7E9EA;
-}
-
-.settings-card-subtitle {
+.settings-section-title {
   font-size: 12px;
-  color: #71767B;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.02em;
+  padding: 0 4px;
 }
 
-/* Auto Layout Lock Toggle Row */
-.settings-toggle-row {
+.settings-group {
+  background: #14171F;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  width: 100%;
+}
+
+.settings-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
-  background: #202327;
-  border: 1px solid #2F3336;
-  border-radius: 12px;
+  padding: 14px 16px;
+  min-height: 48px;
+}
+
+.settings-row-interactive {
   cursor: pointer;
   user-select: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease;
 }
 
-.settings-toggle-row:hover {
-  background: #272B30;
-  border-color: #3E4347;
+.settings-row-interactive:hover,
+.settings-row-interactive:focus-visible {
+  background: #191D27;
+  outline: none;
 }
 
-.settings-toggle-info {
+.settings-row-text {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   padding-right: 12px;
 }
 
-.settings-row-label {
+.settings-label {
   font-size: 14px;
-  font-weight: 600;
-  color: #E7E9EA;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1.3;
 }
 
-.settings-row-desc {
+.settings-description {
   font-size: 12px;
-  color: #71767B;
+  font-weight: 400;
+  color: #9CA3AF;
   line-height: 1.35;
 }
 
+.settings-tabular-metric {
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  color: #9CA3AF;
+  letter-spacing: -0.01em;
+}
+
+/* Switch */
 .settings-switch {
-  width: 46px;
-  height: 26px;
-  border-radius: 999px;
-  background: #2F3336;
-  border: 1px solid #3E4347;
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: #1F2430;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
-  transition: background 0.25s ease, border-color 0.25s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -3784,44 +3784,24 @@ textarea::placeholder {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #16181C;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #6B7280;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
 }
 
 .settings-switch.active .settings-switch-thumb {
-  transform: translateX(20px);
+  transform: translateX(16px);
+  background: #000000;
 }
 
-.settings-badge-note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #202327;
-  border: 1px solid #2F3336;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 12px;
-  color: #E7E9EA;
-}
-
-.settings-pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10B981;
-  box-shadow: 0 0 8px #10B981;
-  flex-shrink: 0;
-}
-
-/* Nav Bar Size Swiping Slider */
-.settings-slider-section {
+/* Slider Section inside Group */
+.settings-slider-card {
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-top: 4px;
 }
 
 .settings-slider-header {
@@ -3830,63 +3810,46 @@ textarea::placeholder {
   justify-content: space-between;
 }
 
-.settings-slider-title {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #E7E9EA;
-}
-
-.settings-slider-badge {
-  font-size: 12px;
-  font-weight: 700;
-  background: #202327;
-  border: 1px solid #2F3336;
-  padding: 3px 10px;
-  border-radius: 999px;
-  color: #E7E9EA;
-}
-
 .settings-slider-track-wrap {
   width: 100%;
-  padding: 6px 0;
+  padding: 4px 0;
 }
 
 .settings-range-slider {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  background: #2F3336;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.14);
   outline: none;
   cursor: pointer;
-  transition: background 0.15s ease;
 }
 
 .settings-range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: 2px solid #16181C;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   transition: transform 0.12s ease;
 }
 
-.settings-range-slider::-webkit-slider-thumb:hover {
+.settings-range-slider::-webkit-slider-thumb:active {
   transform: scale(1.15);
 }
 
 .settings-range-slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: 2px solid #16181C;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
 
@@ -3897,157 +3860,192 @@ textarea::placeholder {
 
 .settings-preset-btn {
   flex: 1;
-  padding: 7px 4px;
-  background: #202327;
-  border: 1px solid #2F3336;
+  padding: 8px 6px;
+  background: #191D27;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  color: #71767B;
-  font-size: 11.5px;
-  font-weight: 600;
+  color: #9CA3AF;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .settings-preset-btn:hover {
+  background: #202431;
   color: #FFFFFF;
-  border-color: #71767B;
 }
 
 .settings-preset-btn.active {
-  background: #2F3336;
-  border-color: #71767B;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #000000;
+  font-weight: 600;
 }
 
-/* Dock Preview */
-.settings-dock-preview-wrap {
-  margin-top: 6px;
-  padding: 16px;
-  background: #000000;
-  border: 1px dashed #2F3336;
-  border-radius: 12px;
+/* Radio Rows */
+.settings-radio-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   gap: 12px;
-  overflow: hidden;
-}
-
-.settings-preview-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #71767B;
-}
-
-.settings-preview-capsule {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 16px;
-  border-radius: 10px;
-  background: rgba(10, 11, 14, 0.95);
-  border: 1px solid var(--border-light);
-  box-shadow: none !important;
-  transform-origin: center center;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.preview-tab {
-  width: 42px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  border-radius: 6px;
+  padding: 14px 16px;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
   position: relative;
 }
 
-.preview-tab.active {
-  color: #FFFFFF;
-  background: transparent;
+.settings-radio-row:hover {
+  background: #191D27;
 }
 
-.preview-tab.active::after {
-  content: '';
+.settings-radio-row.selected {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-radio-input {
   position: absolute;
-  bottom: 2px;
-  width: 4px;
-  height: 4px;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.settings-radio-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #4B5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease;
+}
+
+.settings-radio-circle.checked {
+  border-color: #FFFFFF;
+}
+
+.settings-radio-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #FFFFFF;
 }
 
-.preview-tab svg {
-  width: 20px;
-  height: 20px;
+.settings-radio-text {
+  flex: 1;
 }
 
-/* Static Details & Status */
-.settings-row-static {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-}
-
-.settings-value-pill {
-  font-size: 13px;
-  font-weight: 600;
+.settings-radio-title {
+  font-size: 14px;
+  font-weight: 500;
   color: #FFFFFF;
-  font-family: monospace;
+  line-height: 1.3;
+  margin-bottom: 3px;
 }
 
-.settings-status-tag {
+.settings-radio-desc {
   font-size: 12px;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid transparent;
+  font-weight: 400;
+  color: #9CA3AF;
+  line-height: 1.35;
 }
 
-.settings-status-tag.online {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.4);
+/* Status Pill */
+.settings-status-pill {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.settings-status-pill.online {
+  background: rgba(16, 185, 129, 0.12);
   color: #34D399;
 }
-
-.settings-status-tag.checking {
-  background: rgba(234, 179, 8, 0.15);
-  border-color: rgba(234, 179, 8, 0.4);
-  color: #FBBF24;
+.settings-status-pill.online .settings-status-dot {
+  background: #10B981;
 }
 
-.settings-status-tag.offline {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.4);
+.settings-status-pill.checking {
+  background: rgba(245, 158, 11, 0.12);
+  color: #FBBF24;
+}
+.settings-status-pill.checking .settings-status-dot {
+  background: #F59E0B;
+}
+
+.settings-status-pill.offline {
+  background: rgba(239, 68, 68, 0.12);
   color: #F87171;
+}
+.settings-status-pill.offline .settings-status-dot {
+  background: #EF4444;
 }
 
 /* Action Rows */
-.settings-action-row {
+.settings-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  color: #9CA3AF;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.settings-action-btn:hover {
+  background: #191D27;
+  color: #FFFFFF;
+}
+
+.settings-action-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  text-align: left;
-  background: #202327;
-  border: 1px solid #2F3336;
-  border-radius: 10px;
-  padding: 12px 14px;
+  gap: 4px;
+}
+
+/* Logout Button */
+.settings-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  color: #EF4444;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
 }
 
-.settings-action-row:hover {
-  background: #272B30;
-  border-color: #3E4347;
-}
-
-.settings-action-desc {
-  font-size: 11.5px;
-  color: #71767B;
+.settings-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
 }
 
 /* ========================================================================== */
@@ -4917,82 +4915,6 @@ textarea::placeholder {
 
 /* ========================================================================== */
 /*  Settings Radio Rows for Messaging Permissions                             */
-/* ========================================================================== */
-.settings-permission-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-.settings-radio-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: #202327;
-  border: 1px solid #2F3336;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.settings-radio-row:hover {
-  background: #272B30;
-  border-color: #3E4347;
-}
-.settings-radio-row.selected {
-  border-color: #1D9BF0;
-  background: rgba(29, 155, 240, 0.08);
-}
-.settings-radio-input {
-  position: absolute;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-.settings-radio-row:focus-within {
-  outline: 2px solid var(--focus-ring, #1D9BF0);
-  outline-offset: 2px;
-}
-.settings-radio-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #71767B;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2px;
-  flex-shrink: 0;
-  transition: border-color 0.15s ease;
-}
-.settings-radio-circle.checked {
-  border-color: #1D9BF0;
-}
-.settings-radio-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #1D9BF0;
-}
-.settings-radio-text {
-  flex: 1;
-}
-.settings-radio-title {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 2px;
-}
-.settings-radio-desc {
-  font-size: 11.5px;
-  color: #71767B;
-  line-height: 1.4;
-}
 
 /* ========================================================================== */
 /*  Accessibility: Prefers-Reduced-Motion Support                             */

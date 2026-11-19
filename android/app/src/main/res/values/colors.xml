@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Problamatic brand palette -->
-    <color name="colorPrimary">#1F6F6B</color>
-    <color name="colorPrimaryDark">#14210F</color>
-    <color name="colorAccent">#1F6F6B</color>
+    <!-- Problematic brand palette -->
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FFFFFF</color>
 
-    <!-- Forest splash / window background -->
-    <color name="splashBackground">#14210F</color>
-    <color name="windowBackground">#F0EEE6</color>
+    <!-- Pure OLED Black splash / window background -->
+    <color name="splashBackground">#000000</color>
+    <color name="windowBackground">#000000</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBlack">#14181F</color>
+    <color name="colorBlack">#000000</color>
 </resources>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useApp } from './context/AppContext';
 import Icon from './components/Icons';
 import LoginScreen from './screens/LoginScreen';
@@ -27,13 +28,19 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('feed');
   const [viewMode, setViewMode] = useState(() => {
     if (typeof window !== 'undefined') {
+      if (Capacitor.isNativePlatform()) return 'app';
       const hash = window.location.hash;
       if (hash === '#app') return 'app';
       if (hash.startsWith('#story')) return 'story';
     }
     return 'story';
   });
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (Capacitor.isNativePlatform() || window.location.hash === '#app') return true;
+    }
+    return false;
+  });
   const [showComposer, setShowComposer] = useState(false);
   const [composerSessionId, setComposerSessionId] = useState(0);
   const composerSessionRef = useRef(0);
@@ -56,7 +63,7 @@ export default function App() {
   }, []);
 
   const openApp = () => {
-    setShowSplash(false);
+    setShowSplash(true);
     setViewMode('app');
     window.location.hash = '#app';
   };

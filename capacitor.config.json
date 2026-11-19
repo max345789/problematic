@@ -16,19 +16,19 @@
     "captureInput": true,
     "webContentsDebuggingEnabled": true,
     "mixedContentMode": 0,
-    "backgroundColor": "#14210f",
-    "overrideUserAgent": "Problamatic/1.0"
+    "backgroundColor": "#000000",
+    "overrideUserAgent": "Problematic/1.0"
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 2000,
-      "backgroundColor": "#14210f",
+      "launchShowDuration": 1800,
+      "backgroundColor": "#000000",
       "showSpinner": false,
       "androidScaleType": "CENTER_CROP"
     },
     "StatusBar": {
       "style": "dark",
-      "backgroundColor": "#14210f"
+      "backgroundColor": "#000000"
     },
     "Keyboard": {
       "resize": "body",

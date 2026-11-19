@@ -1,0 +1,52 @@
+$env:JAVA_HOME = "C:\Users\Unified\.jdk\jdk17.0.21_1"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+$adb = "C:\Users\Unified\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+$device = "13717013690002D"
+$projDir = "C:\Users\Unified\.gemini\antigravity\scratch\problematic"
+$androidDir = Join-Path $projDir "android"
+$relDir = Join-Path $projDir "release"
+
+Set-Location $androidDir
+Write-Host "Building signed release APK & AAB with Gradle (JDK 17)..."
+.\gradlew assembleRelease bundleRelease -x lintVitalAnalyzeRelease -x lint
+
+$apkSrc = Join-Path $androidDir "app\build\outputs\apk\release\app-release.apk"
+$aabSrc = Join-Path $androidDir "app\build\outputs\bundle\release\app-release.aab"
+
+if (!(Test-Path $apkSrc)) {
+    Write-Error "APK not found at $apkSrc"
+    exit 1
+}
+
+Write-Host "Copying release artifacts to release folder..."
+Copy-Item $apkSrc -Destination (Join-Path $relDir "problematic-v1.0.0.apk") -Force
+Copy-Item $aabSrc -Destination (Join-Path $relDir "problematic-v1.0.0.aab") -Force
+
+Get-Item (Join-Path $relDir "problematic-v1.0.0.apk"), (Join-Path $relDir "problematic-v1.0.0.aab") | Select-Object Name, Length, LastWriteTime
+
+Write-Host "Checking ADB devices..."
+& $adb devices -l
+
+Write-Host "Installing APK on phone $device..."
+$installResult = & $adb -s $device install -r (Join-Path $relDir "problematic-v1.0.0.apk")
+Write-Host $installResult
+
+if ($installResult -match "INSTALL_FAILED") {
+    Write-Host "Incompatible signature detected. Uninstalling previous version..."
+    & $adb -s $device uninstall com.problamatic.murmur
+    Write-Host "Retrying install..."
+    & $adb -s $device install (Join-Path $relDir "problematic-v1.0.0.apk")
+}
+
+Write-Host "Launching Problematic on phone..."
+& $adb -s $device shell am start -n com.problamatic.murmur/.MainActivity
+
+Start-Sleep -Seconds 2
+
+Write-Host "Waking screen..."
+& $adb -s $device shell input keyevent 224
+
+Write-Host "Focused window status:"
+& $adb -s $device shell "dumpsys window | grep -E 'mCurrentFocus|mFocusedApp'"
+
+Write-Host "DONE!"

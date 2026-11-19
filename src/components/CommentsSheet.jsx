@@ -159,7 +159,7 @@ export default function CommentsSheet({
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 700, fontSize: 13.5, color: '#FFFFFF' }}>{acceptedComment.author}</span>
+                  <span style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--text-main)' }}>{acceptedComment.author}</span>
                   <span style={{ fontSize: 12.5, color: 'var(--text-sub)' }}>{acceptedComment.handle}</span>
                 </div>
                 <div className="solver-mention-quote">

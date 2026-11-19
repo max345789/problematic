@@ -314,7 +314,7 @@ export default function MessagesScreen({
           <div className="bottom-sheet" style={{ maxHeight: '80%' }}>
             <div className="sheet-handle" />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>New Message</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-main)' }}>New Message</div>
               <button
                 type="button"
                 className="sheet-close-btn"

@@ -1568,11 +1568,12 @@ export async function seedInitialData() {
   await saveUsers(seedCommunity());
   await savePosts(seedPosts());
   await setStoredData(STORAGE_KEYS.COMMENTS, seedComments());
-  await saveNotifications([]);
+  await saveNotifications(seedNotifications('user_rohitha'));
+  await setSession('user_rohitha');
 
-  // Production: Fresh installs start with empty direct messages
-  await saveConversations([]);
-  await saveMessages({});
+  const seedDMs = seedConversations();
+  await saveConversations(seedDMs.conversations);
+  await saveMessages(seedDMs.messages);
 
   const theme = await getTheme();
   if (!theme) await saveTheme(DEFAULT_THEME);
@@ -1665,11 +1666,37 @@ export async function initializeStorage() {
     getConversations(),
   ]);
 
-  // Production Auth: If there is no active session or the user is not found, keep currentUser as null.
-  // Never fall back to users[0] or auto-login any account.
-  const currentUser = session?.userId
-    ? users.find((u) => u.id === session.userId) || null
-    : null;
+  // Default to Max (@max) so testers use the app on Max's account, NOT the moderator account
+  const maxUser = users.find((u) => u.id === 'user_rohitha' || u.handle === '@max') || {
+    id: 'user_rohitha',
+    name: 'Max',
+    handle: '@max',
+    avatar: 'M',
+    avatarBg: '#1F6F6B',
+    bio: 'Front-end engineer. Sharing real thoughts, pains, and practical solutions.',
+    respectadeo: 1.4,
+    problemsSolved: 14,
+    problemsPosted: 10,
+    messagingPermission: 'requests',
+    role: 'user',
+    isModerator: false,
+  };
+
+  let currentUser = null;
+  if (session?.userId) {
+    currentUser = users.find((u) => u.id === session.userId) || maxUser;
+  } else {
+    currentUser = maxUser;
+  }
+
+  // Ensure Max is strictly a regular user and never inherits moderator flags
+  if (currentUser && (currentUser.id === 'user_rohitha' || currentUser.handle === '@max')) {
+    currentUser.name = 'Max';
+    currentUser.handle = '@max';
+    currentUser.avatar = 'M';
+    currentUser.role = 'user';
+    currentUser.isModerator = false;
+  }
 
   return {
     users,

@@ -1568,12 +1568,11 @@ export async function seedInitialData() {
   await saveUsers(seedCommunity());
   await savePosts(seedPosts());
   await setStoredData(STORAGE_KEYS.COMMENTS, seedComments());
-  await saveNotifications(seedNotifications('user_rohitha'));
-  await setSession('user_rohitha');
+  await saveNotifications([]);
 
-  const seedDMs = seedConversations();
-  await saveConversations(seedDMs.conversations);
-  await saveMessages(seedDMs.messages);
+  // Production: Fresh installs start with empty direct messages
+  await saveConversations([]);
+  await saveMessages({});
 
   const theme = await getTheme();
   if (!theme) await saveTheme(DEFAULT_THEME);
@@ -1593,29 +1592,14 @@ export async function setOnboardingCompleted(completed = true) {
 export async function initializeStorage() {
   await seedInitialData();
 
-  // Migration/Seed check for conversations: distinguish read failure from confirmed missing key
+  // Conversations and messages default to empty for clean user isolation
   const convResult = await safeGetStoredData(STORAGE_KEYS.CONVERSATIONS);
   const msgResult = await safeGetStoredData(STORAGE_KEYS.MESSAGES);
-  if (convResult.error || msgResult.error) {
-    console.warn('[storage] Failed to read conversations or messages; skipping demo re-seed to preserve user data.');
-  } else {
-    const seed = seedConversations();
-    if (!convResult.exists || !Array.isArray(convResult.data) || convResult.data.length === 0) {
-      await saveConversations(seed.conversations);
-    }
-    // Merge seed messages with existing message collection instead of replacing
-    const existingMessages = msgResult.data && typeof msgResult.data === 'object' ? msgResult.data : {};
-    let messagesNeedSave = false;
-    const mergedMessages = { ...existingMessages };
-    for (const [cId, cMsgs] of Object.entries(seed.messages)) {
-      if (!mergedMessages[cId] || mergedMessages[cId].length === 0) {
-        mergedMessages[cId] = cMsgs;
-        messagesNeedSave = true;
-      }
-    }
-    if (!msgResult.exists || messagesNeedSave) {
-      await saveMessages(mergedMessages);
-    }
+  if (!convResult.exists || !Array.isArray(convResult.data)) {
+    await saveConversations([]);
+  }
+  if (!msgResult.exists || typeof msgResult.data !== 'object') {
+    await saveMessages({});
   }
 
   // Migration check: ensure universal posts and domain seeds are applied once and retryable
@@ -1681,17 +1665,11 @@ export async function initializeStorage() {
     getConversations(),
   ]);
 
+  // Production Auth: If there is no active session or the user is not found, keep currentUser as null.
+  // Never fall back to users[0] or auto-login any account.
   const currentUser = session?.userId
-    ? users.find((u) => u.id === session.userId) || users[0] || null
-    : users[0] || null;
-
-  if (currentUser && currentUser.id === 'user_rohitha') {
-    currentUser.name = 'Max';
-    currentUser.handle = '@max';
-    currentUser.avatar = 'M';
-    currentUser.role = 'user';
-    currentUser.isModerator = false;
-  }
+    ? users.find((u) => u.id === session.userId) || null
+    : null;
 
   return {
     users,

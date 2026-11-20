@@ -165,17 +165,23 @@ export function AppProvider({ children }) {
     await storage.setSession(cleanUser.id);
     setCurrentUser(cleanUser);
     setUsers((prev) => [...prev.filter((u) => u.id !== cleanUser.id), cleanUser]);
+
+    // Ensure new account starts with zero messages
+    await storage.saveConversations([]);
+    await storage.saveMessages({});
+    setConversations([]);
+
     const welcome = {
       type: 'welcome',
       name: 'Problematic',
       avatar: 'P',
       avatarBg: '#1F6F6B',
-      text: 'Welcome to Problematic. A social platform to share your thoughts, pains, and real issues.',
+      text: `Welcome to Problematic, ${cleanUser.name}! A social space for real thoughts, issues, and peer support.`,
       postId: null,
       unread: true,
     };
     const saved = await storage.addNotification(welcome);
-    setNotifications((prev) => [saved, ...prev]);
+    setNotifications([saved]);
     return cleanUser;
   }, []);
 

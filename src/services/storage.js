@@ -102,10 +102,19 @@ function normalizeHandle(raw = '') {
 
 export async function getUsers() {
   const users = await getStoredData(STORAGE_KEYS.USERS, []);
-  // Ensure default seed users and standard users have standard permissions
-  return users.map((u) => {
+  let hasModerator = false;
+  const mapped = users.map((u) => {
     let userObj = { ...u };
-    if (userObj.id === 'user_rohitha') {
+    if (userObj.id === 'user_moderator' || userObj.handle === '@moderator') {
+      hasModerator = true;
+      userObj = {
+        ...userObj,
+        name: userObj.name || 'Moderator',
+        handle: '@moderator',
+        role: 'moderator',
+        isModerator: true,
+      };
+    } else if (userObj.id === 'user_rohitha') {
       userObj = {
         ...userObj,
         name: 'Max',
@@ -129,11 +138,37 @@ export async function getUsers() {
       };
     }
     const withDefaults = {
-      messagingPermission: userObj.messagingPermission || (userObj.id === 'user_arjun' ? 'everyone' : 'requests'),
+      messagingPermission: userObj.messagingPermission || (userObj.id === 'user_arjun' || userObj.isModerator ? 'everyone' : 'requests'),
       ...userObj,
     };
     return withDefaults;
   });
+
+  if (!hasModerator) {
+    const mod = {
+      id: 'user_moderator',
+      name: 'Moderator',
+      handle: '@moderator',
+      passwordHash: hashPassword('password'),
+      role: 'moderator',
+      isModerator: true,
+      avatar: 'M',
+      avatarBg: '#0F172A',
+      bio: 'Problematic Platform Moderator. Maintaining real-life empathy and authentic discussions.',
+      respectadeo: 10.0,
+      problemsSolved: 100,
+      problemsPosted: 0,
+      messagingPermission: 'everyone',
+      pendingPoints: 0.0,
+      collectedPostMilestones: 0,
+      penalties: 0,
+      createdAt: daysAgo(365),
+    };
+    mapped.push(mod);
+    setStoredData(STORAGE_KEYS.USERS, mapped).catch(() => {});
+  }
+
+  return mapped;
 }
 
 export async function saveUsers(users) {
@@ -787,7 +822,27 @@ function seedCommunity() {
     },
   ];
 
-  return [rohitha, ...community];
+  const moderator = {
+    id: 'user_moderator',
+    name: 'Moderator',
+    handle: '@moderator',
+    passwordHash: hashPassword('password'),
+    role: 'moderator',
+    isModerator: true,
+    avatar: 'M',
+    avatarBg: '#0F172A',
+    bio: 'Problematic Platform Moderator. Maintaining real-life empathy and authentic discussions.',
+    respectadeo: 10.0,
+    problemsSolved: 100,
+    problemsPosted: 0,
+    messagingPermission: 'everyone',
+    pendingPoints: 0.0,
+    collectedPostMilestones: 0,
+    penalties: 0,
+    createdAt: daysAgo(365),
+  };
+
+  return [rohitha, moderator, ...community];
 }
 
 function seedPosts() {

@@ -28,6 +28,8 @@ function formatUser(row) {
     problemsPosted: row.problems_posted,
     pendingPoints: row.pending_points,
     penalties: row.penalties,
+    role: row.handle === '@moderator' || row.id === 'user_moderator' ? 'moderator' : (row.role || 'user'),
+    isModerator: Boolean(row.handle === '@moderator' || row.id === 'user_moderator' || row.role === 'moderator'),
     createdAt: row.created_at,
   };
 }

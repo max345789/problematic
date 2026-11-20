@@ -215,6 +215,21 @@ async function seedDatabase() {
       penalties: 0,
       created_at: daysAgo(30),
     },
+    {
+      id: 'user_moderator',
+      name: 'Moderator',
+      handle: '@moderator',
+      password_hash: defaultPwHash,
+      avatar: 'M',
+      avatar_bg: '#0F172A',
+      bio: 'Problematic Platform Moderator. Maintaining real-life empathy and authentic discussions.',
+      respectadeo: 10.0,
+      problems_solved: 100,
+      problems_posted: 0,
+      pending_points: 0.0,
+      penalties: 0,
+      created_at: daysAgo(365),
+    },
   ];
 
   for (const u of users) {

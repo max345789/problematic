@@ -7,6 +7,11 @@ const AppContext = createContext(null);
 function sanitizeUser(u) {
   if (!u) return u;
   let sanitized = { ...u };
+  if (sanitized.id === 'user_moderator' || sanitized.handle === '@moderator') {
+    sanitized.role = 'moderator';
+    sanitized.isModerator = true;
+    return sanitized;
+  }
   if (sanitized.id === 'user_rohitha') {
     sanitized.name = 'Max';
     sanitized.handle = '@max';

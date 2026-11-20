@@ -1,159 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy - Problematic</title>
-  <style>
-    :root {
-      --bg: #0A0D14;
-      --card-bg: #111520;
-      --border: rgba(255, 255, 255, 0.08);
-      --text-main: #F3F4F6;
-      --text-sub: #9CA3AF;
-      --accent: #3B82F6;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #F8F9FA;
-        --card-bg: #FFFFFF;
-        --border: rgba(0, 0, 0, 0.08);
-        --text-main: #111827;
-        --text-sub: #4B5563;
-        --accent: #2563EB;
-      }
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text-main);
-      margin: 0;
-      padding: 32px 16px;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 36px 32px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-top: 0;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-    .meta {
-      font-size: 14px;
-      color: var(--text-sub);
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    h2 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-top: 32px;
-      margin-bottom: 12px;
-      color: var(--text-main);
-    }
-    p, li {
-      font-size: 15px;
-      color: var(--text-sub);
-    }
-    ul {
-      padding-left: 20px;
-      margin-bottom: 16px;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-    strong {
-      color: var(--text-main);
-    }
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      background: rgba(59, 130, 246, 0.1);
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy — Problematic</title>
+<meta name="description" content="Privacy Policy for Problematic social media platform. Learn how we handle data with zero third-party tracking.">
+<script>
+(function(){
+  var saved = localStorage.getItem('problematic_theme');
+  if(saved){
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
+<style>
+:root{
+  --bg:#fff;--fg:#000;--muted:#555;--line:#000;--soft:#f2f2f2;--ok:#0a7a3b;--ok-bg:#e6f5ec;--bad:#b00020;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#000;--fg:#fff;--muted:#a3a3a3;--line:#2b2b2b;--soft:#0f0f0f;--ok:#3ddc84;--ok-bg:#06180e;--bad:#ff6b81;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#000;--fg:#fff;--muted:#a3a3a3;--line:#2b2b2b;--soft:#0f0f0f;--ok:#3ddc84;--ok-bg:#06180e;--bad:#ff6b81;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--bg);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:20px;text-decoration:none}
+.logo span{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--fg);margin-right:8px}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px}
+.nav-links a{text-decoration:none;color:var(--muted)}
+.nav-links a:hover{color:var(--fg)}
+.nav-links a.active{color:var(--fg);font-weight:600}
+.theme{border:1px solid var(--line);background:none;color:var(--fg);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+@media(max-width:820px){.nav-links a:not(.legal-nav){display:none}}
+@media(max-width:620px){.nav-links a{display:none}}
+.legal-content{max-width:800px;margin:0 auto;padding:56px 20px 72px}
+.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 16px}
+h1{font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-.03em;margin:0 0 16px;font-weight:800}
+.meta-tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 14px;font-size:13px;color:var(--muted);margin-bottom:32px}
+.box{border:1px solid var(--line);border-radius:18px;padding:26px;background:var(--bg);margin-bottom:20px}
+.box h2{font-size:22px;letter-spacing:-.02em;margin:0 0 12px;line-height:1.2}
+.box h3{font-size:17px;margin:16px 0 8px}
+.box p{margin:0 0 12px;color:var(--fg);font-size:15px;line-height:1.6}
+.box p.muted{color:var(--muted)}
+.box ul{margin:8px 0 14px;padding-left:20px;font-size:15px}
+.box li{margin-bottom:6px}
+.callout{border-left:3px solid var(--fg);background:var(--soft);padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;font-size:14px}
+.callout b{color:var(--fg)}
+footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer a{text-decoration:none;color:var(--muted)}
+footer a:hover{color:var(--fg);text-decoration:underline}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="badge">Google Play Store & Compliance</div>
-    <h1>Privacy Policy for Problematic</h1>
-    <div class="meta">
-      <strong>Effective Date:</strong> November 19, 2026 &bull; 
-      <strong>Application:</strong> Problematic &bull; 
-      <strong>Developer:</strong> Problematic Team
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html"><span></span>Problematic</a>
+    <nav class="nav-links">
+      <a href="index.html#how">How it works</a>
+      <a href="index.html#features">Features</a>
+      <a href="privacy.html" class="legal-nav active">Privacy</a>
+      <a href="terms.html" class="legal-nav">Terms</a>
+      <a href="safety.html" class="legal-nav">Safety</a>
+      <a href="contact.html" class="legal-nav">Contact</a>
+      <button class="theme" id="theme" type="button" aria-label="Toggle light or dark mode">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<main class="legal-content">
+  <p class="eyebrow">Google Play & Regulatory Compliance</p>
+  <h1>Privacy Policy</h1>
+  <div class="meta-tag">Effective Date: November 20, 2026 · App: Problematic (com.problematic.app) · Developer: Sarath C</div>
+
+  <div class="box">
+    <h2>1. Overview & Commitment</h2>
+    <p>
+      Problematic ("we", "our", or "us") operates a reality-first social media community where people share authentic problems and receive constructive solutions. We believe privacy is fundamental. This Privacy Policy discloses our data collection, usage, and protection practices in compliance with Google Play Store Developer Policies, the European Union General Data Protection Regulation (GDPR), and international privacy frameworks.
+    </p>
+    <div class="callout">
+      <b>Zero Ad-Tracking Promise:</b> We do not sell your personal data, track your location across the web, or embed advertising trackers.
     </div>
+  </div>
 
-    <p>
-      Problematic ("we", "our", or "us") is dedicated to protecting your privacy. This Privacy Policy outlines our practices regarding data collection, usage, and disclosure for the Problematic mobile application and associated backend services.
-    </p>
-
-    <h2>1. Information We Collect</h2>
-    <p>When using Problematic, we collect only the information necessary to deliver core application functionality:</p>
+  <div class="box">
+    <h2>2. Data We Collect</h2>
+    <p>We collect only the minimum data required to deliver core community functionality:</p>
     <ul>
-      <li><strong>Account Credentials:</strong> Username (handle), display name, and securely salted/hashed passwords required for authentication.</li>
-      <li><strong>User-Generated Content:</strong> Problems broadcasted, solutions submitted, comments, votes, poll responses, and direct messages voluntarily exchanged with other users.</li>
-      <li><strong>Device & Network Diagnostics:</strong> Non-identifying network connection state strictly used to manage real-time online/offline synchronization and API connectivity.</li>
+      <li><b>Account Information:</b> Display name, username handle (e.g., <code>@username</code>), and securely salted/hashed password credentials.</li>
+      <li><b>User-Submitted Content:</b> Problems posted, descriptions, tags, reply discussions, solution markers, and direct messages sent voluntarily by you.</li>
+      <li><b>Device & Technical Information:</b> Basic app version, operating system version (Android), and timestamp logs necessary for diagnostics and security.</li>
+      <li><b>App Preferences:</b> Dark/Light theme mode preferences and Direct Message access settings (Everyone, Requests only, or Closed).</li>
     </ul>
+  </div>
 
-    <h2>2. How We Use Your Information</h2>
-    <p>We use your information exclusively to:</p>
+  <div class="box">
+    <h2>3. Data We Do NOT Collect</h2>
     <ul>
-      <li>Authenticate user sessions and maintain your user profile.</li>
-      <li>Facilitate global problem broadcasting and community-driven solutions.</li>
-      <li>Compute community standing and Respectadeo (RD) scores based on validated solution helpfulness.</li>
-      <li>Deliver real-time in-app notifications when solutions or comments are posted to your problems.</li>
+      <li><b>No Precise Physical Location:</b> We do not request or track your precise GPS coordinates.</li>
+      <li><b>No Financial or Payment Data:</b> Problematic contains no digital goods purchases or paywalls.</li>
+      <li><b>No Third-Party Ad Profiling:</b> We do not partner with ad networks or data brokers.</li>
+      <li><b>No Contacts or Phonebook Scraping:</b> We never scan your address book.</li>
     </ul>
+  </div>
 
-    <h2>3. Data Sharing & Third-Party Disclosure</h2>
-    <p>
-      <strong>We do not sell, rent, monetize, or trade your personal information to third parties, advertising networks, or data brokers.</strong>
-      Data is disclosed strictly when required by law or to defend against malicious attacks, spam, and system abuse.
-    </p>
-
-    <h2>4. Data Storage, Encryption & Security</h2>
+  <div class="box">
+    <h2>4. How We Use Information</h2>
+    <p>Your information is processed strictly for the following purposes:</p>
     <ul>
-      <li><strong>Encryption in Transit:</strong> All communications between the mobile application and our backend are encrypted via Transport Layer Security (TLS / HTTPS).</li>
-      <li><strong>Password Security:</strong> Passwords are cryptographically salted and hashed using industry-standard bcrypt before storage.</li>
-      <li><strong>Local Storage:</strong> On-device data is secured within sandboxed application storage and never accessible to other apps.</li>
+      <li>To authenticate your identity and display your user profile.</li>
+      <li>To publish problem broadcasts and display peer replies.</li>
+      <li>To compute community standing through the Respectadeo (RD) helpfulness formula.</li>
+      <li>To deliver 1-on-1 direct messaging when permitted by recipient controls.</li>
+      <li>To enforce community safety, eliminate spam, and prevent child exploitation.</li>
     </ul>
+  </div>
 
-    <h2>5. Data Retention & Account Deletion</h2>
+  <div class="box">
+    <h2>5. Data Security & Storage</h2>
     <p>
-      Users retain full ownership of their data. You can delete your cached session or request complete erasure of your account and associated broadcasts by contacting our developer support team at <a href="mailto:support@problematic.app">support@problematic.app</a>. Upon request, all personal data is permanently expunged within 30 days.
-    </p>
-
-    <h2>6. Children's Privacy</h2>
-    <p>
-      Problematic does not target or knowingly collect personal information from children under the age of 13. If you believe a child under 13 has provided us with personal information, please contact us immediately for prompt deletion.
-    </p>
-
-    <h2>7. Contact Us</h2>
-    <p>
-      For questions regarding this policy, data safety practices, or to exercise your privacy rights, please contact:
-      <br>
-      <strong>Email:</strong> <a href="mailto:support@problematic.app">support@problematic.app</a>
+      All data transmitted between the Problematic mobile client and backend servers is encrypted in transit using industry-standard Transport Layer Security (TLS 1.3 / HTTPS). Data stored on device is confined to the sandboxed application directory protected by Android operating system permissions.
     </p>
   </div>
+
+  <div class="box">
+    <h2>6. Data Retention & Account Deletion</h2>
+    <p>
+      You have the right to request full erasure of your account, posts, comments, and personal information at any time.
+    </p>
+    <p>
+      To request account and data deletion:
+    </p>
+    <ul>
+      <li>Email: <a href="mailto:sarathme02@gmail.com"><b>sarathme02@gmail.com</b></a></li>
+      <li>Subject: <code>[DATA DELETION REQUEST]</code></li>
+      <li>Include your username handle. Your request will be fulfilled within 30 days.</li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>7. Children's Privacy (Under 13)</h2>
+    <p>
+      Problematic is strictly intended for users aged 13 and above. We do not knowingly collect personal information from individuals under 13. If we become aware that a child under 13 has provided personal data, we take immediate steps to terminate the account and purge the data.
+    </p>
+  </div>
+
+  <div class="box">
+    <h2>8. Contact the Privacy Officer</h2>
+    <p>For any questions or concerns regarding this policy, contact:</p>
+    <p>
+      <b>Developer:</b> Sarath C<br>
+      <b>Email:</b> <a href="mailto:sarathme02@gmail.com">sarathme02@gmail.com</a><br>
+      <b>Official Website:</b> <a href="index.html">Problematic Social Platform</a>
+    </p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Problematic. Built for real life. Developer: Sarath C</span>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="safety.html">Safety standards</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById('theme');
+  btn.addEventListener('click',function(){
+    var current=root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next=current==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    localStorage.setItem('problematic_theme',next);
+  });
+})();
+</script>
 </body>
 </html>

@@ -5652,7 +5652,8 @@ body[data-theme="light"],
 
 [data-theme="light"] .profile-settings-btn:hover,
 .theme-light .profile-settings-btn:hover {
-  background: rgba(0, 0, 0, 0.06) !important;
+  background: transparent !important;
+  opacity: 0.75;
   color: #000000 !important;
 }
 

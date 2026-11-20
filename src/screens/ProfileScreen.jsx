@@ -47,6 +47,13 @@ export default function ProfileScreen({ onOpenSettings, onOpenOnboarding, showTo
             onClick={onOpenSettings}
             aria-label="Settings"
             title="Settings"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              boxShadow: 'none',
+              outline: 'none',
+              padding: 0,
+            }}
           >
             <Icon.Gear />
           </button>
